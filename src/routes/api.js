@@ -18,8 +18,8 @@ router.get('/conversations', async (req, res) => {
   const { businessId } = req.query;
   let query = supabase
     .from('conversations')
-    .select('*, messages(id, role, content, sent_at)')
-    .order('last_message_at', { ascending: false });
+    .select('*, messages(id, role, content, created_at)')
+    .order('created_at', { ascending: false });
   if (businessId) query = query.eq('business_id', businessId);
   const { data, error } = await query;
   if (error) return res.status(500).json({ error: error.message });
@@ -32,7 +32,7 @@ router.get('/appointments', async (req, res) => {
   let query = supabase
     .from('appointments')
     .select('*')
-    .order('appointment_time', { ascending: true });
+    .order('scheduled_at', { ascending: true });
   if (businessId) query = query.eq('business_id', businessId);
   const { data, error } = await query;
   if (error) return res.status(500).json({ error: error.message });
@@ -66,7 +66,7 @@ router.get('/stats', async (req, res) => {
   const totalCalls = (convs || []).length;
   const bookedConvs = (convs || []).filter(c => c.status === 'booked').length;
   const activeConvs = (convs || []).filter(c => c.status === 'active').length;
-  const apptThisWeek = (appts || []).filter(a => new Date(a.appointment_time) >= weekStart).length;
+  const apptThisWeek = (appts || []).filter(a => new Date(a.scheduled_at) >= weekStart).length;
 
   res.json({
     callsToday: todayCalls,
