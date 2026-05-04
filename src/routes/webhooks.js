@@ -1,34 +1,56 @@
 const express = require("express");
 const { sendSMS } = require("../services/twilio");
-const { getAIResponse, clearConversation } = require("../services/ai");
+const { getAIResponse } = require("../services/ai");
 const { getAvailableSlots, bookAppointment } = require("../services/calendar");
 const { notifyOwner } = require("../services/notifications");
-const businessConfig = require("../config/businesses.json");
+const supabase = require("../services/supabase");
 
 const router = express.Router();
 
-// Find business by Twilio phone number
-function findBusiness(twilioNumber) {
-  for (const [id, biz] of Object.entries(businessConfig.businesses)) {
-    if (biz.twilioNumber === twilioNumber) {
-      return { id, ...biz };
-    }
-  }
-  return null;
+async function findBusinessByNumber(twilioNumber) {
+  const { data, error } = await supabase
+    .from("businesses")
+    .select("*")
+    .eq("twilio_number", twilioNumber)
+    .single();
+  if (error || !data) return null;
+  return data;
 }
 
-// Twilio calls this when a call goes unanswered (call status webhook)
+async function getOrCreateConversation(businessId, customerPhone) {
+  const { data: existing } = await supabase
+    .from("conversations")
+    .select("*")
+    .eq("business_id", businessId)
+    .eq("customer_phone", customerPhone)
+    .eq("status", "active")
+    .single();
+
+  if (existing) return existing;
+
+  const { data: created } = await supabase
+    .from("conversations")
+    .insert({ business_id: businessId, customer_phone: customerPhone })
+    .select()
+    .single();
+
+  return created;
+}
+
+async function saveMessage(conversationId, role, content) {
+  await supabase.from("messages").insert({ conversation_id: conversationId, role, content });
+}
+
 router.post("/missed-call", async (req, res) => {
   try {
     const { CallStatus, From, To, Called } = req.body;
     const calledNumber = To || Called;
 
-    // Only trigger on missed calls
     if (!["no-answer", "busy", "failed", "canceled"].includes(CallStatus)) {
       return res.status(200).send("<Response></Response>");
     }
 
-    const business = findBusiness(calledNumber);
+    const business = await findBusinessByNumber(calledNumber);
     if (!business) {
       console.log(`[Missed Call] No business found for number: ${calledNumber}`);
       return res.status(200).send("<Response></Response>");
@@ -36,10 +58,9 @@ router.post("/missed-call", async (req, res) => {
 
     console.log(`[Missed Call] ${From} → ${business.name} (${CallStatus})`);
 
-    // Send the initial text-back
+    const conversation = await getOrCreateConversation(business.id, From);
+    await saveMessage(conversation.id, "assistant", business.greeting);
     await sendSMS(From, calledNumber, business.greeting);
-
-    // Notify the owner
     await notifyOwner(business, From, "Missed call — AI is following up via text.");
 
     res.status(200).send("<Response></Response>");
@@ -49,12 +70,11 @@ router.post("/missed-call", async (req, res) => {
   }
 });
 
-// Twilio calls this when the customer replies via SMS
 router.post("/sms", async (req, res) => {
   try {
     const { From, To, Body } = req.body;
 
-    const business = findBusiness(To);
+    const business = await findBusinessByNumber(To);
     if (!business) {
       console.log(`[SMS] No business found for number: ${To}`);
       return res.status(200).send("<Response></Response>");
@@ -62,33 +82,46 @@ router.post("/sms", async (req, res) => {
 
     console.log(`[SMS] ${From} → ${business.name}: "${Body}"`);
 
-    // Get available slots for the AI to reference
-    const slots = await getAvailableSlots(business.id, business);
+    const conversation = await getOrCreateConversation(business.id, From);
+    await saveMessage(conversation.id, "user", Body);
 
-    // Get AI response
+    const slots = await getAvailableSlots(business.id, business);
     const aiReply = await getAIResponse(From, Body, business, slots);
 
-    // Check if AI flagged this as urgent
+    await saveMessage(conversation.id, "assistant", aiReply);
+
     if (aiReply.includes("[URGENT]")) {
       const cleanReply = aiReply.replace("[URGENT]", "").trim();
       await notifyOwner(business, From, Body, "urgent");
       await sendSMS(From, To, cleanReply);
-    }
-    // Check if AI booked an appointment
-    else if (aiReply.includes("[BOOKED:")) {
+    } else if (aiReply.includes("[BOOKED:")) {
       const match = aiReply.match(/\[BOOKED:\s*(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2})\]/);
       const cleanReply = aiReply.replace(/\[BOOKED:.*?\]/, "").trim();
 
       if (match) {
         const dateTimeISO = new Date(match[1]).toISOString();
-        await bookAppointment(business.id, business, dateTimeISO, From, Body);
+        const booking = await bookAppointment(business.id, business, dateTimeISO, From, Body);
+
+        await supabase.from("appointments").insert({
+          business_id: business.id,
+          conversation_id: conversation.id,
+          customer_phone: From,
+          service_description: Body,
+          scheduled_at: dateTimeISO,
+          google_event_id: booking.eventId || null,
+          status: "booked",
+        });
+
+        await supabase
+          .from("conversations")
+          .update({ status: "booked" })
+          .eq("id", conversation.id);
+
         await notifyOwner(business, From, `${match[1]} — ${Body}`, "booked");
       }
 
       await sendSMS(From, To, cleanReply);
-    }
-    // Normal conversation
-    else {
+    } else {
       await sendSMS(From, To, aiReply);
     }
 

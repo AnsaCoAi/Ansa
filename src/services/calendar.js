@@ -1,7 +1,5 @@
 const { google } = require("googleapis");
-
-// Store OAuth tokens per business
-const tokens = new Map();
+const supabase = require("./supabase");
 
 function createOAuthClient() {
   return new google.auth.OAuth2(
@@ -22,35 +20,31 @@ function getAuthUrl(businessId) {
 
 async function handleAuthCallback(code, businessId) {
   const oauth2Client = createOAuthClient();
-  const { tokens: newTokens } = await oauth2Client.getToken(code);
-  tokens.set(businessId, newTokens);
+  const { tokens } = await oauth2Client.getToken(code);
+  await supabase.from("businesses").update({ google_tokens: tokens }).eq("id", businessId);
   console.log(`[Calendar] Authorized for business: ${businessId}`);
-  return newTokens;
+  return tokens;
 }
 
-function getAuthenticatedClient(businessId) {
+async function getAuthenticatedClient(businessId) {
+  const { data } = await supabase.from("businesses").select("google_tokens").eq("id", businessId).single();
+  if (!data?.google_tokens) return null;
   const oauth2Client = createOAuthClient();
-  const businessTokens = tokens.get(businessId);
-  if (!businessTokens) return null;
-  oauth2Client.setCredentials(businessTokens);
+  oauth2Client.setCredentials(data.google_tokens);
   return oauth2Client;
 }
 
 async function getAvailableSlots(businessId, business, daysAhead = 5) {
-  const auth = getAuthenticatedClient(businessId);
-  if (!auth) {
-    // Return default slots if calendar not connected
-    return generateDefaultSlots(business, daysAhead);
-  }
+  const auth = await getAuthenticatedClient(businessId);
+  if (!auth) return generateAvailableSlots(business, daysAhead, []);
 
   const calendar = google.calendar({ version: "v3", auth });
   const now = new Date();
   const end = new Date();
   end.setDate(end.getDate() + daysAhead);
 
-  // Get existing events to find busy times
   const response = await calendar.events.list({
-    calendarId: business.googleCalendarId || "primary",
+    calendarId: business.google_calendar_id || "primary",
     timeMin: now.toISOString(),
     timeMax: end.toISOString(),
     singleEvents: true,
@@ -65,65 +59,48 @@ async function getAvailableSlots(businessId, business, daysAhead = 5) {
   return generateAvailableSlots(business, daysAhead, busyTimes);
 }
 
-function generateDefaultSlots(business, daysAhead) {
-  return generateAvailableSlots(business, daysAhead, []);
-}
-
 function generateAvailableSlots(business, daysAhead, busyTimes) {
   const slots = [];
   const now = new Date();
   const days = ["sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday"];
-  const duration = business.appointmentDuration || 60;
+  const duration = business.appointment_duration || 60;
+  const hours = business.business_hours;
 
   for (let d = 0; d < daysAhead; d++) {
     const date = new Date(now);
     date.setDate(date.getDate() + d);
     const dayName = days[date.getDay()];
-    const hours = business.businessHours[dayName];
+    const dayHours = hours[dayName];
 
-    if (!hours) continue;
+    if (!dayHours) continue;
 
-    const [startH, startM] = hours.start.split(":").map(Number);
-    const [endH, endM] = hours.end.split(":").map(Number);
+    const [startH] = dayHours.start.split(":").map(Number);
+    const [endH] = dayHours.end.split(":").map(Number);
 
-    // Generate slots every hour during business hours
     for (let h = startH; h < endH; h++) {
       const slotStart = new Date(date);
       slotStart.setHours(h, 0, 0, 0);
-
-      // Skip if slot is in the past
       if (slotStart < now) continue;
 
       const slotEnd = new Date(slotStart);
       slotEnd.setMinutes(slotEnd.getMinutes() + duration);
 
-      // Check if slot conflicts with busy times
-      const isBusy = busyTimes.some(
-        (busy) => slotStart < busy.end && slotEnd > busy.start
-      );
-
+      const isBusy = busyTimes.some((busy) => slotStart < busy.end && slotEnd > busy.start);
       if (!isBusy) {
-        const dateStr = slotStart.toLocaleDateString("en-US", {
-          weekday: "long",
-          month: "short",
-          day: "numeric",
+        slots.push({
+          date: slotStart.toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" }),
+          time: slotStart.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true }),
+          iso: slotStart.toISOString(),
         });
-        const timeStr = slotStart.toLocaleTimeString("en-US", {
-          hour: "numeric",
-          minute: "2-digit",
-          hour12: true,
-        });
-        slots.push({ date: dateStr, time: timeStr, iso: slotStart.toISOString() });
       }
     }
   }
 
-  // Return max 8 slots to keep AI responses manageable
   return slots.slice(0, 8);
 }
 
 async function bookAppointment(businessId, business, dateTimeISO, customerName, serviceDescription) {
-  const auth = getAuthenticatedClient(businessId);
+  const auth = await getAuthenticatedClient(businessId);
   if (!auth) {
     console.log(`[Calendar] No auth — booking logged but not added to calendar`);
     return { booked: true, synced: false };
@@ -132,10 +109,10 @@ async function bookAppointment(businessId, business, dateTimeISO, customerName, 
   const calendar = google.calendar({ version: "v3", auth });
   const start = new Date(dateTimeISO);
   const end = new Date(start);
-  end.setMinutes(end.getMinutes() + (business.appointmentDuration || 60));
+  end.setMinutes(end.getMinutes() + (business.appointment_duration || 60));
 
   const event = await calendar.events.insert({
-    calendarId: business.googleCalendarId || "primary",
+    calendarId: business.google_calendar_id || "primary",
     requestBody: {
       summary: `${customerName || "Customer"} — ${serviceDescription || business.trade}`,
       description: `Booked via Ansa AI\nService: ${serviceDescription}\nCustomer: ${customerName}`,
