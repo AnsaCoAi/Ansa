@@ -1,0 +1,25 @@
+{
+  "businesses": {
+    "example_business": {
+      "name": "Jake's Plumbing",
+      "ownerName": "Jake",
+      "ownerPhone": "+1234567890",
+      "trade": "plumbing",
+      "twilioNumber": "+1234567890",
+      "googleCalendarId": "primary",
+      "services": ["drain cleaning", "pipe repair", "water heater", "general plumbing"],
+      "businessHours": {
+        "monday": { "start": "08:00", "end": "17:00" },
+        "tuesday": { "start": "08:00", "end": "17:00" },
+        "wednesday": { "start": "08:00", "end": "17:00" },
+        "thursday": { "start": "08:00", "end": "17:00" },
+        "friday": { "start": "08:00", "end": "17:00" },
+        "saturday": { "start": "09:00", "end": "14:00" },
+        "sunday": null
+      },
+      "timezone": "America/New_York",
+      "appointmentDuration": 60,
+      "greeting": "Hey, this is Jake's Plumbing — sorry we missed your call! What can we help you with today?"
+    }
+  }
+}
