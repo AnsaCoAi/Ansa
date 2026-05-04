@@ -1,7 +1,8 @@
-import React from 'react';
+import { useEffect, useState } from 'react';
 import { Phone, MessageCircle, CalendarCheck, DollarSign, ArrowUpRight, ArrowDownRight, ChevronRight, Eye, MessageSquare, Calendar } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { currentBusiness, missedCalls, conversations, dashboardStats, weeklyData } from '../data/mockData';
+import { api } from '../services/api';
 
 function getGreeting() {
   const h = new Date().getHours();
@@ -44,12 +45,25 @@ const CustomTooltip = ({ active, payload, label }) => {
   );
 };
 
+const BUSINESS_ID = 'biz_001';
+
 export default function DashboardHome() {
+  const [liveStats, setLiveStats] = useState(null);
+  const [liveConvs, setLiveConvs] = useState(null);
+
+  useEffect(() => {
+    api.getStats(BUSINESS_ID).then(setLiveStats).catch(() => {});
+    api.getConversations(BUSINESS_ID).then(setLiveConvs).catch(() => {});
+  }, []);
+
+  const statsData = liveStats || dashboardStats;
+  const convsData = liveConvs || conversations;
+
   const ownerFirst = currentBusiness.owner?.split(' ')[0] || 'there';
   const recentCalls = missedCalls.slice(0, 5);
-  const activeCount = conversations.filter(c => c.status === 'active').length;
-  const todayAppts = dashboardStats.appointmentsThisWeek || 2;
-  const callsDiff = dashboardStats.callsToday - 3;
+  const activeCount = convsData.filter(c => c.status === 'active').length;
+  const todayAppts = statsData.appointmentsThisWeek || 2;
+  const callsDiff = (statsData.callsToday || 0) - 3;
 
   const stats = [
     { icon: Phone, color: '#3b82f6', value: dashboardStats.callsToday, label: 'Missed Calls Today', change: `${Math.abs(callsDiff)} vs yesterday`, up: callsDiff >= 0 },

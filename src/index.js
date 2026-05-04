@@ -1,12 +1,14 @@
 require("dotenv").config();
 const express = require("express");
+const cors = require("cors");
 const webhookRoutes = require("./routes/webhooks");
 const authRoutes = require("./routes/auth");
+const apiRoutes = require("./routes/api");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Parse incoming Twilio webhook data
+app.use(cors({ origin: ['https://www.ansaco.ai', 'http://localhost:5173'] }));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
@@ -24,6 +26,9 @@ app.use("/webhook", webhookRoutes);
 
 // Google Calendar OAuth
 app.use("/auth", authRoutes);
+
+// Dashboard API
+app.use("/api", apiRoutes);
 
 app.listen(PORT, () => {
   console.log(`
