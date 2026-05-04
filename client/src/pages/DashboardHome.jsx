@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Phone, MessageCircle, CalendarCheck, DollarSign, ArrowUpRight, ArrowDownRight, ChevronRight, Eye, MessageSquare, Calendar } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { currentBusiness, missedCalls, conversations, dashboardStats, weeklyData } from '../data/mockData';
+import { missedCalls, conversations, dashboardStats, weeklyData } from '../data/mockData';
 import { api } from '../services/api';
+import { useAuth } from '../context/AuthContext';
 
 function getGreeting() {
   const h = new Date().getHours();
@@ -45,21 +46,21 @@ const CustomTooltip = ({ active, payload, label }) => {
   );
 };
 
-const BUSINESS_ID = 'biz_001';
-
 export default function DashboardHome() {
+  const { business } = useAuth();
   const [liveStats, setLiveStats] = useState(null);
   const [liveConvs, setLiveConvs] = useState(null);
 
   useEffect(() => {
-    api.getStats(BUSINESS_ID).then(setLiveStats).catch(() => {});
-    api.getConversations(BUSINESS_ID).then(setLiveConvs).catch(() => {});
-  }, []);
+    if (!business?.id) return;
+    api.getStats(business.id).then(setLiveStats).catch(() => {});
+    api.getConversations(business.id).then(setLiveConvs).catch(() => {});
+  }, [business]);
 
   const statsData = liveStats || dashboardStats;
   const convsData = liveConvs || conversations;
 
-  const ownerFirst = currentBusiness.owner?.split(' ')[0] || 'there';
+  const ownerFirst = business?.owner_name?.split(' ')[0] || 'there';
   const recentCalls = missedCalls.slice(0, 5);
   const activeCount = convsData.filter(c => c.status === 'active').length;
   const todayAppts = statsData.appointmentsThisWeek || 2;
