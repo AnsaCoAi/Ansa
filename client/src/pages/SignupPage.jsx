@@ -1,19 +1,33 @@
-import React, { useState } from 'react';
-import { User, Mail, Lock, Building2, ChevronDown } from 'lucide-react';
+import { useState } from 'react';
+import { User, Mail, Lock, Building2, Phone, ChevronDown } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 
 const BUSINESS_TYPES = ['Plumbing','HVAC','Electrical','Roofing','Landscaping','General Contractor','Other'];
 
 const inputStyle = { width: '100%', padding: '12px 12px 12px 40px', backgroundColor: '#141414', border: '1px solid #333', borderRadius: '10px', color: '#ffffff', fontSize: '14px', outline: 'none', boxSizing: 'border-box' };
 
 export default function SignupPage() {
+  const { signUp } = useAuth();
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [businessName, setBusinessName] = useState('');
+  const [businessPhone, setBusinessPhone] = useState('');
   const [businessType, setBusinessType] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleCreate = () => {
-    if (fullName && email && password && businessName && businessType) window.location.hash = '#/onboarding';
+  const handleCreate = async () => {
+    if (!fullName || !email || !password || !businessName || !businessPhone || !businessType) {
+      setError('Please fill in all fields.');
+      return;
+    }
+    setError('');
+    setLoading(true);
+    const { error: err } = await signUp({ email, password, fullName, businessName, businessPhone, businessType });
+    setLoading(false);
+    if (err) { setError(err.message); return; }
+    window.location.hash = '#/onboarding';
   };
 
   const hf = e => e.target.style.borderColor = '#3b82f6';
@@ -25,11 +39,15 @@ export default function SignupPage() {
         <div style={{ textAlign: 'center', marginBottom: '24px', fontSize: '32px', fontWeight: '700', color: '#ffffff' }}>ansa<span style={{ color: '#3b82f6' }}>.</span></div>
         <h1 style={{ fontSize: '24px', fontWeight: '600', color: '#ffffff', textAlign: 'center', margin: '0 0 8px 0' }}>Start your free trial</h1>
         <p style={{ fontSize: '14px', color: '#888', textAlign: 'center', margin: '0 0 28px 0' }}>No credit card required</p>
+
+        {error && <div style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '8px', padding: '10px 14px', color: '#ef4444', fontSize: '13px', marginBottom: '16px' }}>{error}</div>}
+
         {[
           { label: 'Full name', type: 'text', val: fullName, set: setFullName, ph: 'John Smith', Icon: User },
           { label: 'Email', type: 'email', val: email, set: setEmail, ph: 'you@company.com', Icon: Mail },
           { label: 'Password', type: 'password', val: password, set: setPassword, ph: 'Create a password', Icon: Lock },
           { label: 'Business name', type: 'text', val: businessName, set: setBusinessName, ph: 'Your Business LLC', Icon: Building2 },
+          { label: 'Business phone number', type: 'tel', val: businessPhone, set: setBusinessPhone, ph: '+1 (555) 000-0000', Icon: Phone },
         ].map(({ label, type, val, set, ph, Icon }) => (
           <div key={label} style={{ marginBottom: '14px' }}>
             <label style={{ display: 'block', fontSize: '14px', color: '#999', marginBottom: '6px' }}>{label}</label>
@@ -39,6 +57,7 @@ export default function SignupPage() {
             </div>
           </div>
         ))}
+
         <div style={{ marginBottom: '24px' }}>
           <label style={{ display: 'block', fontSize: '14px', color: '#999', marginBottom: '6px' }}>Business type</label>
           <div style={{ position: 'relative' }}>
@@ -50,7 +69,10 @@ export default function SignupPage() {
             </select>
           </div>
         </div>
-        <button onClick={handleCreate} style={{ width: '100%', padding: '12px', backgroundColor: '#3b82f6', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '15px', fontWeight: '600', cursor: 'pointer', marginBottom: '16px' }}>Create Account</button>
+
+        <button onClick={handleCreate} disabled={loading} style={{ width: '100%', padding: '12px', backgroundColor: loading ? '#1d4ed8' : '#3b82f6', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '15px', fontWeight: '600', cursor: loading ? 'not-allowed' : 'pointer', marginBottom: '16px' }}>
+          {loading ? 'Creating account...' : 'Create Account'}
+        </button>
         <p style={{ textAlign: 'center', fontSize: '14px', color: '#999', margin: 0 }}>
           Already have an account?{' '}
           <a href="#/login" onClick={e => { e.preventDefault(); window.location.hash = '#/login'; }} style={{ color: '#3b82f6', textDecoration: 'none', fontWeight: '500' }}>Sign in</a>
