@@ -1,6 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { MessageSquare, Clock, ChevronRight } from 'lucide-react';
-import { conversations, messages as allMessages } from '../data/mockData';
+import { useAuth } from '../context/AuthContext';
+import { api } from '../services/api';
 
 function formatPhone(p) {
   const d = p.replace(/\D/g, '');
@@ -33,20 +34,35 @@ const statusColors = {
 };
 
 export default function ConversationsPage() {
+  const { business } = useAuth();
   const [activeTab, setActiveTab] = useState('all');
+  const [conversations, setConversations] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const filtered = useMemo(() => activeTab === 'all' ? conversations : conversations.filter(c => c.status === activeTab), [activeTab]);
+  useEffect(() => {
+    if (!business?.id) return;
+    api.getConversations(business.id)
+      .then(data => setConversations(data || []))
+      .catch(() => setConversations([]))
+      .finally(() => setLoading(false));
+  }, [business?.id]);
+
+  const filtered = useMemo(
+    () => activeTab === 'all' ? conversations : conversations.filter(c => c.status === activeTab),
+    [activeTab, conversations]
+  );
 
   const getLastMessage = (conv) => {
-    const msgs = allMessages[conv.id];
+    const msgs = conv.messages;
     if (!msgs || msgs.length === 0) return 'No messages yet';
     return msgs[msgs.length - 1].content;
   };
 
   const getMsgCount = (conv) => {
-    const msgs = allMessages[conv.id];
-    return msgs ? msgs.filter(m => m.role !== 'system').length : 0;
+    return (conv.messages || []).filter(m => m.role !== 'system').length;
   };
+
+  const getTimestamp = (conv) => conv.updated_at || conv.created_at;
 
   return (
     <div style={{ padding: '32px', maxWidth: 1200, margin: '0 auto' }}>
@@ -58,13 +74,17 @@ export default function ConversationsPage() {
             style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 16px', borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: 'pointer', background: activeTab === tab.key ? '#222' : 'transparent', color: activeTab === tab.key ? '#fff' : '#888', border: 'none' }}>
             {tab.dot && <span style={{ width: 8, height: 8, borderRadius: '50%', background: tab.dot }} />}
             {tab.label}
-            <span style={{ color: '#555', fontSize: 12, marginLeft: 2 }}>({tab.key === 'all' ? conversations.length : conversations.filter(c => c.status === tab.key).length})</span>
+            <span style={{ color: '#555', fontSize: 12, marginLeft: 2 }}>
+              ({tab.key === 'all' ? conversations.length : conversations.filter(c => c.status === tab.key).length})
+            </span>
           </button>
         ))}
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-        {filtered.length === 0 ? (
+        {loading ? (
+          <div style={{ padding: 60, textAlign: 'center', color: '#666', fontSize: 14 }}>Loading...</div>
+        ) : filtered.length === 0 ? (
           <div style={{ padding: 60, textAlign: 'center', color: '#666', fontSize: 14 }}>No conversations found.</div>
         ) : filtered.map(conv => {
           const sc = statusColors[conv.status] || statusColors.closed;
@@ -80,8 +100,7 @@ export default function ConversationsPage() {
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                    <span style={{ fontSize: 15, fontWeight: 600, color: '#fff' }}>{conv.callerName}</span>
-                    <span style={{ fontSize: 12, color: '#666' }}>{formatPhone(conv.callerPhone)}</span>
+                    <span style={{ fontSize: 15, fontWeight: 600, color: '#fff' }}>{formatPhone(conv.customer_phone)}</span>
                   </div>
                   <div style={{ fontSize: 13, color: '#888', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 500 }}>{getLastMessage(conv)}</div>
                 </div>
@@ -91,10 +110,9 @@ export default function ConversationsPage() {
                   <span style={{ fontSize: 12, fontWeight: 600, padding: '4px 10px', borderRadius: 20, color: sc.color, background: sc.bg, textTransform: 'capitalize' }}>{conv.status}</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                     <span style={{ fontSize: 11, color: '#888', display: 'flex', alignItems: 'center', gap: 4 }}><MessageSquare size={12} /> {getMsgCount(conv)} msgs</span>
-                    <span style={{ fontSize: 12, color: '#555' }}><Clock size={11} style={{ marginRight: 3, verticalAlign: 'middle' }} />{timeAgo(conv.lastMessageAt)}</span>
+                    <span style={{ fontSize: 12, color: '#555' }}><Clock size={11} style={{ marginRight: 3, verticalAlign: 'middle' }} />{timeAgo(getTimestamp(conv))}</span>
                   </div>
                 </div>
-                {conv.unread > 0 && <span style={{ width: 20, height: 20, borderRadius: '50%', background: '#3b82f6', color: '#fff', fontSize: 11, fontWeight: 700, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{conv.unread}</span>}
                 <ChevronRight size={18} color="#444" />
               </div>
             </div>
