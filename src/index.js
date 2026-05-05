@@ -4,6 +4,7 @@ const cors = require("cors");
 const webhookRoutes = require("./routes/webhooks");
 const authRoutes = require("./routes/auth");
 const apiRoutes = require("./routes/api");
+const stripeRoutes = require("./routes/stripe");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -29,6 +30,9 @@ app.use("/auth", authRoutes);
 
 // Dashboard API
 app.use("/api", apiRoutes);
+
+// Stripe billing (webhook uses raw body — must be registered after urlencoded/json)
+app.use("/api/stripe", stripeRoutes);
 
 app.listen(PORT, () => {
   console.log(`

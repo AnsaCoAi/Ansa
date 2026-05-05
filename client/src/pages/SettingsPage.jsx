@@ -245,19 +245,58 @@ export default function SettingsPage() {
     );
   }
 
+  async function goToCheckout() {
+    if (!authBusiness?.id) return;
+    const apiUrl = import.meta.env.VITE_API_URL || 'https://ansa-production.up.railway.app';
+    const res = await fetch(`${apiUrl}/api/stripe/checkout`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ businessId: authBusiness.id }),
+    });
+    const { url } = await res.json();
+    if (url) window.location.href = url;
+  }
+
+  async function goToBillingPortal() {
+    if (!authBusiness?.id) return;
+    const apiUrl = import.meta.env.VITE_API_URL || 'https://ansa-production.up.railway.app';
+    const res = await fetch(`${apiUrl}/api/stripe/portal`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ businessId: authBusiness.id }),
+    });
+    const { url, error } = await res.json();
+    if (url) window.location.href = url;
+    else alert(error || 'No active subscription found.');
+  }
+
   function renderBillingTab() {
+    const status = authBusiness?.subscription_status;
+    const isActive = status === 'active' || status === 'trialing';
+
     return (
       <div>
         <div style={s.billingCard}>
           <div style={{ display: 'flex', alignItems: 'center', marginBottom: 20 }}>
             <span style={{ fontSize: 20, fontWeight: 700, color: '#fff' }}>Pro Plan</span>
-            <span style={s.planBadge}>CURRENT</span>
+            {isActive && <span style={s.planBadge}>ACTIVE</span>}
           </div>
-          <div style={{ fontSize: 32, fontWeight: 700, color: '#fff', marginBottom: 4 }}>$497<span style={{ fontSize: 14, fontWeight: 400, color: '#888' }}>/mo</span></div>
-          <div style={{ fontSize: 13, color: '#888', marginBottom: 20 }}>Unlimited missed call text-backs, AI conversations, and appointment bookings.</div>
-          <div style={s.billingRow}><span style={s.billingLabel}>Payment method</span><span style={s.billingValue}>—</span></div>
+          <div style={{ fontSize: 32, fontWeight: 700, color: '#fff', marginBottom: 4 }}>
+            $297<span style={{ fontSize: 14, fontWeight: 400, color: '#888' }}>/mo</span>
+          </div>
+          <div style={{ fontSize: 13, color: '#888', marginBottom: 24 }}>
+            Unlimited missed call text-backs, AI conversations, and appointment bookings.
+          </div>
+          {isActive ? (
+            <button onClick={goToBillingPortal} style={{ ...s.saveBtn, background: 'transparent', border: '1px solid #333', color: '#aaa' }}>
+              Manage Billing / Cancel
+            </button>
+          ) : (
+            <button onClick={goToCheckout} style={s.saveBtn}>
+              Upgrade to Pro — $297/mo
+            </button>
+          )}
         </div>
-        <div style={{ fontSize: 13, color: '#666' }}>Stripe billing coming soon.</div>
       </div>
     );
   }

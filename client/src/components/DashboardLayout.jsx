@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import {
   LayoutDashboard, PhoneMissed, MessageSquare, CalendarCheck,
-  BarChart3, Settings, Bell, LogOut, Menu, X,
+  BarChart3, Settings, LogOut, Menu, X,
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 
@@ -99,9 +99,6 @@ export default function DashboardLayout({ children, currentHash }) {
             <h1 style={styles.pageTitle}>{getPageTitle(currentHash)}</h1>
           </div>
           <div style={styles.topBarRight}>
-            <button style={styles.bellButton} aria-label="Notifications">
-              <Bell size={20} />
-            </button>
             <div style={styles.userAvatar}>{ownerInitials}</div>
           </div>
         </header>
@@ -148,7 +145,6 @@ const styles = {
   hamburger: { background: 'none', border: 'none', color: '#e5e5e5', cursor: 'pointer', padding: 4, display: 'flex', alignItems: 'center' },
   pageTitle: { fontSize: 18, fontWeight: 600, color: '#ffffff', margin: 0 },
   topBarRight: { display: 'flex', alignItems: 'center', gap: 16 },
-  bellButton: { background: 'none', border: 'none', color: '#888', cursor: 'pointer', padding: 4, display: 'flex', alignItems: 'center' },
   userAvatar: { width: 36, height: 36, borderRadius: '50%', background: '#1e1e1e', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 600, color: '#999', border: '2px solid #333' },
   content: { flex: 1, overflowY: 'auto' },
 }
