@@ -72,10 +72,18 @@
 - SMS may be carrier-filtered until A2P clears
 
 ## Next Up
-1. Wait for Twilio A2P brand fix
-2. Test full signup flow on ansaco.ai with a real test account
-3. Stripe billing (Change Plan / Cancel Subscription buttons are the only dead ones left)
-4. Connect Railway to GitHub auto-deploy when UI loads
+1. **Twilio A2P brand fix** — emailed trusthub-verify@twilio.com, awaiting resolution of error 30795
+2. **Test full end-to-end flow** — signup → onboarding → missed call → AI texts back → books appointment (blocked on A2P + Supabase free tier email rate limit resets hourly)
+3. **Get first client** — product is built and live
+4. **Railway auto-deploy** — wire GitHub → Railway once UI canvas is fixed (currently manual: `railway up --service Ansa --detach`)
+
+## Stripe Billing (fully wired as of 2026-05-04)
+- Checkout: POST /api/stripe/checkout → opens Stripe hosted checkout at $297/mo
+- Portal: POST /api/stripe/portal → opens Stripe billing portal (manage/cancel)
+- Webhook: POST /api/stripe/webhook → updates subscription_status in businesses table
+- Supabase columns added: stripe_customer_id, stripe_subscription_id, subscription_status
+- Env vars set on Railway: STRIPE_SECRET_KEY, STRIPE_PRO_PRICE_ID, STRIPE_WEBHOOK_SECRET, FRONTEND_URL
+- Price ID: price_1TTZJHQyXVAhKN7gwWxT8xxB | Webhook: Ansa Production (4 events)
 
 ## Reminders
 - See PRELAUNCH.md for full launch checklist
