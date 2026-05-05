@@ -15,9 +15,9 @@
 
 ## Supabase Schema
 - businesses: id(text PK), name, owner_name, owner_phone, owner_auth_id(uuid), trade, twilio_number, google_calendar_id, google_tokens, services, business_hours, timezone, appointment_duration, greeting, created_at
-- conversations: id, business_id, customer_phone, status, created_at, updated_at
-- messages: id, conversation_id, role, content, created_at
-- appointments: id, business_id, conversation_id, customer_phone, customer_name, service_description, scheduled_at, google_event_id, status, created_at
+- conversations: id, business_id, customer_phone, status(active/booked/closed), created_at, updated_at
+- messages: id, conversation_id, role(user/assistant/system), content, created_at
+- appointments: id, business_id, conversation_id, customer_phone, customer_name, service_description, scheduled_at, google_event_id, status(confirmed/pending/completed/cancelled), created_at
 
 ## Deployments
 - Frontend: Vercel → www.ansaco.ai (auto-deploys from GitHub main)
@@ -27,17 +27,42 @@
 - Railway CLI is logged in and linked to the project
 - Railway project: compassionate-surprise | service: Ansa
 
-## What's Built
-- Supabase wired into backend for all data persistence
-- Backend API routes: GET /api/stats, /api/conversations, /api/appointments, /api/businesses/:id
-- CORS enabled for ansaco.ai and localhost
-- Frontend Supabase client (client/src/services/supabase.js)
-- Frontend API client (client/src/services/api.js)
-- Real auth: AuthContext, SignupPage, LoginPage — Supabase email/password
-- Duplicate business phone check on signup
-- Protected routes — redirects to /login if no session
-- Dashboard shows real logged-in business name and live stats
-- Supabase email confirmation is OFF (testing) — turn ON before launch
+## What's Built — Full Feature List
+
+### Backend (src/)
+- webhooks.js — missed call handler, SMS handler, AI response, booking
+- auth.js — Google Calendar OAuth (GET /auth/google, GET /auth/google/callback)
+- api.js — all dashboard API routes:
+  - GET /api/businesses/:id
+  - PATCH /api/businesses/:id (saves name, phone, services, business_hours, greeting)
+  - GET /api/conversations?businessId=xxx
+  - GET /api/conversations/:id (with nested messages)
+  - PATCH /api/conversations/:id (update status)
+  - POST /api/conversations/:id/send (owner sends manual SMS via Twilio)
+  - GET /api/appointments?businessId=xxx
+  - PATCH /api/appointments/:id (update status)
+  - GET /api/stats?businessId=xxx
+  - POST /api/provision-number (buys Twilio number, wires webhooks, saves to DB)
+
+### Frontend (client/src/)
+- No mock data anywhere — mockData.js deleted, all pages use real API/Supabase
+- Auth: Supabase email/password login, signup, forgot password (sends reset email)
+- Logged-in users redirected from landing/login/signup → dashboard
+- AuthContext: session management, business loading by owner_auth_id
+- DashboardLayout: real business name/initials from auth, working logout
+
+### Pages — all wired to real data
+- LandingPage — full marketing page, Log In link in nav, working CTAs, mailto footer
+- LoginPage — real auth, forgot password sends Supabase reset email
+- SignupPage — creates user + business row, auto-provisions Twilio number
+- OnboardingPage — 4-step wizard, saves business_hours + greeting to Supabase on Launch
+- DashboardHome — live stats, real weekly chart from DB, real recent activity
+- MissedCallsPage — real conversations from DB, date filter, search, pagination
+- ConversationsPage — real data, status tab filters
+- ConversationDetail — real messages, Take Over mode sends real SMS via Twilio, Mark as Closed updates DB
+- AppointmentsPage — real data, Cancel updates DB
+- AnalyticsPage — real stats, real charts built from conversation data
+- SettingsPage — loads real business data, Save writes to Supabase, Integrations shows real Twilio/Calendar status
 
 ## Twilio A2P Status
 - Business Profile BU7688c9bbfecc7d74fe22763133ff11fd — APPROVED
@@ -48,11 +73,9 @@
 
 ## Next Up
 1. Wait for Twilio A2P brand fix
-2. Test full signup flow on ansaco.ai
-3. Onboarding — auto-provision Twilio number on signup
-4. Connect dashboard pages to real data (conversations, appointments still mock)
-5. Stripe billing
-6. Connect Railway to GitHub auto-deploy when UI loads
+2. Test full signup flow on ansaco.ai with a real test account
+3. Stripe billing (Change Plan / Cancel Subscription buttons are the only dead ones left)
+4. Connect Railway to GitHub auto-deploy when UI loads
 
 ## Reminders
 - See PRELAUNCH.md for full launch checklist
