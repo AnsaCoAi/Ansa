@@ -81,7 +81,7 @@ const injectStyles = () => {
     .ansa-testimonial-avatar{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:#fff}
     .ansa-testimonial-name{font-size:14px;font-weight:600}
     .ansa-testimonial-biz{font-size:13px;color:#71717a}
-    .ansa-pricing-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;max-width:840px;margin:0 auto}
+    .ansa-pricing-grid{display:grid;grid-template-columns:1fr;gap:24px;max-width:480px;margin:0 auto}
     .ansa-pricing-card{background:#141414;border:1px solid #222;border-radius:22px;padding:40px 32px;position:relative;transition:border-color .3s,transform .3s}
     .ansa-pricing-card:hover{transform:translateY(-4px)}
     .ansa-pricing-card.popular{border-color:#3b82f6}
@@ -119,7 +119,6 @@ const injectStyles = () => {
     @media(max-width:768px){
       .ansa-problem-grid,.ansa-testimonials{grid-template-columns:1fr}
       .ansa-features-grid{grid-template-columns:1fr}
-      .ansa-pricing-grid{grid-template-columns:1fr}
       .ansa-steps{grid-template-columns:1fr;gap:20px}
       .ansa-step-arrow{display:none}
       .ansa-nav-links{display:none!important}
@@ -316,24 +315,14 @@ export default function LandingPage() {
           <p className="ansa-section-sub">One missed call recovered pays for an entire month. No contracts, cancel anytime.</p>
         </div>
         <div className="ansa-pricing-grid ansa-reveal">
-          <div className="ansa-pricing-card">
-            <div className="ansa-pricing-tier">Starter</div>
-            <div className="ansa-pricing-price">$297<span>/mo</span></div>
-            <div className="ansa-pricing-subtitle">Perfect for getting started</div>
-            <ul className="ansa-pricing-features">
-              {['Up to 100 missed calls/mo','AI text-back responses','Booking link in texts','Basic dashboard','Email support'].map(f => <li key={f}><Check size={16} color="#3b82f6"/>{f}</li>)}
-            </ul>
-            <a href="#/signup" className="ansa-pricing-cta ansa-pricing-cta-secondary">Start Free Trial</a>
-          </div>
           <div className="ansa-pricing-card popular">
-            <div className="ansa-pricing-popular-badge">Most Popular</div>
             <div className="ansa-pricing-tier">Pro</div>
-            <div className="ansa-pricing-price">$497<span>/mo</span></div>
-            <div className="ansa-pricing-subtitle">For serious growth</div>
+            <div className="ansa-pricing-price">$297<span>/mo</span></div>
+            <div className="ansa-pricing-subtitle">Everything you need to never lose another lead</div>
             <ul className="ansa-pricing-features">
               {['Unlimited missed calls','Full AI conversation engine','Direct calendar booking','Advanced analytics','Priority support','Custom AI voice & training'].map(f => <li key={f}><Check size={16} color="#3b82f6"/>{f}</li>)}
             </ul>
-            <a href="#/signup" className="ansa-pricing-cta ansa-pricing-cta-primary">Start Free Trial</a>
+            <a href="#/signup" className="ansa-pricing-cta ansa-pricing-cta-primary">Start Free Trial — 30 Days Free</a>
           </div>
         </div>
       </section>
