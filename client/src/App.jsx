@@ -12,6 +12,8 @@ import ConversationDetail from './pages/ConversationDetail';
 import AppointmentsPage from './pages/AppointmentsPage';
 import AnalyticsPage from './pages/AnalyticsPage';
 import SettingsPage from './pages/SettingsPage';
+import TermsPage from './pages/TermsPage';
+import PrivacyPage from './pages/PrivacyPage';
 
 function Router() {
   const [hash, setHash] = useState(window.location.hash || '#/');
@@ -41,6 +43,8 @@ function Router() {
     if (user) { window.location.hash = '#/dashboard'; return null; }
     return <SignupPage />;
   }
+  if (hash === '#/terms') return <TermsPage />;
+  if (hash === '#/privacy') return <PrivacyPage />;
 
   // Protected routes
   if (!user) {

@@ -357,6 +357,8 @@ export default function LandingPage() {
         </div>
         <div className="ansa-footer-links">
           <a href="mailto:tyler@ansaco.ai">Contact</a>
+          <a href="#/terms">Terms</a>
+          <a href="#/privacy">Privacy</a>
           <a href="#/login">Log In</a>
           <a href="#/signup">Sign Up</a>
         </div>
