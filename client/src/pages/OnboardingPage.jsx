@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { Building2, MapPin, Phone, FileText, MessageSquare, Plus, Trash2, Calendar, CreditCard, CheckCircle2, ChevronLeft, ChevronRight, Rocket, PhoneCall } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { api } from '../services/api';
 
 const BUSINESS_TYPES = ['Plumbing','HVAC','Electrical','Roofing','Landscaping','General Contractor','Other'];
 const DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const DAY_KEYS = ['mon','tue','wed','thu','fri','sat','sun'];
 const HOURS = [];
 for (let h = 0; h < 24; h++) {
   const suffix = h >= 12 ? 'PM' : 'AM';
@@ -27,8 +30,22 @@ const DEFAULT_FAQS = {
 const inp = { width:'100%',padding:'12px 12px 12px 40px',backgroundColor:'#141414',border:'1px solid #333',borderRadius:'10px',color:'#ffffff',fontSize:'14px',outline:'none',boxSizing:'border-box' };
 const inpNP = { ...inp, paddingLeft:'12px' };
 
+function timeStringToHHMM(str) {
+  const match = str.match(/(\d+):(\d+)\s*(AM|PM)/i);
+  if (!match) return '08:00';
+  let h = parseInt(match[1]);
+  const m = match[2];
+  const period = match[3].toUpperCase();
+  if (period === 'PM' && h !== 12) h += 12;
+  if (period === 'AM' && h === 12) h = 0;
+  return `${String(h).padStart(2,'0')}:${m}`;
+}
+
 export default function OnboardingPage() {
+  const { business } = useAuth();
   const [step, setStep] = useState(1);
+  const [saving, setSaving] = useState(false);
+
   const [businessName, setBusinessName] = useState('');
   const [businessType, setBusinessType] = useState('');
   const [serviceArea, setServiceArea] = useState('');
@@ -38,7 +55,6 @@ export default function OnboardingPage() {
   const [greeting, setGreeting] = useState('');
   const [faqs, setFaqs] = useState(DEFAULT_FAQS.default);
   const [tone, setTone] = useState('Friendly');
-  const [connected, setConnected] = useState({ calendar:false, phone:false, billing:false });
 
   const hf = e => e.target.style.borderColor='#3b82f6';
   const hb = e => e.target.style.borderColor='#333';
@@ -50,8 +66,32 @@ export default function OnboardingPage() {
     return true;
   };
 
+  async function handleLaunch() {
+    if (!business?.id) { window.location.hash = '#/dashboard'; return; }
+    setSaving(true);
+    try {
+      const business_hours = {};
+      schedule.forEach((s, i) => {
+        business_hours[DAY_KEYS[i]] = s.enabled
+          ? { open: timeStringToHHMM(s.start), close: timeStringToHHMM(s.end) }
+          : null;
+      });
+      await api.updateBusiness(business.id, {
+        name: businessName || business.name,
+        services: description ? [description] : undefined,
+        business_hours,
+        greeting: greeting || getGreeting(),
+      });
+    } catch (_) {
+      // Non-fatal — dashboard still loads
+    } finally {
+      setSaving(false);
+      window.location.hash = '#/dashboard';
+    }
+  }
+
   const handleContinue = () => {
-    if (step === 4) { window.location.hash = '#/dashboard'; return; }
+    if (step === 4) { handleLaunch(); return; }
     if (step === 1 && !greeting) {
       setGreeting(getGreeting());
       setFaqs(DEFAULT_FAQS[businessType] || DEFAULT_FAQS.default);
@@ -186,25 +226,27 @@ export default function OnboardingPage() {
           {step === 4 && (
             <div>
               <h2 style={{ fontSize:'22px',fontWeight:'600',color:'#fff',margin:'0 0 8px 0' }}>Connect your tools</h2>
-              <p style={{ fontSize:'14px',color:'#888',margin:'0 0 24px 0' }}>Integrate with your favorite tools to get the most out of Ansa</p>
+              <p style={{ fontSize:'14px',color:'#888',margin:'0 0 24px 0' }}>These can all be configured later in Settings</p>
               <div style={{ display:'flex',flexDirection:'column',gap:'12px' }}>
                 {[
-                  { key:'calendar', Icon:Calendar, title:'Google Calendar', desc:'Sync your availability and let Ansa book appointments', action:'Connect' },
-                  { key:'phone', Icon:PhoneCall, title:'Phone Number (Twilio)', desc:'Set up your dedicated Ansa number for text-backs', action:'Set Up' },
-                  { key:'billing', Icon:CreditCard, title:'Billing (Stripe)', desc:'Add a payment method for your Ansa subscription', action:'Add Payment Method' },
-                ].map(({ key, Icon, title, desc, action }) => (
-                  <div key={key} style={{ backgroundColor:'#111111',borderRadius:'12px',border:'1px solid #222',padding:'20px',display:'flex',alignItems:'center',gap:'16px' }}>
-                    <div style={{ width:'44px',height:'44px',borderRadius:'10px',backgroundColor:connected[key]?'rgba(34,197,94,0.15)':'rgba(59,130,246,0.1)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0 }}>
-                      {connected[key] ? <CheckCircle2 size={22} color="#22c55e" /> : <Icon size={22} color="#3b82f6" />}
+                  { Icon:Calendar, title:'Google Calendar', desc:'Sync your availability and let Ansa book appointments', href: business?.id ? `https://ansa-production.up.railway.app/auth/google?businessId=${business.id}` : null },
+                  { Icon:PhoneCall, title:'Phone Number', desc: business?.twilio_number ? `Provisioned: ${business.twilio_number}` : 'Auto-provisioned on signup', done: !!business?.twilio_number },
+                  { Icon:CreditCard, title:'Billing (Stripe)', desc:'Coming soon — add a payment method for your subscription', href: null },
+                ].map(({ Icon, title, desc, href, done }) => (
+                  <div key={title} style={{ backgroundColor:'#111111',borderRadius:'12px',border:'1px solid #222',padding:'20px',display:'flex',alignItems:'center',gap:'16px' }}>
+                    <div style={{ width:'44px',height:'44px',borderRadius:'10px',backgroundColor: done ? 'rgba(34,197,94,0.15)' : 'rgba(59,130,246,0.1)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0 }}>
+                      {done ? <CheckCircle2 size={22} color="#22c55e" /> : <Icon size={22} color="#3b82f6" />}
                     </div>
                     <div style={{ flex:1 }}>
                       <div style={{ fontSize:'15px',fontWeight:'500',color:'#fff',marginBottom:'2px' }}>{title}</div>
                       <div style={{ fontSize:'13px',color:'#888' }}>{desc}</div>
                     </div>
-                    <button onClick={() => setConnected(prev => ({...prev,[key]:!prev[key]}))}
-                      style={{ padding:'8px 16px',backgroundColor:connected[key]?'transparent':'#3b82f6',color:connected[key]?'#22c55e':'#fff',border:connected[key]?'1px solid #22c55e':'none',borderRadius:'8px',fontSize:'13px',fontWeight:'500',cursor:'pointer',whiteSpace:'nowrap' }}>
-                      {connected[key] ? 'Connected' : action}
-                    </button>
+                    {href && (
+                      <a href={href} style={{ padding:'8px 16px',backgroundColor:'#3b82f6',color:'#fff',border:'none',borderRadius:'8px',fontSize:'13px',fontWeight:'500',cursor:'pointer',whiteSpace:'nowrap',textDecoration:'none' }}>
+                        Connect
+                      </a>
+                    )}
+                    {done && <CheckCircle2 size={20} color="#22c55e" />}
                   </div>
                 ))}
               </div>
@@ -220,9 +262,9 @@ export default function OnboardingPage() {
               <ChevronLeft size={16} /> Back
             </button>
           ) : <div />}
-          <button onClick={handleContinue} disabled={!canContinue()}
+          <button onClick={handleContinue} disabled={!canContinue() || saving}
             style={{ padding:step===4?'14px 32px':'12px 24px',backgroundColor:canContinue()?'#3b82f6':'#1e3a5f',color:canContinue()?'#fff':'#666',border:'none',borderRadius:'10px',fontSize:step===4?'16px':'14px',fontWeight:'600',cursor:canContinue()?'pointer':'not-allowed',display:'flex',alignItems:'center',gap:'8px' }}>
-            {step === 4 ? <><Rocket size={18} /> Launch Ansa</> : <>Continue <ChevronRight size={16} /></>}
+            {step === 4 ? (saving ? 'Saving...' : <><Rocket size={18} /> Launch Ansa</>) : <>Continue <ChevronRight size={16} /></>}
           </button>
         </div>
       </div>

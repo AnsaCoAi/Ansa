@@ -1,6 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Phone, Search, ChevronLeft, ChevronRight, ExternalLink } from 'lucide-react';
-import { missedCalls } from '../data/mockData';
+import { useAuth } from '../context/AuthContext';
+import { api } from '../services/api';
 
 function formatPhone(p) {
   const d = p.replace(/\D/g, '');
@@ -20,50 +21,63 @@ function timeAgo(ts) {
 }
 
 const statusConfig = {
-  responded: { label: 'SMS Sent', color: '#3b82f6', bg: 'rgba(59,130,246,0.15)' },
-  pending: { label: 'Pending', color: '#f59e0b', bg: 'rgba(245,158,11,0.15)' },
+  active: { label: 'SMS Sent', color: '#3b82f6', bg: 'rgba(59,130,246,0.15)' },
   booked: { label: 'Booked', color: '#22c55e', bg: 'rgba(34,197,94,0.15)' },
-  no_response: { label: 'No Response', color: '#6b7280', bg: 'rgba(107,114,128,0.15)' },
+  closed: { label: 'Closed', color: '#6b7280', bg: 'rgba(107,114,128,0.15)' },
 };
 
 const dateFilters = ['Today', 'Yesterday', 'This Week', 'This Month', 'All'];
 
 export default function MissedCallsPage() {
+  const { business } = useAuth();
+  const [conversations, setConversations] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [dateFilter, setDateFilter] = useState('All');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const perPage = 8;
 
+  useEffect(() => {
+    if (!business?.id) return;
+    api.getConversations(business.id)
+      .then(data => setConversations(data || []))
+      .catch(() => setConversations([]))
+      .finally(() => setLoading(false));
+  }, [business?.id]);
+
   const filtered = useMemo(() => {
-    let calls = [...missedCalls];
+    let calls = [...conversations];
     const now = new Date();
     const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    if (dateFilter === 'Today') calls = calls.filter(c => new Date(c.timestamp) >= startOfToday);
-    else if (dateFilter === 'Yesterday') {
+
+    if (dateFilter === 'Today') {
+      calls = calls.filter(c => new Date(c.created_at) >= startOfToday);
+    } else if (dateFilter === 'Yesterday') {
       const y = new Date(startOfToday); y.setDate(y.getDate() - 1);
-      calls = calls.filter(c => { const d = new Date(c.timestamp); return d >= y && d < startOfToday; });
+      calls = calls.filter(c => { const d = new Date(c.created_at); return d >= y && d < startOfToday; });
     } else if (dateFilter === 'This Week') {
       const sw = new Date(startOfToday); sw.setDate(sw.getDate() - sw.getDay());
-      calls = calls.filter(c => new Date(c.timestamp) >= sw);
+      calls = calls.filter(c => new Date(c.created_at) >= sw);
     } else if (dateFilter === 'This Month') {
-      calls = calls.filter(c => new Date(c.timestamp) >= new Date(now.getFullYear(), now.getMonth(), 1));
+      calls = calls.filter(c => new Date(c.created_at) >= new Date(now.getFullYear(), now.getMonth(), 1));
     }
+
     if (search.trim()) {
       const q = search.toLowerCase();
-      calls = calls.filter(c => c.callerName?.toLowerCase().includes(q) || c.callerPhone?.includes(q) || formatPhone(c.callerPhone).includes(q));
+      calls = calls.filter(c => c.customer_phone?.includes(q) || formatPhone(c.customer_phone || '').includes(q));
     }
+
     return calls;
-  }, [dateFilter, search]);
+  }, [conversations, dateFilter, search]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
   const paged = filtered.slice((page - 1) * perPage, page * perPage);
-
-  const cols = { gridTemplateColumns: '1.5fr 1fr 0.7fr 1fr 0.8fr' };
+  const cols = { gridTemplateColumns: '1.5fr 1fr 1fr 0.8fr' };
 
   return (
     <div style={{ padding: '32px', maxWidth: 1200, margin: '0 auto' }}>
       <h1 style={{ fontSize: 24, fontWeight: 700, color: '#fff', margin: 0 }}>Missed Calls</h1>
-      <p style={{ fontSize: 14, color: '#888', marginTop: 4, marginBottom: 28 }}>Track and manage incoming missed calls</p>
+      <p style={{ fontSize: 14, color: '#888', marginTop: 4, marginBottom: 28 }}>Every missed call that triggered an Ansa text-back</p>
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, gap: 16, flexWrap: 'wrap' }}>
         <div style={{ display: 'flex', gap: 6 }}>
@@ -76,41 +90,46 @@ export default function MissedCallsPage() {
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#141414', border: '1px solid #1e1e1e', borderRadius: 8, padding: '8px 14px', minWidth: 240 }}>
           <Search size={15} color="#666" />
-          <input style={{ background: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: 13, flex: 1 }} placeholder="Search calls..." value={search} onChange={e => { setSearch(e.target.value); setPage(1); }} />
+          <input style={{ background: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: 13, flex: 1 }}
+            placeholder="Search by phone..." value={search}
+            onChange={e => { setSearch(e.target.value); setPage(1); }} />
         </div>
       </div>
 
       <div style={{ display: 'grid', ...cols, padding: '8px 20px', marginBottom: 6 }}>
-        {['Caller','Time','Duration','Status','Action'].map(h => (
+        {['Caller', 'Received', 'Status', 'Action'].map(h => (
           <span key={h} style={{ fontSize: 12, fontWeight: 600, color: '#666', textTransform: 'uppercase', letterSpacing: 0.5 }}>{h}</span>
         ))}
       </div>
 
-      {paged.length === 0 ? (
-        <div style={{ padding: 40, textAlign: 'center', color: '#666' }}>No missed calls found for this filter.</div>
-      ) : paged.map(call => {
-        const cfg = statusConfig[call.status] || statusConfig.no_response;
+      {loading ? (
+        <div style={{ padding: 40, textAlign: 'center', color: '#666' }}>Loading...</div>
+      ) : paged.length === 0 ? (
+        <div style={{ padding: 40, textAlign: 'center', color: '#666' }}>No missed calls found.</div>
+      ) : paged.map(conv => {
+        const cfg = statusConfig[conv.status] || statusConfig.closed;
         return (
-          <div key={call.id} style={{ display: 'grid', ...cols, alignItems: 'center', padding: '14px 20px', background: '#141414', borderRadius: 10, border: '1px solid #1e1e1e', marginBottom: 6 }}
+          <div key={conv.id} style={{ display: 'grid', ...cols, alignItems: 'center', padding: '14px 20px', background: '#141414', borderRadius: 10, border: '1px solid #1e1e1e', marginBottom: 6 }}
             onMouseEnter={e => e.currentTarget.style.background = '#1a1a1a'}
             onMouseLeave={e => e.currentTarget.style.background = '#141414'}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#1e1e1e', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Phone size={15} color="#888" /></div>
+              <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#1e1e1e', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Phone size={15} color="#888" />
+              </div>
               <div>
-                <div style={{ fontSize: 14, fontWeight: 600, color: '#fff' }}>{call.callerName !== 'Unknown' ? call.callerName : 'Unknown Caller'}</div>
-                <div style={{ fontSize: 12, color: '#666' }}>{formatPhone(call.callerPhone)}</div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: '#fff' }}>{formatPhone(conv.customer_phone)}</div>
+                <div style={{ fontSize: 12, color: '#666' }}>{conv.customer_phone}</div>
               </div>
             </div>
-            <div style={{ fontSize: 13, color: '#aaa' }}>{timeAgo(call.timestamp)}</div>
-            <div style={{ fontSize: 13, color: '#aaa' }}>{call.duration}s</div>
-            <div><span style={{ fontSize: 12, fontWeight: 600, padding: '4px 10px', borderRadius: 20, color: cfg.color, background: cfg.bg }}>{cfg.label}</span></div>
+            <div style={{ fontSize: 13, color: '#aaa' }}>{timeAgo(conv.created_at)}</div>
             <div>
-              {call.conversationId ? (
-                <button style={{ fontSize: 13, color: '#3b82f6', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontWeight: 500, background: 'none', border: 'none' }}
-                  onClick={() => window.location.hash = `#/dashboard/conversations/${call.conversationId}`}>
-                  View <ExternalLink size={13} />
-                </button>
-              ) : <span style={{ fontSize: 13, color: '#555' }}>No conversation</span>}
+              <span style={{ fontSize: 12, fontWeight: 600, padding: '4px 10px', borderRadius: 20, color: cfg.color, background: cfg.bg }}>{cfg.label}</span>
+            </div>
+            <div>
+              <button style={{ fontSize: 13, color: '#3b82f6', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontWeight: 500, background: 'none', border: 'none' }}
+                onClick={() => window.location.hash = `#/dashboard/conversations/${conv.id}`}>
+                View <ExternalLink size={13} />
+              </button>
             </div>
           </div>
         );

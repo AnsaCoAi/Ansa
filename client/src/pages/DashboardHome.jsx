@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Phone, MessageCircle, CalendarCheck, DollarSign, ArrowUpRight, ArrowDownRight, ChevronRight, Eye, MessageSquare, Calendar } from 'lucide-react';
+import { Phone, MessageCircle, CalendarCheck, DollarSign, ArrowUpRight, ChevronRight, MessageSquare, Calendar } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { missedCalls, conversations, dashboardStats, weeklyData } from '../data/mockData';
 import { api } from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
@@ -29,11 +28,10 @@ function formatPhone(p) {
   return p;
 }
 
-const statusConfig = {
-  responded: { label: 'SMS Sent', color: '#3b82f6', bg: 'rgba(59,130,246,0.15)' },
-  pending: { label: 'Pending', color: '#f59e0b', bg: 'rgba(245,158,11,0.15)' },
+const statusColors = {
+  active: { label: 'Active', color: '#3b82f6', bg: 'rgba(59,130,246,0.15)' },
   booked: { label: 'Booked', color: '#22c55e', bg: 'rgba(34,197,94,0.15)' },
-  no_response: { label: 'No Response', color: '#6b7280', bg: 'rgba(107,114,128,0.15)' },
+  closed: { label: 'Closed', color: '#6b7280', bg: 'rgba(107,114,128,0.15)' },
 };
 
 const CustomTooltip = ({ active, payload, label }) => {
@@ -46,31 +44,58 @@ const CustomTooltip = ({ active, payload, label }) => {
   );
 };
 
+function buildWeeklyData(convs) {
+  const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const now = new Date();
+  return Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(now);
+    d.setDate(now.getDate() - (6 - i));
+    d.setHours(0, 0, 0, 0);
+    const next = new Date(d); next.setDate(d.getDate() + 1);
+    const dayConvs = convs.filter(c => {
+      const t = new Date(c.created_at);
+      return t >= d && t < next;
+    });
+    return {
+      day: days[d.getDay()],
+      missedCalls: dayConvs.length,
+      responses: dayConvs.filter(c => c.status !== 'closed' || (c.messages || []).length > 0).length,
+      bookings: dayConvs.filter(c => c.status === 'booked').length,
+    };
+  });
+}
+
 export default function DashboardHome() {
   const { business } = useAuth();
-  const [liveStats, setLiveStats] = useState(null);
-  const [liveConvs, setLiveConvs] = useState(null);
+  const [stats, setStats] = useState(null);
+  const [convs, setConvs] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (!business?.id) return;
-    api.getStats(business.id).then(setLiveStats).catch(() => {});
-    api.getConversations(business.id).then(setLiveConvs).catch(() => {});
-  }, [business]);
-
-  const statsData = liveStats || dashboardStats;
-  const convsData = liveConvs || conversations;
+    Promise.all([
+      api.getStats(business.id),
+      api.getConversations(business.id),
+    ]).then(([s, c]) => {
+      setStats(s);
+      setConvs(c || []);
+    }).catch(() => {}).finally(() => setLoading(false));
+  }, [business?.id]);
 
   const ownerFirst = business?.owner_name?.split(' ')[0] || 'there';
-  const recentCalls = missedCalls.slice(0, 5);
-  const activeCount = convsData.filter(c => c.status === 'active').length;
-  const todayAppts = statsData.appointmentsThisWeek || 2;
-  const callsDiff = (statsData.callsToday || 0) - 3;
+  const activeCount = convs.filter(c => c.status === 'active').length;
+  const bookedCount = convs.filter(c => c.status === 'booked').length;
+  const totalCalls = stats?.totalCalls ?? convs.length;
+  const bookingRate = totalCalls > 0 ? Math.round((bookedCount / totalCalls) * 100) : 0;
+  const responseRate = stats?.responseRate ?? 0;
+  const weeklyData = buildWeeklyData(convs);
+  const recentConvs = [...convs].sort((a, b) => new Date(b.updated_at || b.created_at) - new Date(a.updated_at || a.created_at)).slice(0, 5);
 
-  const stats = [
-    { icon: Phone, color: '#3b82f6', value: dashboardStats.callsToday, label: 'Missed Calls Today', change: `${Math.abs(callsDiff)} vs yesterday`, up: callsDiff >= 0 },
-    { icon: MessageCircle, color: '#8b5cf6', value: `${dashboardStats.responseRate}%`, label: 'Response Rate', change: '3% this week', up: true },
-    { icon: CalendarCheck, color: '#22c55e', value: `${dashboardStats.bookingRate}%`, label: 'Booking Rate', change: '5% this week', up: true },
-    { icon: DollarSign, color: '#f59e0b', value: `$${dashboardStats.revenueRecovered.toLocaleString()}`, label: 'Revenue Recovered', change: 'This month', up: true },
+  const statCards = [
+    { icon: Phone, color: '#3b82f6', value: stats?.callsToday ?? 0, label: 'Missed Calls Today' },
+    { icon: MessageCircle, color: '#8b5cf6', value: `${responseRate}%`, label: 'Response Rate' },
+    { icon: CalendarCheck, color: '#22c55e', value: `${bookingRate}%`, label: 'Booking Rate' },
+    { icon: DollarSign, color: '#f59e0b', value: `${bookedCount}`, label: 'Jobs Booked' },
   ];
 
   return (
@@ -79,16 +104,16 @@ export default function DashboardHome() {
       <p style={{ fontSize: 15, color: '#888', marginTop: 4, marginBottom: 32 }}>Here's what happened while you were on the job.</p>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 32 }}>
-        {stats.map(({ icon: Icon, color, value, label, change, up }) => (
+        {statCards.map(({ icon: Icon, color, value, label }) => (
           <div key={label} style={{ background: '#141414', borderRadius: 12, border: '1px solid #1e1e1e', padding: '20px 24px', display: 'flex', alignItems: 'flex-start', gap: 16 }}>
             <div style={{ width: 44, height: 44, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: `${color}18`, flexShrink: 0 }}>
               <Icon size={20} color={color} />
             </div>
             <div>
-              <div style={{ fontSize: 28, fontWeight: 700, color: '#fff', lineHeight: 1 }}>{value}</div>
+              <div style={{ fontSize: 28, fontWeight: 700, color: '#fff', lineHeight: 1 }}>{loading ? '—' : value}</div>
               <div style={{ fontSize: 13, color: '#888', marginTop: 4 }}>{label}</div>
-              <div style={{ fontSize: 12, fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 2, marginTop: 4, color: up ? '#22c55e' : '#ef4444' }}>
-                {up ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />} {change}
+              <div style={{ fontSize: 12, fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 2, marginTop: 4, color: '#22c55e' }}>
+                <ArrowUpRight size={14} /> Live data
               </div>
             </div>
           </div>
@@ -117,19 +142,23 @@ export default function DashboardHome() {
 
       <div style={{ marginBottom: 32 }}>
         <div style={{ fontSize: 16, fontWeight: 600, color: '#fff', marginBottom: 16 }}>Recent Activity</div>
-        {recentCalls.map(call => {
-          const cfg = statusConfig[call.status] || statusConfig.no_response;
+        {recentConvs.length === 0 ? (
+          <div style={{ padding: '40px', textAlign: 'center', color: '#555', fontSize: 14, background: '#141414', borderRadius: 10, border: '1px solid #1e1e1e' }}>
+            No activity yet — calls will appear here as they come in.
+          </div>
+        ) : recentConvs.map(conv => {
+          const cfg = statusColors[conv.status] || statusColors.closed;
           return (
-            <div key={call.id}
+            <div key={conv.id}
               style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 20px', background: '#141414', borderRadius: 10, border: '1px solid #1e1e1e', marginBottom: 8, cursor: 'pointer' }}
-              onClick={() => { if (call.conversationId) window.location.hash = `#/dashboard/conversations/${call.conversationId}`; }}
+              onClick={() => window.location.hash = `#/dashboard/conversations/${conv.id}`}
               onMouseEnter={e => e.currentTarget.style.background = '#1a1a1a'}
               onMouseLeave={e => e.currentTarget.style.background = '#141414'}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
                 <Phone size={16} color="#666" />
                 <div>
-                  <div style={{ fontSize: 14, fontWeight: 600, color: '#fff' }}>{call.callerName !== 'Unknown' ? call.callerName : formatPhone(call.callerPhone)}</div>
-                  <div style={{ fontSize: 12, color: '#666' }}>{timeAgo(call.timestamp)}</div>
+                  <div style={{ fontSize: 14, fontWeight: 600, color: '#fff' }}>{formatPhone(conv.customer_phone)}</div>
+                  <div style={{ fontSize: 12, color: '#666' }}>{timeAgo(conv.updated_at || conv.created_at)}</div>
                 </div>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -143,16 +172,16 @@ export default function DashboardHome() {
 
       <div style={{ display: 'flex', gap: 12 }}>
         {[
-          { icon: Eye, label: 'View All Calls', hash: '#/dashboard/calls', badge: null },
-          { icon: MessageSquare, label: 'Active Conversations', hash: '#/dashboard/conversations', badge: activeCount },
-          { icon: Calendar, label: "Today's Appointments", hash: '#/dashboard/appointments', badge: todayAppts },
+          { icon: Phone, label: 'View All Calls', hash: '#/dashboard/calls', badge: null },
+          { icon: MessageSquare, label: 'Active Conversations', hash: '#/dashboard/conversations', badge: activeCount || null },
+          { icon: Calendar, label: 'Appointments', hash: '#/dashboard/appointments', badge: null },
         ].map(({ icon: Icon, label, hash, badge }) => (
           <button key={label} onClick={() => window.location.hash = hash}
             style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 20px', background: '#141414', border: '1px solid #1e1e1e', borderRadius: 10, color: '#fff', fontSize: 14, fontWeight: 500, cursor: 'pointer' }}
             onMouseEnter={e => e.currentTarget.style.borderColor = '#3b82f6'}
             onMouseLeave={e => e.currentTarget.style.borderColor = '#1e1e1e'}>
             <Icon size={16} /> {label}
-            {badge !== null && <span style={{ background: '#3b82f6', color: '#fff', fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 10, marginLeft: 4 }}>{badge}</span>}
+            {badge !== null && badge > 0 && <span style={{ background: '#3b82f6', color: '#fff', fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 10, marginLeft: 4 }}>{badge}</span>}
           </button>
         ))}
       </div>
