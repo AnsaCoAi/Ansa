@@ -71,6 +71,13 @@ export default function AppointmentsPage() {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const cancelAppointment = async (id) => {
+    try {
+      await api.updateAppointment(id, { status: 'cancelled' });
+      setAppointments(prev => prev.map(a => a.id === id ? { ...a, status: 'cancelled' } : a));
+    } catch (_) {}
+  };
+
   useEffect(() => {
     if (!business?.id) return;
     api.getAppointments(business.id)
@@ -155,7 +162,7 @@ export default function AppointmentsPage() {
                 <Eye size={13} /> View Details
               </button>
               {(apt.status === 'confirmed' || apt.status === 'pending') && (
-                <button style={styles.actionBtn(false)} onClick={() => {}}>
+                <button style={styles.actionBtn(false)} onClick={() => cancelAppointment(apt.id)}>
                   <XCircle size={13} /> Cancel
                 </button>
               )}

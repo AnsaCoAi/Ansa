@@ -16,6 +16,16 @@ async function patch(path, body) {
   return res.json();
 }
 
+async function post(path, body) {
+  const res = await fetch(`${BASE_URL}${path}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(`API error: ${res.status}`);
+  return res.json();
+}
+
 export const api = {
   getStats: (businessId) => get(`/api/stats?businessId=${businessId}`),
   getConversations: (businessId) => get(`/api/conversations?businessId=${businessId}`),
@@ -23,4 +33,7 @@ export const api = {
   getAppointments: (businessId) => get(`/api/appointments?businessId=${businessId}`),
   getBusiness: (id) => get(`/api/businesses/${id}`),
   updateBusiness: (id, data) => patch(`/api/businesses/${id}`, data),
+  updateConversation: (id, data) => patch(`/api/conversations/${id}`, data),
+  updateAppointment: (id, data) => patch(`/api/appointments/${id}`, data),
+  sendMessage: (conversationId, message) => post(`/api/conversations/${conversationId}/send`, { message }),
 };

@@ -109,6 +109,73 @@ router.get('/stats', async (req, res) => {
   });
 });
 
+// PATCH /api/conversations/:id
+router.patch('/conversations/:id', async (req, res) => {
+  const { status } = req.body;
+  const allowed = ['active', 'booked', 'closed'];
+  if (!allowed.includes(status)) return res.status(400).json({ error: 'Invalid status' });
+  const { data, error } = await supabase
+    .from('conversations')
+    .update({ status, updated_at: new Date().toISOString() })
+    .eq('id', req.params.id)
+    .select()
+    .single();
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
+// PATCH /api/appointments/:id
+router.patch('/appointments/:id', async (req, res) => {
+  const { status } = req.body;
+  const allowed = ['confirmed', 'pending', 'completed', 'cancelled'];
+  if (!allowed.includes(status)) return res.status(400).json({ error: 'Invalid status' });
+  const { data, error } = await supabase
+    .from('appointments')
+    .update({ status })
+    .eq('id', req.params.id)
+    .select()
+    .single();
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
+// POST /api/conversations/:id/send
+// Owner sends a manual SMS from the dashboard
+router.post('/conversations/:id/send', async (req, res) => {
+  const { message } = req.body;
+  if (!message?.trim()) return res.status(400).json({ error: 'message required' });
+
+  const { data: conv, error: convErr } = await supabase
+    .from('conversations')
+    .select('customer_phone, business_id')
+    .eq('id', req.params.id)
+    .single();
+  if (convErr || !conv) return res.status(404).json({ error: 'Conversation not found' });
+
+  const { data: biz, error: bizErr } = await supabase
+    .from('businesses')
+    .select('twilio_number')
+    .eq('id', conv.business_id)
+    .single();
+  if (bizErr || !biz?.twilio_number) return res.status(400).json({ error: 'Business has no Twilio number' });
+
+  try {
+    await twilioClient.messages.create({
+      body: message,
+      from: biz.twilio_number,
+      to: conv.customer_phone,
+    });
+    await supabase.from('messages').insert({
+      conversation_id: req.params.id,
+      role: 'assistant',
+      content: message,
+    });
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // POST /api/provision-number
 // Called after signup — finds and buys a local number, wires webhooks, saves to business record
 router.post('/provision-number', async (req, res) => {

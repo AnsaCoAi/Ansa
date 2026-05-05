@@ -35,10 +35,19 @@ export default function ConversationDetail() {
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [conv?.messages]);
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!inputVal.trim() || aiMode) return;
-    setConv(c => ({ ...c, messages: [...(c.messages || []), { role: 'assistant', content: inputVal, created_at: new Date().toISOString() }] }));
+    const msg = inputVal;
     setInputVal('');
+    setConv(c => ({ ...c, messages: [...(c.messages || []), { role: 'assistant', content: msg, created_at: new Date().toISOString() }] }));
+    try { await api.sendMessage(convId, msg); } catch (_) {}
+  };
+
+  const handleClose = async () => {
+    try {
+      await api.updateConversation(convId, { status: 'closed' });
+      setConv(c => ({ ...c, status: 'closed' }));
+    } catch (_) {}
   };
 
   if (loading) return <div style={{ padding: '24px 32px', color: '#666' }}>Loading...</div>;
@@ -135,7 +144,7 @@ export default function ConversationDetail() {
           <div style={{ borderTop: '1px solid #1e1e1e', margin: '20px 0' }} />
 
           {conv.status !== 'closed' && (
-            <button onClick={() => {}}
+            <button onClick={handleClose}
               style={{ display: 'block', width: '100%', padding: '10px 16px', borderRadius: 10, fontSize: 13, fontWeight: 600, cursor: 'pointer', background: 'transparent', color: '#aaa', border: '1px solid #333' }}>
               <XCircle size={14} style={{ marginRight: 6, verticalAlign: 'middle' }} />Mark as Closed
             </button>
