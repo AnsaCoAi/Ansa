@@ -21,9 +21,21 @@ function getPageTitle(hash) {
   return 'Dashboard'
 }
 
+const TRIAL_DAYS = 30
+
+function trialDaysLeft(createdAt) {
+  if (!createdAt) return null
+  const end = new Date(createdAt).getTime() + TRIAL_DAYS * 24 * 60 * 60 * 1000
+  const left = Math.ceil((end - Date.now()) / (24 * 60 * 60 * 1000))
+  return left > 0 ? left : 0
+}
+
 export default function DashboardLayout({ children, currentHash }) {
   const { business, signOut } = useAuth()
   const [sidebarOpen, setSidebarOpen] = useState(false)
+
+  const daysLeft = trialDaysLeft(business?.created_at)
+  const showTrialBanner = daysLeft !== null && daysLeft <= TRIAL_DAYS
 
   const isActive = (hash) => {
     if (hash === '#/dashboard') return currentHash === '#/dashboard'
@@ -93,6 +105,12 @@ export default function DashboardLayout({ children, currentHash }) {
             <div style={styles.userAvatar}>{ownerInitials}</div>
           </div>
         </header>
+        {showTrialBanner && (
+          <div style={{ background: daysLeft === 0 ? 'rgba(239,68,68,0.1)' : 'rgba(59,130,246,0.08)', borderBottom: `1px solid ${daysLeft === 0 ? 'rgba(239,68,68,0.3)' : 'rgba(59,130,246,0.2)'}`, padding: '10px 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 13, color: daysLeft === 0 ? '#ef4444' : '#93c5fd' }}>
+            <span>{daysLeft === 0 ? 'Your free trial has ended.' : `Free trial: ${daysLeft} day${daysLeft === 1 ? '' : 's'} remaining.`}</span>
+            <a href="#/dashboard/settings" style={{ color: '#3b82f6', fontWeight: 600, textDecoration: 'none' }}>Upgrade to Pro →</a>
+          </div>
+        )}
         <main style={styles.content}>{children}</main>
       </div>
       <style>{`
