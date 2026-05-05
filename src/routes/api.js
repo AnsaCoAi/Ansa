@@ -44,7 +44,7 @@ router.get('/stats', async (req, res) => {
   const { businessId } = req.query;
 
   let convQuery = supabase.from('conversations').select('id, status, created_at');
-  let apptQuery = supabase.from('appointments').select('id, appointment_time, status');
+  let apptQuery = supabase.from('appointments').select('id, scheduled_at, status');
   if (businessId) {
     convQuery = convQuery.eq('business_id', businessId);
     apptQuery = apptQuery.eq('business_id', businessId);
