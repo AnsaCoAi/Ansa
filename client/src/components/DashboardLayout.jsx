@@ -3,7 +3,7 @@ import {
   LayoutDashboard, PhoneMissed, MessageSquare, CalendarCheck,
   BarChart3, Settings, Bell, LogOut, Menu, X,
 } from 'lucide-react'
-import { currentBusiness } from '../data/mockData'
+import { useAuth } from '../context/AuthContext'
 
 const navItems = [
   { label: 'Overview', icon: LayoutDashboard, hash: '#/dashboard' },
@@ -22,6 +22,7 @@ function getPageTitle(hash) {
 }
 
 export default function DashboardLayout({ children, currentHash }) {
+  const { business, signOut } = useAuth()
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const isActive = (hash) => {
@@ -31,6 +32,15 @@ export default function DashboardLayout({ children, currentHash }) {
     }
     return currentHash === hash
   }
+
+  const bizName = business?.name || 'Your Business'
+  const bizInitial = bizName.charAt(0).toUpperCase()
+  const ownerInitials = (business?.owner_name || 'U')
+    .split(' ')
+    .map(w => w[0])
+    .join('')
+    .toUpperCase()
+    .slice(0, 2)
 
   return (
     <div style={styles.wrapper}>
@@ -56,15 +66,15 @@ export default function DashboardLayout({ children, currentHash }) {
         </nav>
         <div style={styles.sidebarBottom}>
           <div style={styles.businessInfo}>
-            <div style={styles.businessAvatar}>{currentBusiness.name.charAt(0)}</div>
+            <div style={styles.businessAvatar}>{bizInitial}</div>
             <div style={styles.businessText}>
-              <div style={styles.businessName}>{currentBusiness.name}</div>
-              <div style={styles.businessPlan}>{currentBusiness.plan} plan</div>
+              <div style={styles.businessName}>{bizName}</div>
+              <div style={styles.businessPlan}>Pro plan</div>
             </div>
           </div>
-          <a href="#/login" style={styles.logoutLink} onClick={() => setSidebarOpen(false)}>
+          <button style={styles.logoutBtn} onClick={() => { setSidebarOpen(false); signOut(); }}>
             <LogOut size={16} /><span>Log out</span>
-          </a>
+          </button>
         </div>
       </aside>
       <div data-ansa-main="" style={styles.main}>
@@ -78,9 +88,9 @@ export default function DashboardLayout({ children, currentHash }) {
           </div>
           <div style={styles.topBarRight}>
             <button style={styles.bellButton} aria-label="Notifications">
-              <Bell size={20} /><span style={styles.bellDot} />
+              <Bell size={20} />
             </button>
-            <div style={styles.userAvatar}>MR</div>
+            <div style={styles.userAvatar}>{ownerInitials}</div>
           </div>
         </header>
         <main style={styles.content}>{children}</main>
@@ -112,16 +122,15 @@ const styles = {
   businessAvatar: { width: 36, height: 36, borderRadius: 8, background: '#3b82f6', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 700, fontSize: 14, flexShrink: 0 },
   businessText: { overflow: 'hidden' },
   businessName: { fontSize: 13, fontWeight: 600, color: '#e5e5e5', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' },
-  businessPlan: { fontSize: 11, color: '#666', textTransform: 'capitalize' },
-  logoutLink: { display: 'flex', alignItems: 'center', gap: 8, color: '#666', textDecoration: 'none', fontSize: 13, padding: '6px 4px' },
+  businessPlan: { fontSize: 11, color: '#666' },
+  logoutBtn: { display: 'flex', alignItems: 'center', gap: 8, color: '#666', background: 'none', border: 'none', fontSize: 13, padding: '6px 4px', cursor: 'pointer', width: '100%' },
   main: { flex: 1, marginLeft: 0, display: 'flex', flexDirection: 'column', minHeight: '100vh' },
   topBar: { height: 64, borderBottom: '1px solid #1e1e1e', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 24px', background: '#0a0a0a', position: 'sticky', top: 0, zIndex: 30 },
   topBarLeft: { display: 'flex', alignItems: 'center', gap: 12 },
   hamburger: { background: 'none', border: 'none', color: '#e5e5e5', cursor: 'pointer', padding: 4, display: 'flex', alignItems: 'center' },
   pageTitle: { fontSize: 18, fontWeight: 600, color: '#ffffff', margin: 0 },
   topBarRight: { display: 'flex', alignItems: 'center', gap: 16 },
-  bellButton: { background: 'none', border: 'none', color: '#888', cursor: 'pointer', position: 'relative', padding: 4, display: 'flex', alignItems: 'center' },
-  bellDot: { position: 'absolute', top: 2, right: 2, width: 8, height: 8, borderRadius: '50%', background: '#3b82f6' },
+  bellButton: { background: 'none', border: 'none', color: '#888', cursor: 'pointer', padding: 4, display: 'flex', alignItems: 'center' },
   userAvatar: { width: 36, height: 36, borderRadius: '50%', background: '#1e1e1e', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 600, color: '#999', border: '2px solid #333' },
-  content: { flex: 1, padding: 24, overflowY: 'auto' },
+  content: { flex: 1, overflowY: 'auto' },
 }
