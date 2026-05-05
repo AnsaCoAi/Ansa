@@ -176,6 +176,29 @@ router.post('/conversations/:id/send', async (req, res) => {
   }
 });
 
+// POST /api/create-business
+// Called during signup — uses service role to bypass RLS
+router.post('/create-business', async (req, res) => {
+  const { id, owner_auth_id, name, owner_name, owner_phone, trade, greeting } = req.body;
+  if (!id || !owner_auth_id) return res.status(400).json({ error: 'id and owner_auth_id required' });
+
+  // Check for duplicate phone
+  const { data: existing } = await supabase
+    .from('businesses')
+    .select('id')
+    .eq('owner_phone', owner_phone)
+    .single();
+
+  if (existing) return res.status(409).json({ error: 'A business with that phone number is already registered.' });
+
+  const { error } = await supabase.from('businesses').insert({
+    id, owner_auth_id, name, owner_name, owner_phone, trade, greeting,
+  });
+
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ success: true });
+});
+
 // POST /api/provision-number
 // Called after signup — finds and buys a local number, wires webhooks, saves to business record
 router.post('/provision-number', async (req, res) => {

@@ -32,17 +32,6 @@ export function AuthProvider({ children }) {
   }
 
   async function signUp({ email, password, fullName, businessName, businessPhone, businessType }) {
-    // Check for duplicate business phone
-    const { data: existing } = await supabase
-      .from('businesses')
-      .select('id')
-      .eq('owner_phone', businessPhone)
-      .single();
-
-    if (existing) {
-      return { error: { message: 'A business with that phone number is already registered.' } };
-    }
-
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -51,19 +40,25 @@ export function AuthProvider({ children }) {
 
     if (error) return { error };
 
-    // Create business record
+    // Create business via backend (service role bypasses RLS)
+    const apiUrl = import.meta.env.VITE_API_URL || 'https://ansa-production.up.railway.app';
     const businessId = crypto.randomUUID();
-    const { error: bizError } = await supabase.from('businesses').insert({
-      id: businessId,
-      owner_auth_id: data.user.id,
-      name: businessName,
-      owner_name: fullName,
-      owner_phone: businessPhone,
-      trade: businessType,
-      greeting: `Hi! This is ${businessName}. Sorry we missed your call — how can we help you today?`,
+    const bizRes = await fetch(`${apiUrl}/api/create-business`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        id: businessId,
+        owner_auth_id: data.user.id,
+        name: businessName,
+        owner_name: fullName,
+        owner_phone: businessPhone,
+        trade: businessType,
+        greeting: `Hi! This is ${businessName}. Sorry we missed your call — how can we help you today?`,
+      }),
     });
 
-    if (bizError) return { error: bizError };
+    const bizData = await bizRes.json();
+    if (!bizRes.ok) return { error: { message: bizData.error || 'Failed to create business.' } };
 
     // Auto-provision a Twilio number for this business
     const areaCode = businessPhone.replace(/\D/g, '').slice(0, 3);
