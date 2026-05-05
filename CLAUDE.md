@@ -14,7 +14,7 @@
 - Services: Supabase, Twilio, Claude AI, Google Calendar
 
 ## Supabase Schema
-- businesses: id(text PK), name, owner_name, owner_phone, owner_auth_id(uuid), trade, twilio_number, google_calendar_id, google_tokens, services, business_hours, timezone, appointment_duration, greeting, created_at
+- businesses: id(text PK), name, owner_name, owner_phone, owner_auth_id(uuid), trade, twilio_number, google_calendar_id, google_tokens, services, business_hours, timezone, appointment_duration, greeting, created_at, stripe_customer_id, stripe_subscription_id, subscription_status
 - conversations: id, business_id, customer_phone, status(active/booked/closed), created_at, updated_at
 - messages: id, conversation_id, role(user/assistant/system), content, created_at
 - appointments: id, business_id, conversation_id, customer_phone, customer_name, service_description, scheduled_at, google_event_id, status(confirmed/pending/completed/cancelled), created_at
@@ -22,8 +22,9 @@
 ## Deployments
 - Frontend: Vercel → www.ansaco.ai (auto-deploys from GitHub main)
 - Backend: Railway → ansa-production.up.railway.app
-- Railway UI canvas is broken (Railway bug) — use CLI to deploy
-- After every backend code change run: `railway up --service Ansa --detach` from repo root
+- Railway UI canvas is broken (Railway bug) but GitHub auto-deploy IS wired via API (AnsaCoAi/Ansa main → Ansa service)
+- Backend auto-deploys on every push to main — no manual `railway up` needed
+- Railway plan: Hobby ($5/mo)
 - Railway CLI is logged in and linked to the project
 - Railway project: compassionate-surprise | service: Ansa
 
@@ -63,6 +64,10 @@
 - AppointmentsPage — real data, Cancel updates DB
 - AnalyticsPage — real stats, real charts built from conversation data
 - SettingsPage — loads real business data, Save writes to Supabase, Integrations shows real Twilio/Calendar status
+- TermsPage — full Terms of Service at #/terms (TCPA, liability cap, indemnification, class action waiver, all US states)
+- PrivacyPage — full Privacy Policy at #/privacy (CCPA/CPRA, Virginia, Colorado, Connecticut, Texas, TCPA)
+- LandingPage — single Pro plan $297/mo, 30-day free trial CTA, Terms/Privacy in footer
+- DashboardLayout — 30-day trial banner computed from business.created_at, notification bell removed
 
 ## Twilio A2P Status
 - Business Profile BU7688c9bbfecc7d74fe22763133ff11fd — APPROVED
@@ -73,9 +78,9 @@
 
 ## Next Up
 1. **Twilio A2P brand fix** — emailed trusthub-verify@twilio.com, awaiting resolution of error 30795
-2. **Test full end-to-end flow** — signup → onboarding → missed call → AI texts back → books appointment (blocked on A2P + Supabase free tier email rate limit resets hourly)
-3. **Get first client** — product is built and live
-4. **Railway auto-deploy** — wire GitHub → Railway once UI canvas is fixed (currently manual: `railway up --service Ansa --detach`)
+2. **Test full end-to-end flow** — signup → onboarding → missed call → AI texts back → books appointment (blocked on A2P; Supabase email rate limit is per-hour on free tier)
+3. **Turn on Supabase email confirmation** — OFF for testing, must enable before first real client
+4. **Get first client** — everything is built and live
 
 ## Stripe Billing (fully wired as of 2026-05-04)
 - Checkout: POST /api/stripe/checkout → opens Stripe hosted checkout at $297/mo
