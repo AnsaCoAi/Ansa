@@ -29,9 +29,18 @@ function Router() {
     </div>
   );
 
-  if (hash === '#/' || hash === '') return <LandingPage />;
-  if (hash === '#/login') return <LoginPage />;
-  if (hash === '#/signup') return <SignupPage />;
+  if (hash === '#/' || hash === '') {
+    if (user) { window.location.hash = '#/dashboard'; return null; }
+    return <LandingPage />;
+  }
+  if (hash === '#/login') {
+    if (user) { window.location.hash = '#/dashboard'; return null; }
+    return <LoginPage />;
+  }
+  if (hash === '#/signup') {
+    if (user) { window.location.hash = '#/dashboard'; return null; }
+    return <SignupPage />;
+  }
 
   // Protected routes
   if (!user) {

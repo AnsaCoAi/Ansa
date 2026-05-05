@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Mail, Lock, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import supabase from '../services/supabase';
 
 export default function LoginPage() {
   const { signIn } = useAuth();
@@ -9,6 +10,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
 
   const handleSignIn = async () => {
     if (!email || !password) { setError('Please enter your email and password.'); return; }
@@ -56,7 +58,15 @@ export default function LoginPage() {
           </div>
         </div>
         <div style={{ textAlign: 'right', marginBottom: '24px' }}>
-          <a href="#" onClick={e => e.preventDefault()} style={{ fontSize: '13px', color: '#3b82f6', textDecoration: 'none' }}>Forgot password?</a>
+          <a href="#" onClick={async e => {
+            e.preventDefault();
+            if (!email) { setError('Enter your email above first.'); return; }
+            setError('');
+            await supabase.auth.resetPasswordForEmail(email, { redirectTo: 'https://www.ansaco.ai/#/login' });
+            setResetSent(true);
+          }} style={{ fontSize: '13px', color: '#3b82f6', textDecoration: 'none' }}>
+            {resetSent ? 'Reset email sent!' : 'Forgot password?'}
+          </a>
         </div>
         <button onClick={handleSignIn} disabled={loading} style={{ ...s.btn, backgroundColor: loading ? '#1d4ed8' : '#3b82f6', cursor: loading ? 'not-allowed' : 'pointer' }}>
           {loading ? 'Signing in...' : 'Sign In'}

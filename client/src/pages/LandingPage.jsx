@@ -180,6 +180,7 @@ export default function LandingPage() {
             <a href="#how-it-works" onClick={scrollTo('how-it-works')}>How It Works</a>
             <a href="#pricing" onClick={scrollTo('pricing')}>Pricing</a>
             <a href="#faq" onClick={scrollTo('faq')}>FAQ</a>
+            <a href="#/login" style={{ color:'#a1a1aa',textDecoration:'none',fontSize:'14px',fontWeight:'500' }}>Log In</a>
             <a href="#/signup" className="ansa-btn ansa-btn-blue" style={{ padding:'10px 22px',fontSize:14 }}>Get Started</a>
           </div>
           <button className="ansa-nav-mobile-toggle" onClick={() => setMobileOpen(!mobileOpen)}>
@@ -190,6 +191,7 @@ export default function LandingPage() {
           <a href="#how-it-works" onClick={scrollTo('how-it-works')}>How It Works</a>
           <a href="#pricing" onClick={scrollTo('pricing')}>Pricing</a>
           <a href="#faq" onClick={scrollTo('faq')}>FAQ</a>
+          <a href="#/login" style={{ color:'#a1a1aa',textDecoration:'none',fontSize:'15px',fontWeight:'500' }}>Log In</a>
           <a href="#/signup" className="ansa-btn ansa-btn-blue" style={{ padding:'10px 22px',fontSize:14,textAlign:'center' }}>Get Started</a>
         </div>
       </nav>
@@ -365,9 +367,9 @@ export default function LandingPage() {
           <span className="ansa-footer-copy">© 2026 Ansa. All rights reserved.</span>
         </div>
         <div className="ansa-footer-links">
-          <a href="#">Privacy</a>
-          <a href="#">Terms</a>
-          <a href="#">Contact</a>
+          <a href="mailto:tyler@ansaco.ai">Contact</a>
+          <a href="#/login">Log In</a>
+          <a href="#/signup">Sign Up</a>
         </div>
       </footer>
     </div>
