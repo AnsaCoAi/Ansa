@@ -1,6 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const supabase = require('../services/supabase');
+const twilio = require('twilio');
+
+const twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
+const WEBHOOK_BASE = process.env.RAILWAY_PUBLIC_DOMAIN
+  ? `https://${process.env.RAILWAY_PUBLIC_DOMAIN}`
+  : 'https://ansa-production.up.railway.app';
 
 // GET /api/businesses/:id
 router.get('/businesses/:id', async (req, res) => {
@@ -76,6 +82,49 @@ router.get('/stats', async (req, res) => {
     conversationsActive: activeConvs,
     appointmentsThisWeek: apptThisWeek,
   });
+});
+
+// POST /api/provision-number
+// Called after signup — finds and buys a local number, wires webhooks, saves to business record
+router.post('/provision-number', async (req, res) => {
+  const { businessId, areaCode } = req.body;
+  if (!businessId) return res.status(400).json({ error: 'businessId required' });
+
+  try {
+    // Search for an available local number
+    const searchParams = { voiceEnabled: true, smsEnabled: true, limit: 1 };
+    if (areaCode) searchParams.areaCode = areaCode;
+
+    const available = await twilioClient.availablePhoneNumbers('US').local.list(searchParams);
+    if (!available.length) return res.status(404).json({ error: 'No numbers available for that area code' });
+
+    const numberToBuy = available[0].phoneNumber;
+
+    // Purchase the number and configure webhooks
+    const purchased = await twilioClient.incomingPhoneNumbers.create({
+      phoneNumber: numberToBuy,
+      voiceUrl: `${WEBHOOK_BASE}/webhook/missed-call`,
+      voiceMethod: 'POST',
+      smsUrl: `${WEBHOOK_BASE}/webhook/sms`,
+      smsMethod: 'POST',
+    });
+
+    // Save to businesses table
+    const { error } = await supabase
+      .from('businesses')
+      .update({ twilio_number: purchased.phoneNumber })
+      .eq('id', businessId);
+
+    if (error) {
+      // Bought the number but couldn't save — release it to avoid orphaned charges
+      await twilioClient.incomingPhoneNumbers(purchased.sid).remove();
+      return res.status(500).json({ error: 'Failed to save number: ' + error.message });
+    }
+
+    res.json({ phoneNumber: purchased.phoneNumber });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 module.exports = router;

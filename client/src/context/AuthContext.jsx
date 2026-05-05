@@ -52,8 +52,9 @@ export function AuthProvider({ children }) {
     if (error) return { error };
 
     // Create business record
+    const businessId = crypto.randomUUID();
     const { error: bizError } = await supabase.from('businesses').insert({
-      id: crypto.randomUUID(),
+      id: businessId,
       owner_auth_id: data.user.id,
       name: businessName,
       owner_name: fullName,
@@ -63,6 +64,20 @@ export function AuthProvider({ children }) {
     });
 
     if (bizError) return { error: bizError };
+
+    // Auto-provision a Twilio number for this business
+    const areaCode = businessPhone.replace(/\D/g, '').slice(0, 3);
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL || 'https://ansa-production.up.railway.app';
+      await fetch(`${apiUrl}/api/provision-number`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ businessId: businessId, areaCode }),
+      });
+    } catch (_) {
+      // Non-fatal — business is created, number can be provisioned later
+    }
+
     return { data };
   }
 
