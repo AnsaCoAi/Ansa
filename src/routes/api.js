@@ -19,6 +19,31 @@ router.get('/businesses/:id', async (req, res) => {
   res.json(data);
 });
 
+// GET /api/conversations/:id
+router.get('/conversations/:id', async (req, res) => {
+  const { data, error } = await supabase
+    .from('conversations')
+    .select('*, messages(id, role, content, created_at)')
+    .eq('id', req.params.id)
+    .single();
+  if (error) return res.status(404).json({ error: error.message });
+  res.json(data);
+});
+
+// PATCH /api/businesses/:id
+router.patch('/businesses/:id', async (req, res) => {
+  const allowed = ['name', 'owner_name', 'owner_phone', 'trade', 'services', 'business_hours', 'timezone', 'appointment_duration', 'greeting'];
+  const updates = Object.fromEntries(Object.entries(req.body).filter(([k]) => allowed.includes(k)));
+  const { data, error } = await supabase
+    .from('businesses')
+    .update(updates)
+    .eq('id', req.params.id)
+    .select()
+    .single();
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
 // GET /api/conversations?businessId=xxx
 router.get('/conversations', async (req, res) => {
   const { businessId } = req.query;
