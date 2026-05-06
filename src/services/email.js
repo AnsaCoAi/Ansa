@@ -96,49 +96,60 @@ async function sendMonthlyReportEmail({ to, ownerName, businessName, month, miss
       <!DOCTYPE html>
       <html>
       <body style="margin:0;padding:0;background:#0a0a0a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
-        <div style="max-width:560px;margin:40px auto;padding:40px;background:#111111;border-radius:16px;border:1px solid #222;">
+        <table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding:40px 20px;">
+        <table width="520" cellpadding="0" cellspacing="0" style="background:#111111;border-radius:16px;border:1px solid #222;"><tr><td style="padding:40px;">
 
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;">
-            <div style="font-size:26px;font-weight:700;color:#fff;">ansa<span style="color:#3b82f6;">.</span></div>
-            <div style="font-size:13px;font-weight:600;color:#aaa;letter-spacing:0.5px;text-transform:uppercase;">${month} Summary</div>
-          </div>
+          <!-- Logo -->
+          <table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding-bottom:6px;">
+            <div style="font-size:28px;font-weight:700;color:#fff;">ansa<span style="color:#3b82f6;">.</span></div>
+          </td></tr><tr><td align="center" style="padding-bottom:32px;">
+            <div style="font-size:12px;font-weight:700;color:#aaa;letter-spacing:1px;text-transform:uppercase;">${month} Summary</div>
+          </td></tr></table>
 
-          <h1 style="font-size:22px;font-weight:700;color:#fff;margin:0 0 8px 0;">Here's what Ansa did for ${businessName} this month.</h1>
-          <p style="font-size:14px;color:#777;margin:0 0 28px 0;">Every missed call is a potential job. Here's how many we caught for you.</p>
+          <!-- Heading -->
+          <table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="padding-bottom:8px;">
+            <div style="font-size:22px;font-weight:700;color:#fff;text-align:center;">Here's what Ansa did for ${businessName} this month.</div>
+          </td></tr><tr><td align="center" style="padding-bottom:28px;">
+            <div style="font-size:14px;color:#777;text-align:center;">Every missed call is a potential job. Here's how many we caught for you.</div>
+          </td></tr></table>
 
-          <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;">
-            <tr>
-              <td width="33%" style="padding-right:6px;">
-                <div style="background:#141414;border:1px solid #3b82f6;border-radius:12px;padding:20px 12px;text-align:center;">
-                  <div style="font-size:40px;font-weight:800;color:#3b82f6;line-height:1;margin-bottom:8px;">${missedCallsHandled}</div>
-                  <div style="font-size:12px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:0.4px;">Calls handled</div>
-                </div>
-              </td>
-              <td width="33%" style="padding:0 3px;">
-                <div style="background:#141414;border:1px solid #22c55e;border-radius:12px;padding:20px 12px;text-align:center;">
-                  <div style="font-size:40px;font-weight:800;color:#22c55e;line-height:1;margin-bottom:8px;">${appointmentsBooked}</div>
-                  <div style="font-size:12px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:0.4px;">Jobs booked</div>
-                </div>
-              </td>
-              <td width="33%" style="padding-left:6px;">
-                <div style="background:#141414;border:1px solid #a78bfa;border-radius:12px;padding:20px 12px;text-align:center;">
-                  <div style="font-size:40px;font-weight:800;color:#a78bfa;line-height:1;margin-bottom:8px;">${conversationsClosed}</div>
-                  <div style="font-size:12px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:0.4px;">Resolved</div>
-                </div>
-              </td>
-            </tr>
-          </table>
+          <!-- Stat boxes — fixed width, equal size -->
+          <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;"><tr>
+            <td width="140" align="center" style="padding:0 4px;">
+              <table width="140" cellpadding="0" cellspacing="0" style="background:#141414;border:2px solid #3b82f6;border-radius:12px;"><tr><td align="center" style="padding:20px 8px;">
+                <div style="font-size:42px;font-weight:800;color:#3b82f6;line-height:1;margin-bottom:8px;">${missedCallsHandled}</div>
+                <div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.5px;">Calls Handled</div>
+              </td></tr></table>
+            </td>
+            <td width="140" align="center" style="padding:0 4px;">
+              <table width="140" cellpadding="0" cellspacing="0" style="background:#141414;border:2px solid #22c55e;border-radius:12px;"><tr><td align="center" style="padding:20px 8px;">
+                <div style="font-size:42px;font-weight:800;color:#22c55e;line-height:1;margin-bottom:8px;">${appointmentsBooked}</div>
+                <div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.5px;">Jobs Booked</div>
+              </td></tr></table>
+            </td>
+            <td width="140" align="center" style="padding:0 4px;">
+              <table width="140" cellpadding="0" cellspacing="0" style="background:#141414;border:2px solid #a78bfa;border-radius:12px;"><tr><td align="center" style="padding:20px 8px;">
+                <div style="font-size:42px;font-weight:800;color:#a78bfa;line-height:1;margin-bottom:8px;">${conversationsClosed}</div>
+                <div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.5px;">Resolved</div>
+              </td></tr></table>
+            </td>
+          </tr></table>
 
-          <a href="https://www.ansaco.ai/#/dashboard" style="display:block;text-align:center;padding:14px;background:#3b82f6;color:#fff;border-radius:10px;text-decoration:none;font-size:15px;font-weight:600;margin-bottom:28px;">
-            View full dashboard →
-          </a>
+          <!-- CTA -->
+          <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:28px;"><tr><td align="center">
+            <a href="https://www.ansaco.ai/#/dashboard" style="display:block;text-align:center;padding:14px 24px;background:#3b82f6;color:#fff;border-radius:10px;text-decoration:none;font-size:15px;font-weight:600;">
+              View full dashboard →
+            </a>
+          </td></tr></table>
 
-          <div style="border-top:1px solid #1f1f1f;padding-top:20px;text-align:center;">
-            <p style="font-size:13px;color:#444;margin:0 0 6px 0;">Ansa handled your missed calls so you could stay on the job.</p>
+          <!-- Footer -->
+          <table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center" style="border-top:1px solid #1f1f1f;padding-top:20px;">
+            <div style="font-size:13px;color:#444;margin-bottom:6px;">Ansa handled your missed calls so you could stay on the job.</div>
             <a href="https://www.ansaco.ai" style="font-size:13px;color:#3b82f6;text-decoration:none;">ansaco.ai</a>
-          </div>
+          </td></tr></table>
 
-        </div>
+        </td></tr></table>
+        </td></tr></table>
       </body>
       </html>
     `,
