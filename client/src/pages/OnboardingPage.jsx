@@ -316,7 +316,13 @@ export default function OnboardingPage() {
               onMouseEnter={e => e.currentTarget.style.borderColor='#555'} onMouseLeave={e => e.currentTarget.style.borderColor='#333'}>
               <ChevronLeft size={16} /> Back
             </button>
-          ) : <div />}
+          ) : (
+            <button onClick={() => window.location.hash = '#/'}
+              style={{ padding:'12px 24px',backgroundColor:'transparent',color:'#999',border:'1px solid #333',borderRadius:'10px',fontSize:'14px',fontWeight:'500',cursor:'pointer',display:'flex',alignItems:'center',gap:'6px' }}
+              onMouseEnter={e => e.currentTarget.style.borderColor='#555'} onMouseLeave={e => e.currentTarget.style.borderColor='#333'}>
+              <ChevronLeft size={16} /> Back to home
+            </button>
+          )}
           <button onClick={handleContinue} disabled={!canContinue() || saving}
             style={{ padding:step===4?'14px 32px':'12px 24px',backgroundColor:canContinue()?'#3b82f6':'#1e3a5f',color:canContinue()?'#fff':'#666',border:'none',borderRadius:'10px',fontSize:step===4?'16px':'14px',fontWeight:'600',cursor:canContinue()?'pointer':'not-allowed',display:'flex',alignItems:'center',gap:'8px' }}>
             {step === 4 ? (saving ? 'Saving...' : <><Rocket size={18} /> Launch Ansa</>) : <>Continue <ChevronRight size={16} /></>}
