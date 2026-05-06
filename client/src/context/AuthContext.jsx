@@ -72,6 +72,9 @@ export function AuthProvider({ children }) {
       // Non-fatal — business is created, number can be provisioned later
     }
 
+    // Small delay to ensure business row is committed before Stripe lookup
+    await new Promise(r => setTimeout(r, 1000));
+
     // Create Stripe checkout session with 30-day trial
     try {
       const stripeRes = await fetch(`${apiUrl}/api/stripe/checkout`, {
@@ -80,8 +83,11 @@ export function AuthProvider({ children }) {
         body: JSON.stringify({ businessId }),
       });
       const stripeData = await stripeRes.json();
+      console.log('Stripe checkout response:', stripeData);
       if (stripeData.url) return { data, stripeUrl: stripeData.url };
-    } catch (_) {}
+    } catch (e) {
+      console.error('Stripe checkout error:', e);
+    }
 
     return { data };
   }
