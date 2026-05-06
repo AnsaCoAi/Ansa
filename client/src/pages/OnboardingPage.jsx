@@ -117,7 +117,7 @@ export default function OnboardingPage() {
   const getGreeting = () => `Hey, this is ${businessName || '[Business Name]'}! Sorry we missed your call — we're currently on a job. How can we help you?`;
 
   const canContinue = () => {
-    if (step === 1) return businessName && businessType && serviceArea && phoneNumber;
+    if (step === 1) return !!serviceArea;
     if (step === 2) return schedule.some(s => s.enabled);
     return true;
   };
