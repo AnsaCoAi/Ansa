@@ -24,10 +24,9 @@ export default function SignupPage() {
     }
     setError('');
     setLoading(true);
-    const { error: err, stripeUrl } = await signUp({ email, password, fullName, businessName, businessPhone, businessType });
-    if (err) { setLoading(false); setError(err.message); return; }
-    if (stripeUrl) { window.location.href = stripeUrl; return; }
+    const { error: err } = await signUp({ email, password, fullName, businessName, businessPhone, businessType });
     setLoading(false);
+    if (err) { setError(err.message); return; }
     window.location.hash = '#/onboarding';
   };
 

@@ -138,12 +138,18 @@ export default function OnboardingPage() {
         business_hours,
         greeting: greeting || getGreeting(),
       });
-    } catch (_) {
-      // Non-fatal — dashboard still loads
-    } finally {
-      setSaving(false);
-      window.location.hash = '#/dashboard';
-    }
+      // Redirect to Stripe checkout as final step
+      const apiUrl = import.meta.env.VITE_API_URL || 'https://ansa-production.up.railway.app';
+      const stripeRes = await fetch(`${apiUrl}/api/stripe/checkout`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ businessId: business.id }),
+      });
+      const stripeData = await stripeRes.json();
+      if (stripeData.url) { window.location.href = stripeData.url; return; }
+    } catch (_) {}
+    setSaving(false);
+    window.location.hash = '#/dashboard';
   }
 
   const handleContinue = () => {

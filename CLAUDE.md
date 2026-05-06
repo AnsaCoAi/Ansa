@@ -12,6 +12,7 @@
 - Backend: Node/Express (src/)
 - Frontend: React/Vite (client/)
 - Services: Supabase, Twilio, Claude AI, Google Calendar
+- Domain: ansaco.ai — registered on Namecheap, DNS managed on Namecheap
 
 ## Supabase Schema
 - businesses: id(text PK), name, owner_name, owner_phone, owner_auth_id(uuid), trade, twilio_number, google_calendar_id, google_tokens, services, business_hours, timezone, appointment_duration, greeting, created_at, stripe_customer_id, stripe_subscription_id, subscription_status
