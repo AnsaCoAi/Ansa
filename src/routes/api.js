@@ -233,4 +233,54 @@ router.post('/provision-number', async (req, res) => {
   }
 });
 
+// POST /api/send-monthly-reports — called by Railway cron on the 1st of each month
+router.post('/send-monthly-reports', async (req, res) => {
+  if (req.headers['x-cron-secret'] !== process.env.CRON_SECRET) {
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
+
+  const { sendMonthlyReportEmail } = require('../services/email');
+
+  const now = new Date();
+  const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  const firstOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+  const month = firstOfLastMonth.toLocaleString('default', { month: 'long', year: 'numeric' });
+
+  const { data: businesses } = await supabase
+    .from('businesses')
+    .select('id, name, owner_name, owner_auth_id')
+    .eq('subscription_status', 'active');
+
+  if (!businesses?.length) return res.json({ sent: 0 });
+
+  let sent = 0;
+  for (const biz of businesses) {
+    try {
+      const [{ count: missedCallsHandled }, { count: appointmentsBooked }, { count: conversationsClosed }] = await Promise.all([
+        supabase.from('conversations').select('*', { count: 'exact', head: true }).eq('business_id', biz.id).gte('created_at', firstOfLastMonth.toISOString()).lt('created_at', firstOfMonth.toISOString()),
+        supabase.from('appointments').select('*', { count: 'exact', head: true }).eq('business_id', biz.id).gte('created_at', firstOfLastMonth.toISOString()).lt('created_at', firstOfMonth.toISOString()),
+        supabase.from('conversations').select('*', { count: 'exact', head: true }).eq('business_id', biz.id).eq('status', 'closed').gte('created_at', firstOfLastMonth.toISOString()).lt('created_at', firstOfMonth.toISOString()),
+      ]);
+
+      const { data: { user } } = await supabase.auth.admin.getUserById(biz.owner_auth_id);
+      if (!user?.email) continue;
+
+      await sendMonthlyReportEmail({
+        to: user.email,
+        ownerName: biz.owner_name,
+        businessName: biz.name,
+        month,
+        missedCallsHandled: missedCallsHandled || 0,
+        appointmentsBooked: appointmentsBooked || 0,
+        conversationsClosed: conversationsClosed || 0,
+      });
+      sent++;
+    } catch (e) {
+      console.error(`Monthly report failed for ${biz.id}:`, e.message);
+    }
+  }
+
+  res.json({ sent });
+});
+
 module.exports = router;
