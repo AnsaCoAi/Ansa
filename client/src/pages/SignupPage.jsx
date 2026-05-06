@@ -25,9 +25,9 @@ export default function SignupPage() {
     setError('');
     setLoading(true);
     const { error: err, stripeUrl } = await signUp({ email, password, fullName, businessName, businessPhone, businessType });
-    setLoading(false);
-    if (err) { setError(err.message); return; }
+    if (err) { setLoading(false); setError(err.message); return; }
     if (stripeUrl) { window.location.href = stripeUrl; return; }
+    setLoading(false);
     window.location.hash = '#/onboarding';
   };
 
@@ -72,7 +72,7 @@ export default function SignupPage() {
         </div>
 
         <button onClick={handleCreate} disabled={loading} style={{ width: '100%', padding: '12px', backgroundColor: loading ? '#1d4ed8' : '#3b82f6', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '15px', fontWeight: '600', cursor: loading ? 'not-allowed' : 'pointer', marginBottom: '16px' }}>
-          {loading ? 'Creating account...' : 'Create Account'}
+          {loading ? 'Setting up your account...' : 'Create Account'}
         </button>
         <p style={{ textAlign: 'center', fontSize: '14px', color: '#999', margin: 0 }}>
           Already have an account?{' '}

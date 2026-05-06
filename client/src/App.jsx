@@ -14,6 +14,7 @@ import AnalyticsPage from './pages/AnalyticsPage';
 import SettingsPage from './pages/SettingsPage';
 import TermsPage from './pages/TermsPage';
 import PrivacyPage from './pages/PrivacyPage';
+import BillingPage from './pages/BillingPage';
 
 function Router() {
   const [hash, setHash] = useState(window.location.hash || '#/');
@@ -45,6 +46,7 @@ function Router() {
   }
   if (hash === '#/terms') return <TermsPage />;
   if (hash === '#/privacy') return <PrivacyPage />;
+  if (hash === '#/billing') return <BillingPage />;
 
   // Protected routes
   if (!user) {
