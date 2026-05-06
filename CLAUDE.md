@@ -44,6 +44,8 @@
   - PATCH /api/appointments/:id (update status)
   - GET /api/stats?businessId=xxx
   - POST /api/provision-number (buys Twilio number, wires webhooks, saves to DB)
+  - POST /api/create-business (creates business row using service role, bypasses RLS — called during signup)
+  - POST /api/stripe/checkout, POST /api/stripe/portal, POST /api/stripe/webhook
 
 ### Frontend (client/src/)
 - No mock data anywhere — mockData.js deleted, all pages use real API/Supabase
@@ -76,11 +78,20 @@
 - Business Identity: Direct Customer (correct)
 - SMS may be carrier-filtered until A2P clears
 
+## Signup Flow Status (as of 2026-05-05)
+- RLS fix: business creation moved from frontend Supabase insert → POST /api/create-business (service role)
+- AuthContext no longer does direct Supabase insert — calls backend instead
+- Backend endpoint confirmed working (tested, returns success)
+- Supabase email confirmation is ON (Tyler received confirmation email during test)
+- Vercel deploy lag may cause old frontend to be cached — hard refresh (Cmd+Shift+R) if seeing old RLS error
+- Test accounts created during testing may need to be deleted from Supabase Auth dashboard
+
 ## Next Up
-1. **Twilio A2P brand fix** — emailed trusthub-verify@twilio.com, awaiting resolution of error 30795
-2. **Test full end-to-end flow** — signup → onboarding → missed call → AI texts back → books appointment (blocked on A2P; Supabase email rate limit is per-hour on free tier)
-3. **Turn on Supabase email confirmation** — OFF for testing, must enable before first real client
-4. **Get first client** — everything is built and live
+1. **Verify signup works end-to-end** — wait for Vercel deploy, use fresh email, hard refresh first
+2. **Twilio A2P brand fix** — sent CP575 to trusthub-verify@twilio.com on 2026-05-05, awaiting resolution
+3. **Turn off Supabase email confirmation** for testing, back ON before launch
+4. **Test full end-to-end flow** — signup → onboarding → missed call → AI texts back → books appointment
+5. **Get first client**
 
 ## Stripe Billing (fully wired as of 2026-05-04)
 - Checkout: POST /api/stripe/checkout → opens Stripe hosted checkout at $297/mo
