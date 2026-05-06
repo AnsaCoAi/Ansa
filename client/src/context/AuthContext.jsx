@@ -60,6 +60,9 @@ export function AuthProvider({ children }) {
     const bizData = await bizRes.json();
     if (!bizRes.ok) return { error: { message: bizData.error || 'Failed to create business.' } };
 
+    // Business row now exists — load it into context (onAuthStateChange fired before this)
+    await loadBusiness(data.user.id);
+
     // Auto-provision a Twilio number for this business
     const areaCode = businessPhone.replace(/\D/g, '').slice(0, 3);
     try {
