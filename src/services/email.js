@@ -126,7 +126,7 @@ async function sendMonthlyReportEmail({ to, ownerName, businessName, month, miss
         <td width="140" align="center" style="padding:0 4px;">
           <table width="140" cellpadding="0" cellspacing="0" style="background:#141414;border:2px solid #a78bfa;border-radius:12px;"><tr><td align="center" style="padding:20px 8px;">
             <div style="font-size:42px;font-weight:800;color:#a78bfa;line-height:1;margin-bottom:8px;">${conversationsClosed}</div>
-            <div style="font-size:11px;font-weight:700;color:#bbb;text-transform:uppercase;letter-spacing:0.5px;">Questions Answered</div>
+            <div style="font-size:11px;font-weight:700;color:#bbb;text-transform:uppercase;letter-spacing:0.5px;">Answered</div>
           </td></tr></table>
         </td>
       </tr></table>
