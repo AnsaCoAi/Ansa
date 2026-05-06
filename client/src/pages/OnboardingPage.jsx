@@ -114,7 +114,19 @@ export default function OnboardingPage() {
 
   const hf = e => e.target.style.borderColor='#3b82f6';
   const hb = e => e.target.style.borderColor='#333';
-  const getGreeting = () => `Hey, this is ${businessName || '[Business Name]'}! Sorry we missed your call — we're currently on a job. How can we help you?`;
+
+  const TONE_GREETINGS = {
+    Professional: `Hello, you've reached ${businessName || '[Business Name]'}. We're currently unavailable but will respond shortly. Please let us know how we can assist you.`,
+    Friendly: `Hey, this is ${businessName || '[Business Name]'}! Sorry we missed your call — we're currently on a job. How can we help you?`,
+    Casual: `Hey! You've reached ${businessName || '[Business Name]'} — we're out in the field right now. What can we do for you?`,
+  };
+
+  const getGreeting = (t = tone) => TONE_GREETINGS[t] || TONE_GREETINGS.Friendly;
+
+  const handleToneChange = (t) => {
+    setTone(t);
+    setGreeting(getGreeting(t));
+  };
 
   const canContinue = () => {
     if (step === 1) return !!serviceArea;
@@ -260,7 +272,7 @@ export default function OnboardingPage() {
                 <div style={{ display:'flex',gap:'10px' }}>
                   {['Professional','Friendly','Casual'].map(t => (
                     <label key={t} style={{ flex:1,padding:'12px',backgroundColor:tone===t?'rgba(59,130,246,0.15)':'#141414',border:`1px solid ${tone===t?'#3b82f6':'#333'}`,borderRadius:'10px',cursor:'pointer',textAlign:'center' }}>
-                      <input type="radio" name="tone" value={t} checked={tone===t} onChange={() => setTone(t)} style={{ display:'none' }} />
+                      <input type="radio" name="tone" value={t} checked={tone===t} onChange={() => handleToneChange(t)} style={{ display:'none' }} />
                       <span style={{ fontSize:'14px',color:tone===t?'#3b82f6':'#ccc',fontWeight:'500' }}>{t}</span>
                     </label>
                   ))}
