@@ -125,6 +125,8 @@ export default function OnboardingPage() {
   async function handleLaunch() {
     if (!business?.id) { window.location.hash = '#/dashboard'; return; }
     setSaving(true);
+
+    // Save business settings (non-fatal if fails)
     try {
       const business_hours = {};
       schedule.forEach((s, i) => {
@@ -138,7 +140,12 @@ export default function OnboardingPage() {
         business_hours,
         greeting: greeting || getGreeting(),
       });
-      // Redirect to Stripe checkout as final step
+    } catch (e) {
+      console.error('updateBusiness failed:', e);
+    }
+
+    // Redirect to Stripe checkout
+    try {
       const apiUrl = import.meta.env.VITE_API_URL || 'https://ansa-production.up.railway.app';
       const stripeRes = await fetch(`${apiUrl}/api/stripe/checkout`, {
         method: 'POST',
@@ -146,8 +153,12 @@ export default function OnboardingPage() {
         body: JSON.stringify({ businessId: business.id }),
       });
       const stripeData = await stripeRes.json();
+      console.log('Stripe response:', stripeData);
       if (stripeData.url) { window.location.href = stripeData.url; return; }
-    } catch (_) {}
+    } catch (e) {
+      console.error('Stripe checkout failed:', e);
+    }
+
     setSaving(false);
     window.location.hash = '#/dashboard';
   }
