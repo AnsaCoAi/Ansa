@@ -180,7 +180,7 @@ export default function LandingPage() {
             <a href="#pricing" onClick={scrollTo('pricing')}>Pricing</a>
             <a href="#faq" onClick={scrollTo('faq')}>FAQ</a>
             <a href="#/login" style={{ color:'#a1a1aa',textDecoration:'none',fontSize:'14px',fontWeight:'500' }}>Log In</a>
-            <a href="#/signup" className="ansa-btn ansa-btn-blue" style={{ padding:'10px 22px',fontSize:14 }}>Get Started</a>
+            <a href="#/signup" className="ansa-btn ansa-btn-blue" style={{ padding:'10px 22px',fontSize:14,color:'#fff' }}>Get Started</a>
           </div>
           <button className="ansa-nav-mobile-toggle" onClick={() => setMobileOpen(!mobileOpen)}>
             {mobileOpen ? <X size={24} /> : <Menu size={24} />}
@@ -191,7 +191,7 @@ export default function LandingPage() {
           <a href="#pricing" onClick={scrollTo('pricing')}>Pricing</a>
           <a href="#faq" onClick={scrollTo('faq')}>FAQ</a>
           <a href="#/login" style={{ color:'#a1a1aa',textDecoration:'none',fontSize:'15px',fontWeight:'500' }}>Log In</a>
-          <a href="#/signup" className="ansa-btn ansa-btn-blue" style={{ padding:'10px 22px',fontSize:14,textAlign:'center' }}>Get Started</a>
+          <a href="#/signup" className="ansa-btn ansa-btn-blue" style={{ padding:'10px 22px',fontSize:14,textAlign:'center',color:'#fff' }}>Get Started</a>
         </div>
       </nav>
 
