@@ -262,7 +262,8 @@ export default function OnboardingPage() {
           {step === 3 && (
             <div>
               <h2 style={{ fontSize:'22px',fontWeight:'600',color:'#fff',margin:'0 0 8px 0' }}>Customize your AI assistant</h2>
-              <p style={{ fontSize:'14px',color:'#888',margin:'0 0 24px 0' }}>Configure how Ansa responds to your missed calls</p>
+              <p style={{ fontSize:'14px',color:'#888',margin:'0 0 12px 0' }}>Configure how Ansa responds to your missed calls</p>
+              <p style={{ fontSize:'13px',color:'#555',margin:'0 0 24px 0' }}>You can change any of this later in Settings → AI Assistant.</p>
               <div style={{ marginBottom:'24px' }}>
                 <label style={{ display:'block',fontSize:'14px',color:'#999',marginBottom:'6px' }}>AI greeting message</label>
                 <textarea value={greeting || getGreeting()} onChange={e => setGreeting(e.target.value)} rows={3} style={{ ...inpNP,resize:'vertical' }} onFocus={hf} onBlur={hb} />
