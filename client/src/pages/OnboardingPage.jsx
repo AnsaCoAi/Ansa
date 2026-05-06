@@ -102,10 +102,10 @@ export default function OnboardingPage() {
   const [step, setStep] = useState(1);
   const [saving, setSaving] = useState(false);
 
-  const [businessName, setBusinessName] = useState('');
-  const [businessType, setBusinessType] = useState('');
+  const [businessName, setBusinessName] = useState(business?.name || '');
+  const [businessType, setBusinessType] = useState(business?.trade || '');
   const [serviceArea, setServiceArea] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState(business?.owner_phone || '');
   const [description, setDescription] = useState('');
   const [schedule, setSchedule] = useState(DAYS.map((day,i) => ({ day, enabled: i < 5, start:'8:00 AM', end:'6:00 PM' })));
   const [greeting, setGreeting] = useState('');

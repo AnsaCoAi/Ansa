@@ -73,14 +73,17 @@ export function AuthProvider({ children }) {
     }
 
     // Create Stripe checkout session with 30-day trial
-    const stripeRes = await fetch(`${apiUrl}/api/stripe/checkout`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ businessId }),
-    });
-    const stripeData = await stripeRes.json();
+    try {
+      const stripeRes = await fetch(`${apiUrl}/api/stripe/checkout`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ businessId }),
+      });
+      const stripeData = await stripeRes.json();
+      if (stripeData.url) return { data, stripeUrl: stripeData.url };
+    } catch (_) {}
 
-    return { data, stripeUrl: stripeData.url };
+    return { data };
   }
 
   async function signIn({ email, password }) {
