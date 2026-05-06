@@ -48,4 +48,43 @@ async function sendWelcomeEmail({ to, ownerName, businessName }) {
   });
 }
 
-module.exports = { sendWelcomeEmail };
+async function sendCancellationEmail({ to, ownerName, businessName }) {
+  await resend.emails.send({
+    from: 'Ansa <hello@ansaco.ai>',
+    to,
+    subject: `Your Ansa subscription has been cancelled`,
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <body style="margin:0;padding:0;background:#0a0a0a;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
+        <div style="max-width:560px;margin:40px auto;padding:40px;background:#111111;border-radius:16px;border:1px solid #222;">
+          <div style="font-size:28px;font-weight:700;color:#fff;margin-bottom:32px;">
+            ansa<span style="color:#3b82f6;">.</span>
+          </div>
+
+          <h1 style="font-size:22px;font-weight:600;color:#fff;margin:0 0 12px 0;">
+            We're sorry to see you go, ${ownerName}.
+          </h1>
+          <p style="font-size:15px;color:#888;line-height:1.6;margin:0 0 24px 0;">
+            Your Ansa subscription for <strong style="color:#fff;">${businessName}</strong> has been cancelled. You won't be charged going forward.
+          </p>
+          <p style="font-size:15px;color:#888;line-height:1.6;margin:0 0 24px 0;">
+            If this was a mistake or you'd like to come back, you can reactivate anytime — your settings and history will still be there.
+          </p>
+
+          <a href="https://www.ansaco.ai/#/billing" style="display:block;text-align:center;padding:14px;background:#3b82f6;color:#fff;border-radius:10px;text-decoration:none;font-size:15px;font-weight:600;margin-bottom:24px;">
+            Reactivate my account
+          </a>
+
+          <p style="font-size:13px;color:#555;text-align:center;margin:0;">
+            Questions? Reply to this email — we'd love to hear your feedback.<br/>
+            <a href="https://www.ansaco.ai" style="color:#3b82f6;text-decoration:none;">ansaco.ai</a>
+          </p>
+        </div>
+      </body>
+      </html>
+    `,
+  });
+}
+
+module.exports = { sendWelcomeEmail, sendCancellationEmail };
