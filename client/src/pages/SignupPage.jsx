@@ -1,13 +1,11 @@
 import { useState } from 'react';
 import { User, Mail, Lock, Building2, Phone, ChevronDown } from 'lucide-react';
-import { useAuth } from '../context/AuthContext';
 
 const BUSINESS_TYPES = ['Plumbing','HVAC','Electrical','Roofing','Landscaping','General Contractor','Other'];
 
 const inputStyle = { width: '100%', padding: '12px 12px 12px 40px', backgroundColor: '#141414', border: '1px solid #333', borderRadius: '10px', color: '#ffffff', fontSize: '14px', outline: 'none', boxSizing: 'border-box' };
 
 export default function SignupPage() {
-  const { signUp } = useAuth();
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -15,18 +13,14 @@ export default function SignupPage() {
   const [businessPhone, setBusinessPhone] = useState('');
   const [businessType, setBusinessType] = useState('');
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
 
-  const handleCreate = async () => {
+  const handleCreate = () => {
     if (!fullName || !email || !password || !businessName || !businessPhone || !businessType) {
       setError('Please fill in all fields.');
       return;
     }
     setError('');
-    setLoading(true);
-    const { error: err } = await signUp({ email, password, fullName, businessName, businessPhone, businessType });
-    setLoading(false);
-    if (err) { setError(err.message); return; }
+    localStorage.setItem('ansa_signup', JSON.stringify({ fullName, email, password, businessName, businessPhone, businessType }));
     window.location.hash = '#/onboarding';
   };
 
@@ -70,8 +64,8 @@ export default function SignupPage() {
           </div>
         </div>
 
-        <button onClick={handleCreate} disabled={loading} style={{ width: '100%', padding: '12px', backgroundColor: loading ? '#1d4ed8' : '#3b82f6', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '15px', fontWeight: '600', cursor: loading ? 'not-allowed' : 'pointer', marginBottom: '16px' }}>
-          {loading ? 'Setting up your account...' : 'Create Account'}
+        <button onClick={handleCreate} style={{ width: '100%', padding: '12px', backgroundColor: '#3b82f6', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '15px', fontWeight: '600', cursor: 'pointer', marginBottom: '16px' }}>
+          Continue
         </button>
         <p style={{ textAlign: 'center', fontSize: '14px', color: '#999', margin: 0 }}>
           Already have an account?{' '}

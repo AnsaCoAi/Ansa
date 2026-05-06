@@ -1,7 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Building2, MapPin, Phone, FileText, MessageSquare, Plus, Trash2, Calendar, CreditCard, CheckCircle2, ChevronLeft, ChevronRight, Rocket, PhoneCall } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { MapPin, FileText, Plus, Trash2, Calendar, CreditCard, CheckCircle2, ChevronLeft, ChevronRight, Rocket, PhoneCall } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
-import { api } from '../services/api';
 
 const US_CITIES = [
   'Atlanta, GA','Austin, TX','Baltimore, MD','Boston, MA','Charlotte, NC','Chicago, IL',
@@ -59,7 +58,6 @@ function CityAutocomplete({ value, onChange }) {
   );
 }
 
-const BUSINESS_TYPES = ['Plumbing','HVAC','Electrical','Roofing','Landscaping','General Contractor','Other'];
 const DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 const DAY_KEYS = ['mon','tue','wed','thu','fri','sat','sun'];
 const HOURS = [];
@@ -98,14 +96,16 @@ function timeStringToHHMM(str) {
 }
 
 export default function OnboardingPage() {
-  const { business, signOut } = useAuth();
+  const { signUp } = useAuth(); // called on Launch Ansa
   const [step, setStep] = useState(1);
   const [saving, setSaving] = useState(false);
+  const [launchError, setLaunchError] = useState('');
 
-  const [businessName, setBusinessName] = useState(business?.name || '');
-  const [businessType, setBusinessType] = useState(business?.trade || '');
+  const stored = JSON.parse(localStorage.getItem('ansa_signup') || '{}');
+
+  const [businessName] = useState(stored.businessName || '');
+  const [businessType] = useState(stored.businessType || '');
   const [serviceArea, setServiceArea] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState(business?.owner_phone || '');
   const [description, setDescription] = useState('');
   const [schedule, setSchedule] = useState(DAYS.map((day,i) => ({ day, enabled: i < 5, start:'8:00 AM', end:'6:00 PM' })));
   const [greeting, setGreeting] = useState('');
@@ -123,37 +123,47 @@ export default function OnboardingPage() {
   };
 
   async function handleLaunch() {
-    if (!business?.id) { window.location.hash = '#/dashboard'; return; }
-    setSaving(true);
+    const creds = JSON.parse(localStorage.getItem('ansa_signup') || '{}');
+    if (!creds.email) { window.location.hash = '#/signup'; return; }
 
-    // Save business settings (non-fatal if fails)
-    try {
-      const business_hours = {};
-      schedule.forEach((s, i) => {
-        business_hours[DAY_KEYS[i]] = s.enabled
-          ? { open: timeStringToHHMM(s.start), close: timeStringToHHMM(s.end) }
-          : null;
-      });
-      await api.updateBusiness(business.id, {
-        name: businessName || business.name,
-        services: description ? [description] : undefined,
-        business_hours,
-        greeting: greeting || getGreeting(),
-      });
-    } catch (e) {
-      console.error('updateBusiness failed:', e);
+    setSaving(true);
+    setLaunchError('');
+
+    const business_hours = {};
+    schedule.forEach((s, i) => {
+      business_hours[DAY_KEYS[i]] = s.enabled
+        ? { open: timeStringToHHMM(s.start), close: timeStringToHHMM(s.end) }
+        : null;
+    });
+
+    const { error, businessId } = await signUp({
+      email: creds.email,
+      password: creds.password,
+      fullName: creds.fullName,
+      businessName: creds.businessName,
+      businessPhone: creds.businessPhone,
+      businessType: creds.businessType,
+      businessHours: business_hours,
+      services: description ? [description] : undefined,
+      greeting: greeting || getGreeting(),
+    });
+
+    if (error) {
+      setSaving(false);
+      setLaunchError(error.message);
+      return;
     }
 
-    // Redirect to Stripe checkout
+    localStorage.removeItem('ansa_signup');
+
+    const apiUrl = import.meta.env.VITE_API_URL || 'https://ansa-production.up.railway.app';
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || 'https://ansa-production.up.railway.app';
       const stripeRes = await fetch(`${apiUrl}/api/stripe/checkout`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ businessId: business.id }),
+        body: JSON.stringify({ businessId }),
       });
       const stripeData = await stripeRes.json();
-      console.log('Stripe response:', stripeData);
       if (stripeData.url) { window.location.href = stripeData.url; return; }
     } catch (e) {
       console.error('Stripe checkout failed:', e);
@@ -284,8 +294,8 @@ export default function OnboardingPage() {
               <p style={{ fontSize:'14px',color:'#888',margin:'0 0 24px 0' }}>These can all be configured later in Settings</p>
               <div style={{ display:'flex',flexDirection:'column',gap:'12px' }}>
                 {[
-                  { Icon:Calendar, title:'Google Calendar', desc:'Sync your availability and let Ansa book appointments', href: business?.id ? `https://ansa-production.up.railway.app/auth/google?businessId=${business.id}` : null },
-                  { Icon:PhoneCall, title:'Phone Number', desc: business?.twilio_number ? `Provisioned: ${business.twilio_number}` : 'Auto-provisioned on signup', done: !!business?.twilio_number },
+                  { Icon:Calendar, title:'Google Calendar', desc:'Sync your availability — connect after launch in Settings', href: null },
+                  { Icon:PhoneCall, title:'Phone Number', desc:'Auto-provisioned when you launch', done: false },
                   { Icon:CreditCard, title:'Billing (Stripe)', desc:'Coming soon — add a payment method for your subscription', href: null },
                 ].map(({ Icon, title, desc, href, done }) => (
                   <div key={title} style={{ backgroundColor:'#111111',borderRadius:'12px',border:'1px solid #222',padding:'20px',display:'flex',alignItems:'center',gap:'16px' }}>
@@ -309,6 +319,7 @@ export default function OnboardingPage() {
           )}
         </div>
 
+        {launchError && <div style={{ background:'rgba(239,68,68,0.1)',border:'1px solid rgba(239,68,68,0.3)',borderRadius:'8px',padding:'10px 14px',color:'#ef4444',fontSize:'13px',marginBottom:'16px' }}>{launchError}</div>}
         <div style={{ display:'flex',justifyContent:'space-between',gap:'12px' }}>
           {step > 1 ? (
             <button onClick={() => setStep(step-1)}
@@ -317,7 +328,7 @@ export default function OnboardingPage() {
               <ChevronLeft size={16} /> Back
             </button>
           ) : (
-            <button onClick={signOut}
+            <button onClick={() => { localStorage.removeItem('ansa_signup'); window.location.hash = '#/'; }}
               style={{ padding:'12px 24px',backgroundColor:'transparent',color:'#999',border:'1px solid #333',borderRadius:'10px',fontSize:'14px',fontWeight:'500',cursor:'pointer',display:'flex',alignItems:'center',gap:'6px' }}
               onMouseEnter={e => e.currentTarget.style.borderColor='#555'} onMouseLeave={e => e.currentTarget.style.borderColor='#333'}>
               <ChevronLeft size={16} /> Back to home
