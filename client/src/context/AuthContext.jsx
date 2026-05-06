@@ -63,7 +63,6 @@ export function AuthProvider({ children }) {
     // Auto-provision a Twilio number for this business
     const areaCode = businessPhone.replace(/\D/g, '').slice(0, 3);
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || 'https://ansa-production.up.railway.app';
       await fetch(`${apiUrl}/api/provision-number`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -73,7 +72,15 @@ export function AuthProvider({ children }) {
       // Non-fatal — business is created, number can be provisioned later
     }
 
-    return { data };
+    // Create Stripe checkout session with 30-day trial
+    const stripeRes = await fetch(`${apiUrl}/api/stripe/checkout`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ businessId }),
+    });
+    const stripeData = await stripeRes.json();
+
+    return { data, stripeUrl: stripeData.url };
   }
 
   async function signIn({ email, password }) {

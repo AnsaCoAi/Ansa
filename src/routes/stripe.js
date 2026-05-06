@@ -37,9 +37,9 @@ router.post('/checkout', async (req, res) => {
     customer: customerId,
     mode: 'subscription',
     line_items: [{ price: PRO_PRICE_ID, quantity: 1 }],
-    subscription_data: { metadata: { businessId } },
-    success_url: `${FRONTEND_URL}/#/dashboard/settings?billing=success`,
-    cancel_url: `${FRONTEND_URL}/#/dashboard/settings?billing=cancelled`,
+    subscription_data: { trial_period_days: 30, metadata: { businessId } },
+    success_url: `${FRONTEND_URL}/#/onboarding`,
+    cancel_url: `${FRONTEND_URL}/#/signup`,
   });
 
   res.json({ url: session.url });
