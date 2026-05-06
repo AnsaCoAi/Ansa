@@ -98,7 +98,7 @@ function timeStringToHHMM(str) {
 }
 
 export default function OnboardingPage() {
-  const { business } = useAuth();
+  const { business, signOut } = useAuth();
   const [step, setStep] = useState(1);
   const [saving, setSaving] = useState(false);
 
@@ -317,7 +317,7 @@ export default function OnboardingPage() {
               <ChevronLeft size={16} /> Back
             </button>
           ) : (
-            <button onClick={() => window.location.hash = '#/'}
+            <button onClick={signOut}
               style={{ padding:'12px 24px',backgroundColor:'transparent',color:'#999',border:'1px solid #333',borderRadius:'10px',fontSize:'14px',fontWeight:'500',cursor:'pointer',display:'flex',alignItems:'center',gap:'6px' }}
               onMouseEnter={e => e.currentTarget.style.borderColor='#555'} onMouseLeave={e => e.currentTarget.style.borderColor='#333'}>
               <ChevronLeft size={16} /> Back to home
