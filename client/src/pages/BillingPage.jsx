@@ -7,13 +7,15 @@ export default function BillingPage() {
   const [loading, setLoading] = useState(false);
 
   const openStripe = async () => {
-    if (!business?.id) return;
+    const params = new URLSearchParams(window.location.search);
+    const businessId = business?.id || params.get('b');
+    if (!businessId) return;
     setLoading(true);
     const apiUrl = import.meta.env.VITE_API_URL || 'https://ansa-production.up.railway.app';
     const res = await fetch(`${apiUrl}/api/stripe/checkout`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ businessId: business.id }),
+      body: JSON.stringify({ businessId }),
     });
     const data = await res.json();
     if (data.url) window.location.href = data.url;

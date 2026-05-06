@@ -39,7 +39,7 @@ router.post('/checkout', async (req, res) => {
     line_items: [{ price: PRO_PRICE_ID, quantity: 1 }],
     subscription_data: { trial_period_days: 30, metadata: { businessId } },
     success_url: `${FRONTEND_URL}/#/onboarding`,
-    cancel_url: `${FRONTEND_URL}/#/billing`,
+    cancel_url: `${FRONTEND_URL}/#/billing?b=${businessId}`,
   });
 
   res.json({ url: session.url });
