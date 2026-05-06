@@ -17,7 +17,7 @@ import PrivacyPage from './pages/PrivacyPage';
 
 function Router() {
   const [hash, setHash] = useState(window.location.hash || '#/');
-  const { user, loading } = useAuth();
+  const { user, business, loading } = useAuth();
 
   useEffect(() => {
     const onHashChange = () => setHash(window.location.hash || '#/');
@@ -32,15 +32,15 @@ function Router() {
   );
 
   if (hash === '#/' || hash === '') {
-    if (user) { window.location.hash = '#/dashboard'; return null; }
+    if (user) { window.location.hash = business ? '#/dashboard' : '#/onboarding'; return null; }
     return <LandingPage />;
   }
   if (hash === '#/login') {
-    if (user) { window.location.hash = '#/dashboard'; return null; }
+    if (user) { window.location.hash = business ? '#/dashboard' : '#/onboarding'; return null; }
     return <LoginPage />;
   }
   if (hash === '#/signup') {
-    if (user) { window.location.hash = '#/dashboard'; return null; }
+    if (user) { window.location.hash = business ? '#/dashboard' : '#/onboarding'; return null; }
     return <SignupPage />;
   }
   if (hash === '#/terms') return <TermsPage />;
