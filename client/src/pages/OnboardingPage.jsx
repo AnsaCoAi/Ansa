@@ -1,7 +1,63 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Building2, MapPin, Phone, FileText, MessageSquare, Plus, Trash2, Calendar, CreditCard, CheckCircle2, ChevronLeft, ChevronRight, Rocket, PhoneCall } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
+
+const US_CITIES = [
+  'Atlanta, GA','Austin, TX','Baltimore, MD','Boston, MA','Charlotte, NC','Chicago, IL',
+  'Cincinnati, OH','Cleveland, OH','Columbus, OH','Dallas, TX','Denver, CO','Detroit, MI',
+  'El Paso, TX','Fort Worth, TX','Fresno, CA','Houston, TX','Indianapolis, IN','Jacksonville, FL',
+  'Kansas City, MO','Las Vegas, NV','Long Beach, CA','Los Angeles, CA','Louisville, KY',
+  'Memphis, TN','Mesa, AZ','Miami, FL','Milwaukee, WI','Minneapolis, MN','Nashville, TN',
+  'New Orleans, LA','New York, NY','Oakland, CA','Oklahoma City, OK','Omaha, NE','Orlando, FL',
+  'Philadelphia, PA','Phoenix, AZ','Pittsburgh, PA','Portland, OR','Raleigh, NC','Richmond, VA',
+  'Sacramento, CA','San Antonio, TX','San Diego, CA','San Francisco, CA','San Jose, CA',
+  'Seattle, WA','St. Louis, MO','Tampa, FL','Tucson, AZ','Virginia Beach, VA','Washington, DC',
+];
+
+function CityAutocomplete({ value, onChange }) {
+  const [query, setQuery] = useState(value || '');
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+
+  const matches = query.length >= 2
+    ? US_CITIES.filter(c => c.toLowerCase().includes(query.toLowerCase())).slice(0, 8)
+    : [];
+
+  useEffect(() => {
+    const handleClick = e => { if (ref.current && !ref.current.contains(e.target)) setOpen(false); };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, []);
+
+  const select = city => { setQuery(city); onChange(city); setOpen(false); };
+
+  return (
+    <div ref={ref} style={{ position: 'relative' }}>
+      <MapPin size={18} color="#666" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', zIndex: 1 }} />
+      <input
+        type="text" value={query} placeholder="Los Angeles, CA"
+        onChange={e => { setQuery(e.target.value); onChange(''); setOpen(true); }}
+        onFocus={e => { e.target.style.borderColor='#3b82f6'; setOpen(true); }}
+        onBlur={e => e.target.style.borderColor='#333'}
+        style={{ width:'100%',padding:'12px 12px 12px 40px',backgroundColor:'#141414',border:'1px solid #333',borderRadius:'10px',color:'#ffffff',fontSize:'14px',outline:'none',boxSizing:'border-box' }}
+        autoComplete="off"
+      />
+      {open && matches.length > 0 && (
+        <div style={{ position:'absolute',top:'calc(100% + 4px)',left:0,right:0,backgroundColor:'#1a1a1a',border:'1px solid #333',borderRadius:'10px',zIndex:100,overflow:'hidden' }}>
+          {matches.map(city => (
+            <div key={city} onMouseDown={() => select(city)}
+              style={{ padding:'10px 14px',color:'#fff',fontSize:'14px',cursor:'pointer' }}
+              onMouseEnter={e => e.currentTarget.style.backgroundColor='#2a2a2a'}
+              onMouseLeave={e => e.currentTarget.style.backgroundColor='transparent'}>
+              {city}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 const BUSINESS_TYPES = ['Plumbing','HVAC','Electrical','Roofing','Landscaping','General Contractor','Other'];
 const DAYS = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
@@ -120,7 +176,6 @@ export default function OnboardingPage() {
               <h2 style={{ fontSize:'22px',fontWeight:'600',color:'#fff',margin:'0 0 24px 0' }}>Tell us about your business</h2>
               {[
                 { label:'Business name *', type:'text', val:businessName, set:setBusinessName, ph:'Your Business LLC', Icon:Building2 },
-                { label:'Service area *', type:'text', val:serviceArea, set:setServiceArea, ph:'Los Angeles, CA', Icon:MapPin },
                 { label:'Business phone number *', type:'tel', val:phoneNumber, set:setPhoneNumber, ph:'(555) 123-4567', Icon:Phone },
               ].map(({ label, type, val, set, ph, Icon }) => (
                 <div key={label} style={{ marginBottom:'16px' }}>
@@ -131,6 +186,10 @@ export default function OnboardingPage() {
                   </div>
                 </div>
               ))}
+              <div style={{ marginBottom:'16px' }}>
+                <label style={{ display:'block',fontSize:'14px',color:'#999',marginBottom:'6px' }}>Service area *</label>
+                <CityAutocomplete value={serviceArea} onChange={setServiceArea} />
+              </div>
               <div style={{ marginBottom:'16px' }}>
                 <label style={{ display:'block',fontSize:'14px',color:'#999',marginBottom:'6px' }}>Business type *</label>
                 <div style={{ position:'relative' }}>
