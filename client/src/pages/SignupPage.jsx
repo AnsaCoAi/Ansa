@@ -75,7 +75,7 @@ export default function SignupPage() {
         </button>
         <p style={{ textAlign: 'center', fontSize: '14px', color: '#999', margin: 0 }}>
           Already have an account?{' '}
-          <a href="#/login" onClick={e => { e.preventDefault(); window.location.hash = '#/login'; }} style={{ color: '#3b82f6', textDecoration: 'none', fontWeight: '500' }}>Sign in</a>
+          <a href="#/login" onClick={e => { e.preventDefault(); window.location.hash = '#/login'; }} style={{ color: '#3b82f6', textDecoration: 'none', fontWeight: '500' }}>Log in</a>
         </p>
       </div>
     </div>
