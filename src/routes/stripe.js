@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const supabase = require('../services/supabase');
+const { sendWelcomeEmail } = require('../services/email');
 
 const FRONTEND_URL = process.env.FRONTEND_URL || 'https://www.ansaco.ai';
 const PRO_PRICE_ID = process.env.STRIPE_PRO_PRICE_ID;
@@ -97,6 +98,25 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
           subscription_status: statusMap[event.type],
         })
         .eq('id', businessId);
+
+      if (event.type === 'customer.subscription.created') {
+        try {
+          const { data: biz } = await supabase
+            .from('businesses')
+            .select('name, owner_name, owner_auth_id')
+            .eq('id', businessId)
+            .single();
+
+          if (biz) {
+            const { data: { user } } = await supabase.auth.admin.getUserById(biz.owner_auth_id);
+            if (user?.email) {
+              await sendWelcomeEmail({ to: user.email, ownerName: biz.owner_name, businessName: biz.name });
+            }
+          }
+        } catch (e) {
+          console.error('Welcome email failed:', e.message);
+        }
+      }
     }
   }
 
