@@ -27,7 +27,7 @@ const injectStyles = () => {
     .ansa-nav-mobile-menu{display:none;flex-direction:column;gap:16px;position:absolute;top:64px;left:0;right:0;background:rgba(10,10,10,.97);padding:24px;border-bottom:1px solid #222}
     .ansa-nav-mobile-menu a{color:#a1a1aa;text-decoration:none;font-size:15px;font-weight:500}
     .ansa-btn{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;transition:all .25s;text-decoration:none;border:none;font-family:inherit}
-    .ansa-btn-blue{background:#3b82f6;color:#fff;box-shadow:0 0 20px rgba(59,130,246,.3)}
+    .ansa-btn-blue{background:#3b82f6;color:#fff!important;box-shadow:0 0 20px rgba(59,130,246,.3)}
     .ansa-btn-blue:hover{background:#2563eb;box-shadow:0 0 32px rgba(59,130,246,.45);transform:translateY(-1px)}
     .ansa-btn-outline{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.15)}
     .ansa-btn-outline:hover{border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.04);transform:translateY(-1px)}
