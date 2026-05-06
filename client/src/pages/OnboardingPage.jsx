@@ -173,32 +173,11 @@ export default function OnboardingPage() {
         <div style={{ backgroundColor:'#111111',borderRadius:'16px',border:'1px solid #222',boxShadow:'0 25px 50px rgba(0,0,0,0.5)',padding:'32px',marginBottom:'24px' }}>
           {step === 1 && (
             <div>
-              <h2 style={{ fontSize:'22px',fontWeight:'600',color:'#fff',margin:'0 0 24px 0' }}>Tell us about your business</h2>
-              {[
-                { label:'Business name *', type:'text', val:businessName, set:setBusinessName, ph:'Your Business LLC', Icon:Building2 },
-                { label:'Business phone number *', type:'tel', val:phoneNumber, set:setPhoneNumber, ph:'(555) 123-4567', Icon:Phone },
-              ].map(({ label, type, val, set, ph, Icon }) => (
-                <div key={label} style={{ marginBottom:'16px' }}>
-                  <label style={{ display:'block',fontSize:'14px',color:'#999',marginBottom:'6px' }}>{label}</label>
-                  <div style={{ position:'relative' }}>
-                    <Icon size={18} color="#666" style={{ position:'absolute',left:'12px',top:'50%',transform:'translateY(-50%)' }} />
-                    <input type={type} value={val} onChange={e => set(e.target.value)} placeholder={ph} style={inp} onFocus={hf} onBlur={hb} />
-                  </div>
-                </div>
-              ))}
+              <h2 style={{ fontSize:'22px',fontWeight:'600',color:'#fff',margin:'0 0 8px 0' }}>Almost there!</h2>
+              <p style={{ fontSize:'14px',color:'#888',margin:'0 0 24px 0' }}>Just a couple more details to set up your account.</p>
               <div style={{ marginBottom:'16px' }}>
                 <label style={{ display:'block',fontSize:'14px',color:'#999',marginBottom:'6px' }}>Service area *</label>
                 <CityAutocomplete value={serviceArea} onChange={setServiceArea} />
-              </div>
-              <div style={{ marginBottom:'16px' }}>
-                <label style={{ display:'block',fontSize:'14px',color:'#999',marginBottom:'6px' }}>Business type *</label>
-                <div style={{ position:'relative' }}>
-                  <Building2 size={18} color="#666" style={{ position:'absolute',left:'12px',top:'50%',transform:'translateY(-50%)',zIndex:1 }} />
-                  <select value={businessType} onChange={e => setBusinessType(e.target.value)} style={{ ...inp,appearance:'none',cursor:'pointer',color:businessType?'#fff':'#888' }} onFocus={hf} onBlur={hb}>
-                    <option value="" disabled>Select type</option>
-                    {BUSINESS_TYPES.map(t => <option key={t} value={t} style={{ backgroundColor:'#141414',color:'#fff' }}>{t}</option>)}
-                  </select>
-                </div>
               </div>
               <div>
                 <label style={{ display:'block',fontSize:'14px',color:'#999',marginBottom:'6px' }}>Business description</label>
