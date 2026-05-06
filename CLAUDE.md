@@ -11,7 +11,7 @@
 - GitHub: github.com/AnsaCoAi/Ansa (main branch)
 - Backend: Node/Express (src/)
 - Frontend: React/Vite (client/)
-- Services: Supabase, Twilio, Claude AI, Google Calendar
+- Services: Supabase, Twilio, Claude AI, Google Calendar, Resend, Stripe
 - Domain: ansaco.ai — registered on Namecheap, DNS managed on Namecheap
 
 ## Supabase Schema
@@ -28,6 +28,7 @@
 - Railway plan: Hobby ($5/mo)
 - Railway CLI is logged in and linked to the project
 - Railway project: compassionate-surprise | service: Ansa
+- Railway GraphQL API auth: use accessToken from ~/.config/railway/config.json (NOT the stored Railway token in credentials — that one doesn't work)
 
 ## What's Built — Full Feature List
 
@@ -45,66 +46,86 @@
   - PATCH /api/appointments/:id (update status)
   - GET /api/stats?businessId=xxx
   - POST /api/provision-number (buys Twilio number, wires webhooks, saves to DB)
-  - POST /api/create-business (creates business row using service role, bypasses RLS — called during signup)
+  - POST /api/create-business (creates business row using service role, bypasses RLS)
   - POST /api/stripe/checkout, POST /api/stripe/portal, POST /api/stripe/webhook
+  - POST /api/send-monthly-reports (secured with CRON_SECRET header — called by Railway cron)
 - index.js — CORS allows both https://www.ansaco.ai and https://ansaco.ai
+- src/services/email.js — Resend email service (welcome, cancellation, monthly report)
 
 ### Frontend (client/src/)
-- No mock data anywhere — mockData.js deleted, all pages use real API/Supabase
-- Auth: Supabase email/password login, signup, forgot password (sends reset email)
-- Logged-in users with no business → redirect to #/onboarding
-- Logged-in users with business → redirect to #/dashboard
+- No mock data anywhere — all pages use real API/Supabase
+- Auth: Supabase email/password login, signup, forgot password
 - AuthContext: session management, business loading by owner_auth_id
 - DashboardLayout: real business name/initials from auth, working logout
 
 ### Pages — all wired to real data
-- LandingPage — full marketing page, Log In link in nav, working CTAs, mailto footer
+- LandingPage — full marketing page
 - LoginPage — real auth, forgot password sends Supabase reset email via Resend
-- SignupPage — creates user + business row, auto-provisions Twilio number, redirects to #/onboarding
-- OnboardingPage — 4-step wizard (service area/desc, hours, AI setup, connect tools), Launch Ansa button saves data then opens Stripe checkout
-- BillingPage — shown at #/billing if user cancels Stripe, has "Add payment method" button to reopen Stripe
-- DashboardHome — live stats, real weekly chart from DB, real recent activity
-- MissedCallsPage — real conversations from DB, date filter, search, pagination
-- ConversationsPage — real data, status tab filters
-- ConversationDetail — real messages, Take Over mode sends real SMS via Twilio, Mark as Closed updates DB
-- AppointmentsPage — real data, Cancel updates DB
-- AnalyticsPage — real stats, real charts built from conversation data
-- SettingsPage — loads real business data, Save writes to Supabase, Integrations shows real Twilio/Calendar status
-- TermsPage — full Terms of Service at #/terms
-- PrivacyPage — full Privacy Policy at #/privacy
-- DashboardLayout — 30-day trial banner computed from business.created_at, notification bell removed
+- SignupPage — collects credentials + business info, saves to localStorage ONLY (no account created yet)
+- OnboardingPage — 4-step wizard, creates account on Launch Ansa
+- BillingPage — shown at #/billing if user cancels Stripe, has "Add payment method" + "← Back to onboarding"
+- DashboardHome, MissedCallsPage, ConversationsPage, ConversationDetail, AppointmentsPage, AnalyticsPage, SettingsPage — all real data
+- TermsPage, PrivacyPage
 
-## Signup Flow (current as of 2026-05-05)
-1. User fills out signup form (name, email, password, business name, phone, type)
-2. Supabase auth user created
-3. POST /api/create-business creates business row (service role, bypasses RLS)
-4. POST /api/provision-number auto-buys Twilio number
-5. Redirect to #/onboarding
-6. Onboarding step 1: service area (city autocomplete) + business description
-7. Onboarding step 2: business hours
-8. Onboarding step 3: AI greeting + tone + FAQs
-9. Onboarding step 4: connect tools (Google Calendar, Twilio status, billing)
-10. Launch Ansa → saves settings → POST /api/stripe/checkout → Stripe opens with 30-day trial
-11. Stripe success → #/onboarding (redirects to dashboard since business exists)
-12. Stripe cancel → #/billing page
+## Signup Flow (CURRENT as of 2026-05-05 session — CRITICAL)
+
+### The fix that took all session to get right:
+**Old broken flow:** Signup created auth user immediately → race condition where onAuthStateChange fired before create-business completed → business was null → handleLaunch exited early → Stripe never opened.
+
+**Current working flow:**
+1. SignupPage collects name/email/password/business info → saves to localStorage as `ansa_signup` → redirects to #/onboarding (NO account created yet)
+2. App.jsx allows unauthenticated users through to #/onboarding
+3. Onboarding steps 1-4 collect settings (service area, hours, AI greeting/tone, tools)
+4. Launch Ansa → handleLaunch() reads localStorage → calls signUp() in AuthContext
+5. signUp() creates Supabase auth user → POST /api/create-business → loadBusiness() → provisions Twilio number → returns { businessId }
+6. handleLaunch() uses returned businessId → POST /api/stripe/checkout → Stripe opens with 30-day trial
+7. Stripe success → #/onboarding (redirects to dashboard since business now exists)
+8. Stripe cancel → #/billing?b={businessId} (businessId in URL so billing page works without auth context)
+9. localStorage.removeItem('ansa_signup') called after account created successfully
+
+### Key files for signup flow:
+- client/src/pages/SignupPage.jsx — just saves to localStorage, no auth
+- client/src/context/AuthContext.jsx — signUp() now accepts businessHours/services/greeting, returns { businessId }
+- client/src/pages/OnboardingPage.jsx — handleLaunch() does everything
+- client/src/App.jsx — #/onboarding is before the auth gate
+- client/src/pages/BillingPage.jsx — reads businessId from URL query param ?b=
+
+## Onboarding UX Details
+- Step 1: Service area (city autocomplete) + business description. "← Back to home" button clears localStorage and goes to #/
+- Step 2: Business hours schedule
+- Step 3: AI greeting + tone (Professional/Friendly/Casual — each changes the greeting text live) + FAQs. Note says "You can change any of this later in Settings → AI Assistant."
+- Step 4: Connect tools (Google Calendar, Phone Number, Billing — all informational, no links since account doesn't exist yet)
+- Steps 2-4 have "← Back" to go to previous step
 
 ## Stripe Billing
 - Checkout: POST /api/stripe/checkout → opens Stripe hosted checkout at $297/mo with 30-day trial
 - Portal: POST /api/stripe/portal → opens Stripe billing portal (manage/cancel)
-- Webhook: POST /api/stripe/webhook → updates subscription_status in businesses table
+- Webhook: POST /api/stripe/webhook → updates subscription_status, sends welcome email on created, cancellation email on deleted
 - Supabase columns: stripe_customer_id, stripe_subscription_id, subscription_status
 - Env vars on Railway: STRIPE_SECRET_KEY, STRIPE_PRO_PRICE_ID, STRIPE_WEBHOOK_SECRET, FRONTEND_URL
 - Price ID: price_1TTZJHQyXVAhKN7gwWxT8xxB | Webhook: Ansa Production (4 events)
-- Stripe success_url: /#/onboarding | cancel_url: /#/billing
+- Stripe success_url: /#/onboarding | cancel_url: /#/billing?b={businessId}
 
-## Email (Resend SMTP)
-- Resend account: tyler@ansaco.ai
-- Domain verified: ansaco.ai (DNS records added to Namecheap)
-- Resend API key: stored in Claude memory (project_credentials.md)
-- Supabase SMTP: smtp.resend.com, port 465, username: resend
+## Email (Resend)
+- Resend API key: re_JHFEp6gy_HE6ZhN7Zjhbt3azXMHXYfE14 (also set as RESEND_API_KEY on Railway)
 - Sender: hello@ansaco.ai | Sender name: Ansa
+- Domain verified: ansaco.ai
+- Supabase SMTP: smtp.resend.com, port 465, username: resend, password = Resend API key
 - Email confirmation: OFF (turn back ON before launch)
-- Custom email templates done: Confirm signup, Reset password
+- src/services/email.js has: sendWelcomeEmail, sendCancellationEmail, sendMonthlyReportEmail
+- Welcome email: fires on customer.subscription.created webhook
+- Cancellation email: fires on customer.subscription.deleted webhook
+- Monthly report: fires via Railway cron (service: "Monthly Report Cron") at 0 9 1 * * (9am on 1st of month), secured with CRON_SECRET header
+- CRON_SECRET: df2324158d2ab6c8f26f8c2c8474f9bc5952c2603d4944e2bd440e1f2ab633ca (set on Railway)
+- Monthly report cron service ID: ab5a9992-13b7-4a33-9b05-be31a070b37e
+- All emails use table-based layout (not flexbox) for mobile compatibility
+- List-Unsubscribe header added to monthly report for spam compliance
+
+## DNS (Namecheap)
+- DMARC record: _dmarc → v=DMARC1; p=none; rua=mailto:hello@ansaco.ai (updated this session)
+- SPF: set by Resend
+- DKIM: set by Resend (google._domain... and resend._domain...)
+- Deliverability: domain is new, will warm up over time. Tell clients to add hello@ansaco.ai to contacts.
 
 ## Twilio A2P Status
 - Business Profile BU7688c9bbfecc7d74fe22763133ff11fd — APPROVED
@@ -112,12 +133,11 @@
 - Emailed trusthub-verify@twilio.com on 2026-05-05 — awaiting fix
 - SMS may be carrier-filtered until A2P clears
 
-## Current Blocker (as of 2026-05-05 session)
-- Stripe checkout not firing after Launch Ansa button
-- Root cause was duplicate phone check in /api/create-business causing 409 → business not created → business is null → handleLaunch exits early
-- Fix: removed duplicate phone check (committed a89baf5)
-- Railway needs to redeploy this fix before testing again
-- To test: delete auth user from Supabase, sign up fresh, go through all 4 onboarding steps, hit Launch Ansa
+## Railway Cron — Monthly Report
+- Service name: "Monthly Report Cron" | Service ID: ab5a9992-13b7-4a33-9b05-be31a070b37e
+- Schedule: 0 9 1 * * (9am UTC, 1st of each month)
+- Command: curl -s -X POST https://ansa-production.up.railway.app/api/send-monthly-reports -H 'x-cron-secret: df2324158d2ab6c8f26f8c2c8474f9bc5952c2603d4944e2bd440e1f2ab633ca'
+- Queries all businesses with subscription_status = 'active', sends monthly stats email to each
 
 ## Reminders
 - See PRELAUNCH.md for full launch checklist
