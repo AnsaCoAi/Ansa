@@ -39,6 +39,9 @@ export default function BillingPage() {
           {loading ? 'Loading...' : 'Add payment method'}
         </button>
         <p style={{ fontSize: '13px', color: '#555', marginTop: '16px' }}>No charge for 30 days. Cancel anytime.</p>
+        <button onClick={() => window.location.hash = '#/onboarding'} style={{ marginTop: '16px', background: 'none', border: 'none', color: '#666', fontSize: '13px', cursor: 'pointer', textDecoration: 'underline' }}>
+          ← Back to onboarding
+        </button>
       </div>
     </div>
   );
