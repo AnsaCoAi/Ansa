@@ -1,6 +1,6 @@
 const EFFECTIVE_DATE = 'May 4, 2026';
 const COMPANY = 'Ansa Co LLC';
-const EMAIL = 'legal@ansaco.ai';
+const EMAIL = 'hello@ansaco.ai';
 const ADDRESS = '2158 Loggia, Newport Beach, CA 92660';
 
 const s = {
