@@ -71,7 +71,7 @@ export default function TermsPage() {
         <h2 style={s.h2}>7. Subscription, Payment, and Refunds</h2>
         <p style={s.p}>Ansa offers a 30-day free trial followed by a paid subscription plan. By providing payment information, you authorize us to charge your payment method on a recurring monthly basis.</p>
         <ul style={s.ul}>
-          <li style={s.li}><strong style={{ color: '#ddd' }}>Free trial.</strong> Your free trial begins on the date of account creation and lasts 30 days. No credit card is required during the trial period.</li>
+          <li style={s.li}><strong style={{ color: '#ddd' }}>Free trial.</strong> Your free trial begins on the date of account creation and lasts 30 days. A valid payment method is required to start your free trial. You will not be charged until the trial period ends.</li>
           <li style={s.li}><strong style={{ color: '#ddd' }}>Billing.</strong> Subscriptions are billed monthly in advance. Prices are subject to change with 30 days' notice.</li>
           <li style={s.li}><strong style={{ color: '#ddd' }}>Cancellation.</strong> You may cancel at any time through your account settings. Cancellation takes effect at the end of the current billing period. No partial refunds are issued.</li>
           <li style={s.li}><strong style={{ color: '#ddd' }}>No refunds.</strong> All fees are non-refundable except as required by applicable law.</li>
