@@ -129,9 +129,12 @@
 
 ## Twilio A2P Status
 - Business Profile BU7688c9bbfecc7d74fe22763133ff11fd — APPROVED
-- Brand registration FAILING — Error 30795 (legal name mismatch)
-- Emailed trusthub-verify@twilio.com on 2026-05-05 — awaiting fix
-- SMS may be carrier-filtered until A2P clears
+- Brand BN4a1d91889d77361779ae61f0634d4c47 — VERIFIED (TCR appeal worked, EIN was too new)
+- Previous campaign (Low Volume Mixed) — DELETED after 2 rejections on CTA field
+- New campaign submitted 2026-06-04 under Customer Care ($10/mo) — PENDING VETTING
+- Campaign rejection history: rejected twice for CTA wording. Fixed by switching to Customer Care use case + framing messages as "response to inbound call that did not reach a live agent"
+- Privacy policy updated with required SMS no-third-party-sharing clause
+- SMS may still be carrier-filtered until campaign approved (1–7 business days)
 
 ## Railway Cron — Monthly Report
 - Service name: "Monthly Report Cron" | Service ID: ab5a9992-13b7-4a33-9b05-be31a070b37e
@@ -139,9 +142,24 @@
 - Command: curl -s -X POST https://ansa-production.up.railway.app/api/send-monthly-reports -H 'x-cron-secret: df2324158d2ab6c8f26f8c2c8474f9bc5952c2603d4944e2bd440e1f2ab633ca'
 - Queries all businesses with subscription_status = 'active', sends monthly stats email to each
 
+## Current Status (as of 2026-06-04)
+- Stripe: fully working. Signup → onboarding → Launch Ansa → Stripe checkout → dashboard flow confirmed working
+- Emails: welcome, cancellation, monthly report all built and deployed via Resend
+- Supabase email confirmation: ON (turned on, custom confirm signup template set in Supabase dashboard)
+- A2P campaign: resubmitted under Customer Care 2026-06-04, awaiting approval
+- Favicon + OG image: deployed (client/public/favicon.svg, client/public/og-image.svg)
+- Node.js: pinned to >=20 in package.json
+- PRELAUNCH.md is stale — ignore it
+
+## Outstanding Before Launch
+1. End-to-end test: full signup → Stripe → dashboard with real card (not done yet)
+2. Test SMS end-to-end: real missed call → AI text-back (blocked until A2P approved + end-to-end test done)
+3. A2P campaign approval: waiting on Twilio (submitted 2026-06-04)
+4. Supabase free tier pauses after 7 days inactivity — unpause at supabase.com if project is down. Upgrade to Pro ($25/mo) when first client onboards
+5. Favicon: SVG renders but may not show in all browsers — consider replacing with PNG if issues persist
+
 ## Reminders
-- See PRELAUNCH.md for full launch checklist
-- Supabase email confirmation OFF — turn back ON before launch
+- Supabase pauses every 7 days on free tier — check before each session and unpause if needed
 - Upgrade Supabase to Pro when first client onboards ($25/mo)
 - CA Statement of Information due ~July 2026 ($20)
 - CA $800 franchise tax due April 2027
