@@ -47,7 +47,10 @@ function Router() {
   if (hash === '#/terms') return <TermsPage />;
   if (hash === '#/privacy') return <PrivacyPage />;
   if (hash === '#/billing') return <BillingPage />;
-  if (hash === '#/onboarding') return <OnboardingPage />;
+  if (hash === '#/onboarding') {
+    if (user && business) { window.location.hash = '#/dashboard'; return null; }
+    return <OnboardingPage />;
+  }
 
   // Protected routes
   if (!user) {
