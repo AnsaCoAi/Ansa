@@ -176,6 +176,7 @@ export default function OnboardingPage() {
         body: JSON.stringify({ businessId }),
       });
       const stripeData = await stripeRes.json();
+      if (stripeData.bypass) { window.location.hash = '#/dashboard'; return; }
       if (stripeData.url) { window.location.href = stripeData.url; return; }
     } catch (e) {
       console.error('Stripe checkout failed:', e);

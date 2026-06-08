@@ -7,6 +7,8 @@ const { sendWelcomeEmail, sendCancellationEmail } = require('../services/email')
 const FRONTEND_URL = process.env.FRONTEND_URL || 'https://www.ansaco.ai';
 const PRO_PRICE_ID = process.env.STRIPE_PRO_PRICE_ID;
 
+const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || '').split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
+
 // POST /api/stripe/checkout — create Stripe Checkout session
 router.post('/checkout', async (req, res) => {
   const { businessId } = req.body;
@@ -14,11 +16,24 @@ router.post('/checkout', async (req, res) => {
 
   const { data: biz, error } = await supabase
     .from('businesses')
-    .select('id, name, owner_phone, stripe_customer_id')
+    .select('id, name, owner_phone, stripe_customer_id, owner_auth_id')
     .eq('id', businessId)
     .single();
 
   if (error || !biz) return res.status(404).json({ error: 'Business not found' });
+
+  // Admin bypass — skip Stripe and activate directly
+  if (ADMIN_EMAILS.length && biz.owner_auth_id) {
+    try {
+      const { data: { user } } = await supabase.auth.admin.getUserById(biz.owner_auth_id);
+      if (user?.email && ADMIN_EMAILS.includes(user.email.toLowerCase())) {
+        await supabase.from('businesses').update({ subscription_status: 'active' }).eq('id', businessId);
+        return res.json({ bypass: true });
+      }
+    } catch (e) {
+      console.error('Admin bypass check failed:', e.message);
+    }
+  }
 
   let customerId = biz.stripe_customer_id;
 
