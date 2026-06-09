@@ -60,9 +60,10 @@ const injectStyles = () => {
     .ansa-phone-slot.is-center{flex:0 0 340px;opacity:1;transform:scale(1)}
     .ansa-phone-slot.is-side{flex:0 0 280px;opacity:.45;transform:scale(.9);cursor:pointer}
     .ansa-phone-slot.is-side:hover{opacity:.65;transform:scale(.92)}
+    .ansa-phone-slot.is-side:hover .ansa-phone{border-color:#4F6EF7;box-shadow:0 0 0 1px #4F6EF7,0 32px 80px rgba(0,0,0,.6)}
     @media(max-width:820px){.ansa-phone-slot.is-side{display:none!important}.ansa-phones-row{justify-content:center}}
     .ansa-phone{background:#1c1c1e;border:1px solid #2c2c2e;border-radius:36px;padding:20px 16px 24px;position:relative;box-shadow:0 32px 80px rgba(0,0,0,.6),0 0 60px rgba(79,110,247,.07);height:420px;display:flex;flex-direction:column;overflow:hidden}
-    .ansa-phone-slot.is-center .ansa-phone{animation:ansa-float 6s ease-in-out infinite}
+    .ansa-phone-slot.is-center .ansa-phone{animation:ansa-float 6s ease-in-out infinite;border-color:rgba(79,110,247,.5);box-shadow:0 0 0 1px rgba(79,110,247,.3),0 32px 80px rgba(0,0,0,.6),0 0 40px rgba(79,110,247,.12)}
     .ansa-phone-notch{width:100px;height:5px;background:#2c2c2e;border-radius:99px;margin:0 auto 18px}
     .ansa-phone-status{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding:0 2px}
     .ansa-phone-biz{font-size:12px;font-weight:600;color:#fff;letter-spacing:-.1px}
