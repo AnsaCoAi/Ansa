@@ -1095,6 +1095,54 @@ export default function LandingPage() {
 
       <div className="ansa-divider" />
 
+      {/* Owner Notifications */}
+      <section className="ansa-section">
+        <div className="ansa-reveal">
+          <p className="ansa-section-label">You Stay In The Loop</p>
+          <h2 className="ansa-section-title">You'll Know the Second Anything Happens</h2>
+          <p className="ansa-section-sub">Ansa texts you instantly — whether it's a missed call, a booked job, or a customer who needs a callback.</p>
+        </div>
+        <div className="ansa-reveal" style={{ display:'flex',justifyContent:'center',marginTop:40 }}>
+          <div style={{ background:'#141414',border:'1px solid #2a2a2a',borderRadius:36,padding:'28px 20px',width:340,boxShadow:'0 24px 80px rgba(0,0,0,.5),0 0 60px rgba(79,110,247,.08)' }}>
+            {/* Lock screen header */}
+            <div style={{ width:80,height:5,background:'#2a2a2a',borderRadius:99,margin:'0 auto 24px' }} />
+            <div style={{ textAlign:'center',marginBottom:28 }}>
+              <div style={{ fontSize:13,color:'#555',marginBottom:4 }}>Monday, June 9</div>
+              <div style={{ fontSize:42,fontWeight:700,color:'#fff',letterSpacing:-1,lineHeight:1 }}>2:14 PM</div>
+            </div>
+            {/* Notifications */}
+            {[
+              {
+                title:'🔔 Missed Call',
+                body:'(714) 555-0182 just called. AI is handling it — response sent in 12 seconds.',
+                time:'2:14 PM',
+              },
+              {
+                title:'✅ Appointment Booked',
+                body:'Marcus T. booked a leaking faucet repair for Thu Jun 12 at 10:00 AM. Est. $280.',
+                time:'2:17 PM',
+              },
+              {
+                title:'📲 Callback Requested',
+                body:'(949) 555-0391 says: "I\'d rather just talk to someone — can you call me back?" Tap to view.',
+                time:'3:44 PM',
+              },
+            ].map((n,i) => (
+              <div key={i} style={{ background:'rgba(255,255,255,.04)',border:'1px solid rgba(255,255,255,.07)',borderRadius:16,padding:'12px 14px',marginBottom:i<2?10:0 }}>
+                <div style={{ display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:5 }}>
+                  <span style={{ fontSize:12,fontWeight:700,color:'#fff' }}>{n.title}</span>
+                  <span style={{ fontSize:10,color:'#555' }}>{n.time}</span>
+                </div>
+                <div style={{ fontSize:11.5,color:'#a1a1aa',lineHeight:1.5 }}>{n.body}</div>
+              </div>
+            ))}
+            <div style={{ width:120,height:4,background:'#2a2a2a',borderRadius:99,margin:'24px auto 0' }} />
+          </div>
+        </div>
+      </section>
+
+      <div className="ansa-divider" />
+
       {/* Pricing */}
       <section className="ansa-section" id="pricing">
         <div className="ansa-reveal">
