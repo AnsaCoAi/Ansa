@@ -679,7 +679,7 @@ export default function LandingPage() {
         <div className="ansa-final-cta-inner ansa-reveal">
           <h2>Stop Losing Jobs to Voicemail.</h2>
           <p>Every day without Ansa is another 3–5 calls going unanswered. Start your free trial in 5 minutes.</p>
-          <a href="#/signup" className="ansa-btn ansa-btn-blue" style={{ background:'#fff',color:'#1e3a5f',fontWeight:700,boxShadow:'0 0 30px rgba(255,255,255,.2)' }}>
+          <a href="#/signup" className="ansa-btn" style={{ background:'#fff',color:'#1e3a5f',fontWeight:700,boxShadow:'0 0 30px rgba(255,255,255,.2)' }}>
             Start Your Free Trial <ArrowRight size={16}/>
           </a>
           <div className="ansa-trust-line" style={{ color:'rgba(255,255,255,.4)',marginTop:16 }}>No credit card required &nbsp;·&nbsp; Setup in 5 minutes &nbsp;·&nbsp; Cancel anytime</div>
