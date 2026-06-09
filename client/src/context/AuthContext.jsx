@@ -4,34 +4,33 @@ import supabase from '../services/supabase';
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(undefined); // undefined = loading
-  const [business, setBusiness] = useState(null);
-  const [businessLoading, setBusinessLoading] = useState(false);
+  const [user, setUser] = useState(undefined);   // undefined = auth not yet checked
+  const [business, setBusiness] = useState(undefined); // undefined = business not yet checked
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
       if (session?.user) loadBusiness(session.user.id);
+      else setBusiness(null);
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
       if (session?.user) loadBusiness(session.user.id);
-      else { setBusiness(null); setBusinessLoading(false); }
+      else setBusiness(null);
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
   async function loadBusiness(userId) {
-    setBusinessLoading(true);
+    setBusiness(undefined); // mark as loading
     const { data } = await supabase
       .from('businesses')
       .select('*')
       .eq('owner_auth_id', userId)
       .single();
-    setBusiness(data || null);
-    setBusinessLoading(false);
+    setBusiness(data ?? null);
   }
 
   // Creates auth user + business row + provisions Twilio. Returns { error } or { businessId }.
@@ -89,7 +88,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, business, signUp, signIn, signOut, loading: user === undefined || businessLoading }}>
+    <AuthContext.Provider value={{ user, business, signUp, signIn, signOut, loading: user === undefined || business === undefined }}>
       {children}
     </AuthContext.Provider>
   );
