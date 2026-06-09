@@ -96,7 +96,7 @@ function timeStringToHHMM(str) {
 }
 
 export default function OnboardingPage() {
-  const { signUp } = useAuth(); // called on Launch Ansa
+  const { signUp, user } = useAuth();
   const [step, setStep] = useState(1);
   const [saving, setSaving] = useState(false);
   const [launchError, setLaunchError] = useState('');
@@ -136,7 +136,7 @@ export default function OnboardingPage() {
 
   async function handleLaunch() {
     const creds = JSON.parse(localStorage.getItem('ansa_signup') || '{}');
-    if (!creds.email) { window.location.hash = '#/signup'; return; }
+    if (!creds.email) { window.location.hash = user ? '#/dashboard' : '#/signup'; return; }
 
     setSaving(true);
     setLaunchError('');
