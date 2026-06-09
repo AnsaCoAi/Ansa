@@ -399,13 +399,13 @@ const PROOF_ITEMS = [
 // ─── Dashboard Showcase ───────────────────────────────────────────────────────
 
 const MOCK_WEEKLY = [
-  { day:'Mon', calls:4, bookings:2 },
-  { day:'Tue', calls:3, bookings:1 },
-  { day:'Wed', calls:6, bookings:4 },
-  { day:'Thu', calls:2, bookings:1 },
-  { day:'Fri', calls:7, bookings:5 },
-  { day:'Sat', calls:5, bookings:3 },
-  { day:'Sun', calls:3, bookings:2 },
+  { day:'Mon', calls:4, responses:4, bookings:2 },
+  { day:'Tue', calls:3, responses:3, bookings:1 },
+  { day:'Wed', calls:7, responses:7, bookings:4 },
+  { day:'Thu', calls:2, responses:2, bookings:1 },
+  { day:'Fri', calls:8, responses:8, bookings:5 },
+  { day:'Sat', calls:5, responses:5, bookings:3 },
+  { day:'Sun', calls:3, responses:3, bookings:2 },
 ];
 
 const MOCK_CONVS = [
@@ -416,50 +416,116 @@ const MOCK_CONVS = [
   { phone:'(949) 555-0773', last:'Appointment confirmed for tomorrow!', status:'booked', time:'5h ago' },
 ];
 
+const MOCK_CALLS = [
+  { phone:'(949) 555-0182', time:'12m ago', status:'booked' },
+  { phone:'(714) 555-0347', time:'34m ago', status:'active' },
+  { phone:'(562) 555-0901', time:'2h ago', status:'closed' },
+  { phone:'(310) 555-0264', time:'3h ago', status:'active' },
+  { phone:'(949) 555-0773', time:'5h ago', status:'booked' },
+  { phone:'(213) 555-0128', time:'Yesterday', status:'closed' },
+];
+
+const MOCK_APPTS = [
+  { customer:'Marcus T.', service:'Leaking faucet repair', time:'Today · 2:00 PM', status:'confirmed' },
+  { customer:'Sarah K.', service:'Water heater installation', time:'Tomorrow · 1:00 PM', status:'confirmed' },
+  { customer:'David R.', service:'HVAC annual tune-up', time:'Thu · 10:00 AM', status:'pending' },
+  { customer:'Lisa M.', service:'Bathroom remodel estimate', time:'Fri · 3:00 PM', status:'confirmed' },
+];
+
 const SC = {
-  booked: { color:'#22c55e', bg:'rgba(34,197,94,0.15)' },
-  active:  { color:'#4F6EF7', bg:'rgba(79,110,247,0.15)' },
-  closed:  { color:'#6b7280', bg:'rgba(107,114,128,0.15)' },
+  booked:    { color:'#22c55e', bg:'rgba(34,197,94,0.15)' },
+  active:    { color:'#4F6EF7', bg:'rgba(79,110,247,0.15)' },
+  closed:    { color:'#6b7280', bg:'rgba(107,114,128,0.15)' },
+  confirmed: { color:'#22c55e', bg:'rgba(34,197,94,0.15)' },
+  pending:   { color:'#f59e0b', bg:'rgba(245,158,11,0.15)' },
 };
+
+// SVG area chart — pixel-accurate replica of the real Recharts chart
+function AreaChart({ data, series }) {
+  const W = 320, H = 100, PL = 6, PR = 6, PT = 8, PB = 20;
+  const cW = W - PL - PR, cH = H - PT - PB;
+  const maxVal = Math.max(...data.flatMap(d => series.map(s => d[s.key])), 1);
+  const x = i => PL + (i / (data.length - 1)) * cW;
+  const y = v => PT + cH - (v / maxVal) * cH;
+  return (
+    <svg viewBox={`0 0 ${W} ${H}`} style={{ width:'100%', height:100, display:'block' }}>
+      <defs>
+        {series.map((s,si) => (
+          <linearGradient key={si} id={`sg${si}`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={s.color} stopOpacity={0.25}/>
+            <stop offset="100%" stopColor={s.color} stopOpacity={0}/>
+          </linearGradient>
+        ))}
+      </defs>
+      {[0.33,0.66,1].map(f => (
+        <line key={f} x1={PL} x2={PL+cW} y1={PT+cH*(1-f)} y2={PT+cH*(1-f)} stroke="#1e1e1e" strokeWidth={1}/>
+      ))}
+      {series.map((s,si) => {
+        const pts = data.map((d,i) => [x(i), y(d[s.key])]);
+        const line = pts.map((p,i) => `${i?'L':'M'}${p[0]},${p[1]}`).join(' ');
+        const area = line + ` L${pts[pts.length-1][0]},${PT+cH} L${pts[0][0]},${PT+cH} Z`;
+        return (
+          <g key={si}>
+            <path d={area} fill={`url(#sg${si})`}/>
+            <path d={line} fill="none" stroke={s.color} strokeWidth={1.5}/>
+          </g>
+        );
+      })}
+      {data.map((d,i) => (
+        <text key={i} x={x(i)} y={H-4} textAnchor="middle" fontSize={8.5} fill="#3f3f46">{d.day}</text>
+      ))}
+    </svg>
+  );
+}
+
+function MiniStat({ color, val, label }) {
+  return (
+    <div className="ansa-mini-stat">
+      <div className="ansa-mini-stat-dot" style={{ background:color }}/>
+      <div>
+        <div className="ansa-mini-stat-val">{val}</div>
+        <div className="ansa-mini-stat-label">{label}</div>
+      </div>
+    </div>
+  );
+}
+
+function Funnel({ rows }) {
+  return rows.map((f,i) => (
+    <div key={i} className="ansa-funnel-row">
+      <div style={{ display:'flex',justifyContent:'space-between',marginBottom:3 }}>
+        <span style={{ fontSize:11,color:'#a1a1aa',fontWeight:500 }}>{f.label}</span>
+        <span style={{ fontSize:11,color:'#555' }}>{f.val}</span>
+      </div>
+      <div className="ansa-funnel-bar-outer">
+        <div className="ansa-funnel-bar-inner" style={{ width:`${f.pct}%`,background:f.color }}/>
+      </div>
+    </div>
+  ));
+}
 
 function ShowcaseOverview() {
   return (
     <div>
-      <div style={{ fontSize:16,fontWeight:700,color:'#fff',marginBottom:2 }}>Good afternoon, John</div>
-      <div style={{ fontSize:11,color:'#555',marginBottom:14 }}>Here's what happened while you were on the job.</div>
-      <div className="ansa-mini-grid">
-        {[
-          { color:'#4F6EF7', val:'3', label:'Missed Calls Today' },
-          { color:'#8b5cf6', val:'100%', label:'Response Rate' },
-          { color:'#22c55e', val:'67%', label:'Booking Rate' },
-          { color:'#f59e0b', val:'8', label:'Jobs Booked' },
-        ].map((s,i) => (
-          <div key={i} className="ansa-mini-stat">
-            <div className="ansa-mini-stat-dot" style={{ background:s.color }} />
-            <div>
-              <div className="ansa-mini-stat-val">{s.val}</div>
-              <div className="ansa-mini-stat-label">{s.label}</div>
-            </div>
-          </div>
-        ))}
+      <div style={{ fontSize:15,fontWeight:700,color:'#fff',marginBottom:1 }}>Good afternoon, John</div>
+      <div style={{ fontSize:11,color:'#555',marginBottom:12 }}>Here's what happened while you were on the job.</div>
+      <div className="ansa-mini-grid" style={{ marginBottom:10 }}>
+        <MiniStat color="#4F6EF7" val="3"    label="Missed Calls Today"/>
+        <MiniStat color="#8b5cf6" val="100%" label="Response Rate"/>
+        <MiniStat color="#22c55e" val="67%"  label="Booking Rate"/>
+        <MiniStat color="#f59e0b" val="8"    label="Jobs Booked"/>
       </div>
       <div className="ansa-mini-chart">
-        <div className="ansa-mini-chart-title">This Week</div>
-        <div className="ansa-mini-bars">
-          {MOCK_WEEKLY.map((d,i) => (
-            <div key={i} className="ansa-mini-bar-wrap">
-              <div style={{ flex:1,display:'flex',alignItems:'flex-end',gap:2,width:'100%' }}>
-                <div className="ansa-mini-bar" style={{ background:'#4F6EF7',height:`${(d.calls/7)*100}%`,flex:1,minHeight:3 }} />
-                <div className="ansa-mini-bar" style={{ background:'#22c55e',height:`${(d.bookings/7)*100}%`,flex:1,minHeight:3 }} />
-              </div>
-              <div className="ansa-mini-bar-label">{d.day}</div>
-            </div>
-          ))}
-        </div>
-        <div style={{ display:'flex',gap:12,marginTop:8 }}>
-          {[['#4F6EF7','Calls'],['#22c55e','Booked']].map(([c,l]) => (
-            <span key={l} style={{ fontSize:10,color:'#555',display:'flex',alignItems:'center',gap:4 }}>
-              <span style={{ width:8,height:8,borderRadius:2,background:c,display:'inline-block' }} />{l}
+        <div className="ansa-mini-chart-title">This Week's Activity</div>
+        <AreaChart data={MOCK_WEEKLY} series={[
+          { key:'calls',     color:'#4F6EF7' },
+          { key:'responses', color:'#8b5cf6' },
+          { key:'bookings',  color:'#22c55e' },
+        ]}/>
+        <div style={{ display:'flex',gap:12,marginTop:6 }}>
+          {[['#4F6EF7','Missed Calls'],['#8b5cf6','Responses'],['#22c55e','Bookings']].map(([c,l]) => (
+            <span key={l} style={{ fontSize:9,color:'#555',display:'flex',alignItems:'center',gap:3 }}>
+              <span style={{ width:7,height:7,borderRadius:2,background:c,display:'inline-block' }}/>{l}
             </span>
           ))}
         </div>
@@ -467,15 +533,37 @@ function ShowcaseOverview() {
       <div className="ansa-mini-chart" style={{ marginBottom:0 }}>
         <div className="ansa-mini-chart-title">Recent Activity</div>
         {MOCK_CONVS.slice(0,3).map((c,i) => (
-          <div key={i} style={{ display:'flex',justifyContent:'space-between',alignItems:'center',padding:'7px 0',borderBottom:i<2?'1px solid #1a1a1a':'none' }}>
+          <div key={i} style={{ display:'flex',justifyContent:'space-between',alignItems:'center',padding:'6px 0',borderBottom:i<2?'1px solid #1a1a1a':'none' }}>
             <div>
               <div style={{ fontSize:12,fontWeight:600,color:'#fff' }}>{c.phone}</div>
               <div style={{ fontSize:10,color:'#555' }}>{c.time}</div>
             </div>
-            <span className="ansa-mini-badge" style={{ color:SC[c.status].color, background:SC[c.status].bg }}>{c.status}</span>
+            <span className="ansa-mini-badge" style={{ color:SC[c.status].color,background:SC[c.status].bg }}>{c.status}</span>
           </div>
         ))}
       </div>
+    </div>
+  );
+}
+
+function ShowcaseMissedCalls() {
+  return (
+    <div>
+      <div style={{ fontSize:15,fontWeight:700,color:'#fff',marginBottom:12 }}>Missed Calls</div>
+      {MOCK_CALLS.map((c,i) => (
+        <div key={i} className="ansa-mini-conv">
+          <div style={{ display:'flex',alignItems:'center',gap:10,minWidth:0 }}>
+            <div style={{ width:32,height:32,borderRadius:'50%',background:'#1a1a1a',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0 }}>
+              <span style={{ fontSize:13 }}>📞</span>
+            </div>
+            <div style={{ minWidth:0 }}>
+              <div className="ansa-mini-conv-phone">{c.phone}</div>
+              <div style={{ fontSize:10,color:'#555' }}>{c.time}</div>
+            </div>
+          </div>
+          <span className="ansa-mini-badge" style={{ color:SC[c.status].color,background:SC[c.status].bg,flexShrink:0 }}>{c.status}</span>
+        </div>
+      ))}
     </div>
   );
 }
@@ -485,11 +573,11 @@ function ShowcaseConversations() {
   const filtered = tab === 'all' ? MOCK_CONVS : MOCK_CONVS.filter(c => c.status === tab);
   return (
     <div>
-      <div style={{ fontSize:16,fontWeight:700,color:'#fff',marginBottom:12 }}>Conversations</div>
-      <div style={{ display:'flex',gap:3,marginBottom:12,background:'#141414',borderRadius:7,padding:3,width:'fit-content' }}>
+      <div style={{ fontSize:15,fontWeight:700,color:'#fff',marginBottom:10 }}>Conversations</div>
+      <div style={{ display:'flex',gap:3,marginBottom:10,background:'#141414',borderRadius:7,padding:3,width:'fit-content' }}>
         {['all','active','booked','closed'].map(t => (
           <button key={t} onClick={() => setTab(t)}
-            style={{ padding:'5px 11px',borderRadius:5,fontSize:11,fontWeight:500,cursor:'pointer',
+            style={{ padding:'4px 10px',borderRadius:5,fontSize:10.5,fontWeight:500,cursor:'pointer',
               background:tab===t?'#222':'transparent',color:tab===t?'#fff':'#666',border:'none',
               fontFamily:'inherit',textTransform:'capitalize' }}>
             {t}
@@ -503,7 +591,7 @@ function ShowcaseConversations() {
             <div className="ansa-mini-conv-last">{c.last}</div>
           </div>
           <div style={{ display:'flex',flexDirection:'column',alignItems:'flex-end',gap:3,flexShrink:0,marginLeft:8 }}>
-            <span className="ansa-mini-badge" style={{ color:SC[c.status].color, background:SC[c.status].bg }}>{c.status}</span>
+            <span className="ansa-mini-badge" style={{ color:SC[c.status].color,background:SC[c.status].bg }}>{c.status}</span>
             <span style={{ fontSize:10,color:'#555' }}>{c.time}</span>
           </div>
         </div>
@@ -512,81 +600,106 @@ function ShowcaseConversations() {
   );
 }
 
-function ShowcaseAnalytics() {
-  const funnel = [
-    { label:'Missed Calls', val:31, pct:100, color:'#4F6EF7' },
-    { label:'SMS Sent', val:31, pct:100, color:'#8b5cf6' },
-    { label:'Customer Replied', val:24, pct:77, color:'#f59e0b' },
-    { label:'Booked', val:14, pct:45, color:'#22c55e' },
-  ];
+function ShowcaseAppointments() {
   return (
     <div>
-      <div style={{ fontSize:16,fontWeight:700,color:'#fff',marginBottom:12 }}>Analytics</div>
-      <div className="ansa-mini-grid">
-        {[
-          { color:'#4F6EF7', val:'31', label:'Total Calls' },
-          { color:'#8b5cf6', val:'100%', label:'Response Rate' },
-          { color:'#22c55e', val:'45%', label:'Booking Rate' },
-          { color:'#f59e0b', val:'14', label:'Jobs Booked' },
-        ].map((s,i) => (
-          <div key={i} className="ansa-mini-stat">
-            <div className="ansa-mini-stat-dot" style={{ background:s.color }} />
-            <div>
-              <div className="ansa-mini-stat-val">{s.val}</div>
-              <div className="ansa-mini-stat-label">{s.label}</div>
-            </div>
+      <div style={{ fontSize:15,fontWeight:700,color:'#fff',marginBottom:12 }}>Appointments</div>
+      {MOCK_APPTS.map((a,i) => (
+        <div key={i} className="ansa-mini-conv" style={{ alignItems:'flex-start' }}>
+          <div style={{ minWidth:0 }}>
+            <div className="ansa-mini-conv-phone">{a.customer}</div>
+            <div style={{ fontSize:11,color:'#a1a1aa',marginTop:1 }}>{a.service}</div>
+            <div style={{ fontSize:10,color:'#555',marginTop:2 }}>{a.time}</div>
           </div>
-        ))}
+          <span className="ansa-mini-badge" style={{ color:SC[a.status].color,background:SC[a.status].bg,flexShrink:0,marginLeft:8,marginTop:2 }}>{a.status}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ShowcaseAnalytics() {
+  return (
+    <div>
+      <div style={{ fontSize:15,fontWeight:700,color:'#fff',marginBottom:10 }}>Analytics</div>
+      <div className="ansa-mini-grid" style={{ marginBottom:10 }}>
+        <MiniStat color="#4F6EF7" val="31"   label="Total Calls"/>
+        <MiniStat color="#8b5cf6" val="100%" label="Response Rate"/>
+        <MiniStat color="#22c55e" val="45%"  label="Booking Rate"/>
+        <MiniStat color="#f59e0b" val="14"   label="Jobs Booked"/>
       </div>
       <div className="ansa-mini-chart">
-        <div className="ansa-mini-chart-title">This Week's Activity</div>
-        <div className="ansa-mini-bars">
-          {MOCK_WEEKLY.map((d,i) => (
-            <div key={i} className="ansa-mini-bar-wrap">
-              <div style={{ flex:1,display:'flex',alignItems:'flex-end',gap:2,width:'100%' }}>
-                <div className="ansa-mini-bar" style={{ background:'#4F6EF7',height:`${(d.calls/7)*100}%`,flex:1,minHeight:3 }} />
-                <div className="ansa-mini-bar" style={{ background:'#22c55e',height:`${(d.bookings/7)*100}%`,flex:1,minHeight:3 }} />
-              </div>
-              <div className="ansa-mini-bar-label">{d.day}</div>
-            </div>
-          ))}
-        </div>
+        <div className="ansa-mini-chart-title">Calls vs Responses vs Bookings</div>
+        <AreaChart data={MOCK_WEEKLY} series={[
+          { key:'calls',     color:'#4F6EF7' },
+          { key:'responses', color:'#8b5cf6' },
+          { key:'bookings',  color:'#22c55e' },
+        ]}/>
       </div>
       <div className="ansa-mini-chart" style={{ marginBottom:0 }}>
         <div className="ansa-mini-chart-title">Conversion Funnel</div>
-        {funnel.map((f,i) => (
-          <div key={i} className="ansa-funnel-row">
-            <div style={{ display:'flex',justifyContent:'space-between',marginBottom:4 }}>
-              <span style={{ fontSize:11,color:'#a1a1aa',fontWeight:500 }}>{f.label}</span>
-              <span style={{ fontSize:11,color:'#555' }}>{f.val}</span>
-            </div>
-            <div className="ansa-funnel-bar-outer">
-              <div className="ansa-funnel-bar-inner" style={{ width:`${f.pct}%`,background:f.color }} />
-            </div>
-          </div>
-        ))}
+        <Funnel rows={[
+          { label:'Missed Calls',      val:31, pct:100, color:'#4F6EF7' },
+          { label:'SMS Sent',          val:31, pct:100, color:'#8b5cf6' },
+          { label:'Customer Replied',  val:24, pct:77,  color:'#f59e0b' },
+          { label:'Booked',            val:14, pct:45,  color:'#22c55e' },
+        ]}/>
       </div>
     </div>
   );
 }
 
-const SHOWCASE_TABS = ['Overview', 'Conversations', 'Analytics'];
+function ShowcaseSettings() {
+  return (
+    <div>
+      <div style={{ fontSize:15,fontWeight:700,color:'#fff',marginBottom:12 }}>Settings</div>
+      <div className="ansa-mini-chart" style={{ marginBottom:10 }}>
+        <div className="ansa-mini-chart-title">Business Info</div>
+        {[
+          { label:'Business Name',  val:'Johns Contracting' },
+          { label:'Phone Number',   val:'+1 (424) 622-5851' },
+          { label:'Trade',          val:'General Contractor' },
+          { label:'Service Area',   val:'Newport Beach, CA' },
+        ].map((f,i) => (
+          <div key={i} style={{ marginBottom:8 }}>
+            <div style={{ fontSize:9.5,color:'#555',marginBottom:2,textTransform:'uppercase',letterSpacing:'0.5px' }}>{f.label}</div>
+            <div style={{ background:'#1a1a1a',border:'1px solid #222',borderRadius:5,padding:'6px 9px',fontSize:11.5,color:'#d1d5db' }}>{f.val}</div>
+          </div>
+        ))}
+      </div>
+      <div className="ansa-mini-chart" style={{ marginBottom:0 }}>
+        <div className="ansa-mini-chart-title">AI Greeting</div>
+        <div style={{ background:'#1a1a1a',border:'1px solid #222',borderRadius:5,padding:'8px 10px',fontSize:11.5,color:'#d1d5db',lineHeight:1.5,marginBottom:8 }}>
+          Hey! Thanks for calling Johns Contracting — sorry we missed you. How can we help?
+        </div>
+        <div style={{ display:'flex',gap:5 }}>
+          {['Professional','Friendly','Casual'].map((t,i) => (
+            <div key={t} style={{ padding:'3px 9px',borderRadius:5,fontSize:10,fontWeight:600,
+              background:i===0?'rgba(79,110,247,.15)':'transparent',
+              color:i===0?'#818CF8':'#555',
+              border:`1px solid ${i===0?'rgba(79,110,247,.3)':'#222'}` }}>{t}</div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 const SIDEBAR_NAV = [
-  { label:'Overview', emoji:'⊞' },
-  { label:'Missed Calls', emoji:'✆' },
-  { label:'Conversations', emoji:'✉' },
-  { label:'Appointments', emoji:'▦' },
-  { label:'Analytics', emoji:'↗' },
-  { label:'Settings', emoji:'⚙' },
+  { label:'Overview',      idx:0 },
+  { label:'Missed Calls',  idx:1 },
+  { label:'Conversations', idx:2 },
+  { label:'Appointments',  idx:3 },
+  { label:'Analytics',     idx:4 },
+  { label:'Settings',      idx:5 },
 ];
-const TAB_TO_NAV = { 0:'Overview', 1:'Conversations', 2:'Analytics' };
+const PAGE_TITLES = ['Overview','Missed Calls','Conversations','Appointments','Analytics','Settings'];
+const SHOWCASE_VIEWS = [ShowcaseOverview, ShowcaseMissedCalls, ShowcaseConversations, ShowcaseAppointments, ShowcaseAnalytics, ShowcaseSettings];
 const SHOWCASE_DURATION = 5000;
 
 function DashboardShowcase() {
-  const [tab, setTab] = useState(0);
+  const [view, setView] = useState(0);
   const [progress, setProgress] = useState(0);
-  const tabRef = useRef(tab);
-  tabRef.current = tab;
 
   useEffect(() => {
     let start = null;
@@ -599,48 +712,69 @@ function DashboardShowcase() {
       if (elapsed < SHOWCASE_DURATION) {
         raf = requestAnimationFrame(animate);
       } else {
-        setTab(t => (t + 1) % SHOWCASE_TABS.length);
+        setView(v => (v + 1) % SHOWCASE_VIEWS.length);
       }
     };
     raf = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(raf);
-  }, [tab]);
+  }, [view]);
 
-  const handleTabClick = i => { setTab(i); setProgress(0); };
-  const activeNav = TAB_TO_NAV[tab];
+  const handleNav = i => { setView(i); setProgress(0); };
+  const ActiveView = SHOWCASE_VIEWS[view];
 
   return (
     <div>
       <div className="ansa-showcase-wrap">
+        {/* Browser chrome */}
         <div className="ansa-showcase-chrome">
-          <div className="ansa-showcase-dots"><span /><span /><span /></div>
+          <div className="ansa-showcase-dots"><span/><span/><span/></div>
           <div className="ansa-showcase-url">app.ansaco.ai/dashboard</div>
         </div>
         <div className="ansa-showcase-app">
+          {/* Sidebar */}
           <div className="ansa-showcase-sidebar">
             <div className="ansa-showcase-logo">ansa<span>.</span></div>
-            {SIDEBAR_NAV.map(item => (
-              <div key={item.label} className={`ansa-showcase-nav-item${activeNav===item.label?' active':''}`}>
-                <span style={{ fontSize:13,fontFamily:'monospace',width:16,textAlign:'center' }}>{item.emoji}</span>
-                <span>{item.label}</span>
+            <div style={{ flex:1,padding:'8px 0' }}>
+              {SIDEBAR_NAV.map(item => (
+                <div key={item.idx} onClick={() => handleNav(item.idx)}
+                  className={`ansa-showcase-nav-item${view===item.idx?' active':''}`}
+                  style={{ cursor:'pointer' }}>
+                  <span>{item.label}</span>
+                </div>
+              ))}
+            </div>
+            {/* Bottom: business card + links */}
+            <div style={{ borderTop:'1px solid #1a1a1a',padding:'12px 14px' }}>
+              <div style={{ display:'flex',alignItems:'center',gap:8,marginBottom:10 }}>
+                <div style={{ width:30,height:30,borderRadius:7,background:'#4F6EF7',display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontWeight:700,fontSize:12,flexShrink:0 }}>J</div>
+                <div style={{ overflow:'hidden' }}>
+                  <div style={{ fontSize:11.5,fontWeight:600,color:'#e5e5e5',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis' }}>Johns Contracting</div>
+                  <div style={{ fontSize:10,color:'#555' }}>Pro plan</div>
+                </div>
               </div>
-            ))}
+              <div style={{ fontSize:11,color:'#555',padding:'4px 0',cursor:'pointer' }}>📞 Contact support</div>
+              <div style={{ fontSize:11,color:'#555',padding:'4px 0',cursor:'pointer' }}>↩ Log out</div>
+            </div>
           </div>
-          <div className="ansa-showcase-main">
-            <div className={`ansa-showcase-view${tab===0?' active':''}`}><ShowcaseOverview /></div>
-            <div className={`ansa-showcase-view${tab===1?' active':''}`}><ShowcaseConversations /></div>
-            <div className={`ansa-showcase-view${tab===2?' active':''}`}><ShowcaseAnalytics /></div>
+          {/* Main area */}
+          <div className="ansa-showcase-main" style={{ display:'flex',flexDirection:'column' }}>
+            {/* Top bar */}
+            <div style={{ height:48,borderBottom:'1px solid #1a1a1a',display:'flex',alignItems:'center',justifyContent:'space-between',padding:'0 18px',flexShrink:0 }}>
+              <div style={{ fontSize:14,fontWeight:600,color:'#fff' }}>{PAGE_TITLES[view]}</div>
+              <div style={{ width:30,height:30,borderRadius:'50%',background:'#1e1e1e',display:'flex',alignItems:'center',justifyContent:'center',fontSize:11,fontWeight:600,color:'#888',border:'2px solid #2a2a2a' }}>JL</div>
+            </div>
+            {/* Content */}
+            <div style={{ flex:1,overflowY:'auto',padding:16,position:'relative' }}>
+              <ActiveView key={view}/>
+            </div>
           </div>
         </div>
       </div>
-      <div className="ansa-showcase-tabs-row">
-        {SHOWCASE_TABS.map((t,i) => (
-          <button key={i} onClick={() => handleTabClick(i)} className={`ansa-showcase-tab-btn${tab===i?' active':''}`}>{t}</button>
-        ))}
-      </div>
+      {/* Progress bar */}
       <div className="ansa-showcase-progress">
-        <div className="ansa-showcase-progress-bar" style={{ width:`${progress}%`,transition:progress===0?'none':'width .1s linear' }} />
+        <div className="ansa-showcase-progress-bar" style={{ width:`${progress}%`,transition:progress===0?'none':'width .1s linear' }}/>
       </div>
+      <div style={{ textAlign:'center',marginTop:8,fontSize:12,color:'#3f3f46' }}>Click any section in the sidebar to explore ↑</div>
     </div>
   );
 }
