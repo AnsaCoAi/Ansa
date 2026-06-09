@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { PhoneOff, MessageSquareOff, DollarSign, Phone, MessageCircle, CalendarCheck, Zap, Check, ChevronDown, Star, ArrowRight, Menu, X, CheckCircle, XCircle } from 'lucide-react';
+import { PhoneOff, MessageSquareOff, DollarSign, Phone, MessageCircle, CalendarCheck, Zap, Check, ChevronDown, Star, ArrowRight, Menu, X, CheckCircle, XCircle, LayoutDashboard, PhoneMissed, MessageSquare, BarChart3, Settings, LogOut, HeadphonesIcon } from 'lucide-react';
 
 const STYLE_ID = 'ansa-landing-styles';
 const PRIMARY = '#4F6EF7';
@@ -218,45 +218,48 @@ const injectStyles = () => {
     .ansa-sticky-cta a{display:flex;align-items:center;justify-content:center;gap:8px;background:${PRIMARY};color:#fff;font-size:15px;font-weight:700;padding:14px;border-radius:12px;text-decoration:none;box-shadow:0 0 24px rgba(79,110,247,.4)}
 
     /* Dashboard Showcase */
-    .ansa-showcase-wrap{border-radius:16px;overflow:hidden;border:1px solid #3a3a4a;background:#111118;box-shadow:0 0 0 1px rgba(79,110,247,.25),0 40px 100px rgba(0,0,0,.8),0 0 120px rgba(79,110,247,.18)}
-    .ansa-showcase-chrome{background:#1a1a24;border-bottom:1px solid #2a2a38;padding:11px 16px;display:flex;align-items:center;gap:12px}
+    .ansa-showcase-wrap{border-radius:16px;overflow:hidden;border:1px solid #1e1e1e;background:#111111;box-shadow:0 0 0 1px rgba(59,130,246,.12),0 40px 100px rgba(0,0,0,.8),0 0 80px rgba(59,130,246,.08)}
+    .ansa-showcase-chrome{background:#111111;border-bottom:1px solid #1e1e1e;padding:11px 16px;display:flex;align-items:center;gap:12px}
     .ansa-showcase-dots{display:flex;gap:6px}
     .ansa-showcase-dots span{width:11px;height:11px;border-radius:50%}
     .ansa-showcase-dots span:nth-child(1){background:#ef4444}
     .ansa-showcase-dots span:nth-child(2){background:#f59e0b}
     .ansa-showcase-dots span:nth-child(3){background:#22c55e}
-    .ansa-showcase-url{flex:1;background:#13131c;border:1px solid #2a2a38;border-radius:6px;padding:4px 12px;font-size:12px;color:#888;text-align:center;font-family:-apple-system,BlinkMacSystemFont,sans-serif;display:flex;align-items:center;justify-content:center;gap:5px}
+    .ansa-showcase-url{flex:1;background:#0a0a0a;border:1px solid #1e1e1e;border-radius:6px;padding:4px 12px;font-size:12px;color:#888;font-family:-apple-system,BlinkMacSystemFont,sans-serif;display:flex;align-items:center;justify-content:center;gap:5px}
     .ansa-showcase-url svg{color:#22c55e;flex-shrink:0}
-    .ansa-showcase-url span{color:#bbb;font-weight:500}.ansa-showcase-url em{color:#666;font-style:normal}
-    .ansa-showcase-app{display:flex;height:500px;overflow:hidden}
-    .ansa-showcase-sidebar{width:196px;flex-shrink:0;background:#141420;border-right:1px solid #2a2a38;padding:0;display:flex;flex-direction:column}
-    .ansa-showcase-logo{padding:16px;font-size:17px;font-weight:800;color:#fff;border-bottom:1px solid #2a2a38;margin-bottom:6px;letter-spacing:-.3px}
-    .ansa-showcase-logo span{color:#4F6EF7}
-    .ansa-showcase-nav-item{display:flex;align-items:center;gap:9px;padding:9px 16px;font-size:12.5px;font-weight:500;color:#666;transition:all .15s}
-    .ansa-showcase-nav-item.active{color:#fff;background:rgba(79,110,247,.12);border-right:2px solid #4F6EF7}
-    .ansa-showcase-main{flex:1;overflow:hidden;background:#0f0f18;position:relative}
-    .ansa-showcase-view{position:absolute;inset:0;overflow-y:auto;padding:20px;opacity:0;transition:opacity .35s ease;pointer-events:none}
-    .ansa-showcase-view.active{opacity:1;pointer-events:auto}
-    .ansa-showcase-tabs-row{display:flex;justify-content:center;gap:8px;margin-top:16px}
-    .ansa-showcase-tab-btn{padding:7px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid #222;background:transparent;color:#71717a;transition:all .2s;font-family:inherit}
-    .ansa-showcase-tab-btn:hover{border-color:#333;color:#ccc}
-    .ansa-showcase-tab-btn.active{background:#4F6EF7;color:#fff;border-color:#4F6EF7}
-    .ansa-showcase-progress{height:2px;background:#1a1a1a;border-radius:1px;margin:10px auto 0;overflow:hidden;max-width:220px}
-    .ansa-showcase-progress-bar{height:100%;background:#4F6EF7;border-radius:1px}
-    .ansa-mini-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:10px}
-    .ansa-mini-stat{background:#141414;border:1px solid #1e1e1e;border-radius:9px;padding:12px 14px;display:flex;align-items:center;gap:10px}
-    .ansa-mini-stat-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
-    .ansa-mini-stat-val{font-size:20px;font-weight:700;color:#fff;line-height:1}
-    .ansa-mini-stat-label{font-size:10.5px;color:#71717a;margin-top:2px}
+    .ansa-showcase-url span{color:#bbb;font-weight:500}
+    .ansa-showcase-app{display:flex;height:520px;overflow:hidden}
+    .ansa-showcase-sidebar{width:210px;flex-shrink:0;background:#111111;border-right:1px solid #1e1e1e;display:flex;flex-direction:column}
+    .ansa-showcase-logo{padding:18px;font-size:18px;font-weight:800;color:#fff;border-bottom:1px solid #1e1e1e;letter-spacing:-.3px}
+    .ansa-showcase-logo span{color:#3b82f6}
+    .ansa-showcase-nav-section{flex:1;padding:8px 0}
+    .ansa-showcase-nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;margin:1px 8px;border-radius:8px;font-size:13px;font-weight:500;color:#999;transition:all .15s;cursor:pointer}
+    .ansa-showcase-nav-item svg{color:#888;flex-shrink:0;transition:color .15s}
+    .ansa-showcase-nav-item:hover{color:#ccc;background:rgba(255,255,255,.04)}
+    .ansa-showcase-nav-item:hover svg{color:#aaa}
+    .ansa-showcase-nav-item.active{color:#3b82f6;background:rgba(59,130,246,.1)}
+    .ansa-showcase-nav-item.active svg{color:#3b82f6}
+    .ansa-showcase-sidebar-footer{border-top:1px solid #1e1e1e;padding:14px}
+    .ansa-showcase-main{flex:1;overflow:hidden;background:#0a0a0a;display:flex;flex-direction:column}
+    .ansa-showcase-topbar{height:56px;border-bottom:1px solid #1e1e1e;display:flex;align-items:center;justify-content:space-between;padding:0 20px;flex-shrink:0;background:#0a0a0a}
+    .ansa-showcase-content{flex:1;overflow-y:auto;padding:20px}
+    .ansa-showcase-progress{height:2px;background:#1e1e1e;border-radius:1px;margin:10px auto 0;overflow:hidden;max-width:220px}
+    .ansa-showcase-progress-bar{height:100%;background:#3b82f6;border-radius:1px}
+    .ansa-sc-statgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+    .ansa-sc-stat{background:#141414;border:1px solid #1e1e1e;border-radius:12px;padding:14px 16px;display:flex;align-items:center;gap:10px}
+    .ansa-sc-stat-icon{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .ansa-sc-stat-val{font-size:20px;font-weight:700;color:#fff;line-height:1}
+    .ansa-sc-stat-label{font-size:10px;color:#888;margin-top:2px}
+    .ansa-sc-card{background:#141414;border:1px solid #1e1e1e;border-radius:12px;padding:14px;margin-bottom:10px}
+    .ansa-sc-card-title{font-size:12px;font-weight:600;color:#fff;margin-bottom:10px}
+    .ansa-sc-row{background:#141414;border:1px solid #1e1e1e;border-radius:10px;padding:12px 14px;margin-bottom:7px;display:flex;align-items:center;gap:10px;transition:background .15s}
+    .ansa-sc-row:hover{background:#1a1a1a;border-color:#2a2a2a}
+    .ansa-sc-avatar{width:36px;height:36px;border-radius:50%;background:#1e1e1e;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#888}
+    .ansa-sc-badge{font-size:10.5px;font-weight:600;padding:3px 10px;border-radius:20px;white-space:nowrap}
     .ansa-mini-chart{background:#141414;border:1px solid #1e1e1e;border-radius:9px;padding:14px;margin-bottom:10px}
     .ansa-mini-chart-title{font-size:12px;font-weight:600;color:#fff;margin-bottom:10px}
-    .ansa-mini-bars{display:flex;align-items:flex-end;gap:5px;height:72px}
-    .ansa-mini-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}
-    .ansa-mini-bar{width:100%;border-radius:2px 2px 0 0}
-    .ansa-mini-bar-label{font-size:9.5px;color:#3f3f46}
-    .ansa-mini-conv{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:#1a1a28;border:1px solid #2a2a3a;border-radius:8px;margin-bottom:5px}
-    .ansa-mini-conv-phone{font-size:12.5px;font-weight:600;color:#fff;margin-bottom:2px}
-    .ansa-mini-conv-last{font-size:11px;color:#71717a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px}
+    .ansa-mini-conv-phone{font-size:13px;font-weight:600;color:#fff;margin-bottom:2px}
+    .ansa-mini-conv-last{font-size:11.5px;color:#888;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px}
     .ansa-mini-badge{font-size:10px;font-weight:600;padding:3px 8px;border-radius:999px;white-space:nowrap}
     .ansa-funnel-row{margin-bottom:9px}
     .ansa-funnel-bar-outer{width:100%;height:20px;background:#1a1a1a;border-radius:5px;overflow:hidden}
@@ -497,13 +500,6 @@ const MOCK_APPTS = [
   { customer:'Lisa M.', service:'Bathroom remodel estimate', time:'Fri · 3:00 PM', status:'confirmed' },
 ];
 
-const SC = {
-  booked:    { color:'#22c55e', bg:'rgba(34,197,94,0.15)' },
-  active:    { color:'#4F6EF7', bg:'rgba(79,110,247,0.15)' },
-  closed:    { color:'#6b7280', bg:'rgba(107,114,128,0.15)' },
-  confirmed: { color:'#22c55e', bg:'rgba(34,197,94,0.15)' },
-  pending:   { color:'#f59e0b', bg:'rgba(245,158,11,0.15)' },
-};
 
 // SVG area chart — pixel-accurate replica of the real Recharts chart
 function AreaChart({ data, series }) {
@@ -543,17 +539,6 @@ function AreaChart({ data, series }) {
   );
 }
 
-function MiniStat({ color, val, label }) {
-  return (
-    <div className="ansa-mini-stat">
-      <div className="ansa-mini-stat-dot" style={{ background:color }}/>
-      <div>
-        <div className="ansa-mini-stat-val">{val}</div>
-        <div className="ansa-mini-stat-label">{label}</div>
-      </div>
-    </div>
-  );
-}
 
 function Funnel({ rows }) {
   return rows.map((f,i) => (
@@ -569,57 +554,57 @@ function Funnel({ rows }) {
   ));
 }
 
+const SC_REAL = {
+  booked:    { color:'#3b82f6', bg:'rgba(59,130,246,0.15)' },
+  active:    { color:'#3b82f6', bg:'rgba(59,130,246,0.15)' },
+  closed:    { color:'#6b7280', bg:'rgba(107,114,128,0.15)' },
+  confirmed: { color:'#22c55e', bg:'rgba(34,197,94,0.15)' },
+  pending:   { color:'#f59e0b', bg:'rgba(245,158,11,0.15)' },
+  cancelled: { color:'#ef4444', bg:'rgba(239,68,68,0.15)' },
+};
+
 function ShowcaseOverview() {
   return (
     <div>
-      <div style={{ fontSize:15,fontWeight:700,color:'#fff',marginBottom:1 }}>Good afternoon, John</div>
-      <div style={{ fontSize:11,color:'#555',marginBottom:12 }}>Here's what happened while you were on the job.</div>
-      <div className="ansa-mini-grid" style={{ marginBottom:10 }}>
-        <MiniStat color="#4F6EF7" val="3"    label="Missed Calls Today"/>
-        <MiniStat color="#8b5cf6" val="100%" label="Response Rate"/>
-        <MiniStat color="#22c55e" val="67%"  label="Booking Rate"/>
-        <MiniStat color="#f59e0b" val="8"    label="Jobs Booked"/>
+      <div style={{ fontSize:18,fontWeight:700,color:'#fff',marginBottom:3 }}>Overview</div>
+      <div style={{ fontSize:13,color:'#888',marginBottom:14 }}>Here's what happened while you were on the job.</div>
+      <div className="ansa-sc-statgrid">
+        {[
+          { icon:<PhoneMissed size={16}/>, color:'#3b82f6', val:'3',    label:'Missed Calls Today' },
+          { icon:<MessageSquare size={16}/>, color:'#8b5cf6', val:'100%', label:'Response Rate' },
+          { icon:<CalendarCheck size={16}/>, color:'#22c55e', val:'67%',  label:'Booking Rate' },
+          { icon:<DollarSign size={16}/>, color:'#f59e0b', val:'8',    label:'Jobs Booked' },
+        ].map((s,i) => (
+          <div key={i} className="ansa-sc-stat">
+            <div className="ansa-sc-stat-icon" style={{ background:`${s.color}18` }}><span style={{ color:s.color }}>{s.icon}</span></div>
+            <div><div className="ansa-sc-stat-val">{s.val}</div><div className="ansa-sc-stat-label">{s.label}</div></div>
+          </div>
+        ))}
       </div>
-      <div className="ansa-mini-chart">
-        <div className="ansa-mini-chart-title">This Week's Activity</div>
+      <div className="ansa-sc-card">
+        <div className="ansa-sc-card-title">This Week's Activity</div>
         <AreaChart data={MOCK_WEEKLY} series={[
-          { key:'calls',     color:'#4F6EF7' },
+          { key:'calls',     color:'#3b82f6' },
           { key:'responses', color:'#8b5cf6' },
           { key:'bookings',  color:'#22c55e' },
         ]}/>
         <div style={{ display:'flex',gap:12,marginTop:6 }}>
-          {[['#4F6EF7','Missed Calls'],['#8b5cf6','Responses'],['#22c55e','Bookings']].map(([c,l]) => (
-            <span key={l} style={{ fontSize:9,color:'#555',display:'flex',alignItems:'center',gap:3 }}>
+          {[['#3b82f6','Missed Calls'],['#8b5cf6','Responses'],['#22c55e','Bookings']].map(([c,l]) => (
+            <span key={l} style={{ fontSize:9,color:'#888',display:'flex',alignItems:'center',gap:3 }}>
               <span style={{ width:7,height:7,borderRadius:2,background:c,display:'inline-block' }}/>{l}
             </span>
           ))}
         </div>
       </div>
-      <div className="ansa-mini-chart" style={{ marginBottom:0 }}>
-        <div className="ansa-mini-chart-title">Recent Activity</div>
+      <div className="ansa-sc-card" style={{ marginBottom:0 }}>
+        <div className="ansa-sc-card-title">Recent Activity</div>
         {MOCK_CONVS.slice(0,3).map((c,i) => (
-          <div key={i} style={{ display:'flex',justifyContent:'space-between',alignItems:'center',padding:'6px 0',borderBottom:i<2?'1px solid #1a1a1a':'none' }}>
+          <div key={i} style={{ display:'flex',justifyContent:'space-between',alignItems:'center',padding:'8px 0',borderBottom:i<2?'1px solid #1e1e1e':'none' }}>
             <div>
-              <div style={{ fontSize:12,fontWeight:600,color:'#fff' }}>{c.phone}</div>
-              <div style={{ fontSize:10,color:'#555' }}>{c.time}</div>
+              <div style={{ fontSize:13,fontWeight:600,color:'#fff' }}>{c.phone}</div>
+              <div style={{ fontSize:11,color:'#666' }}>{c.time}</div>
             </div>
-            <span className="ansa-mini-badge" style={{ color:SC[c.status].color,background:SC[c.status].bg }}>{c.status}</span>
-          </div>
-        ))}
-      </div>
-      <div className="ansa-mini-chart" style={{ marginBottom:0,marginTop:8 }}>
-        <div className="ansa-mini-chart-title">Your Text Notifications</div>
-        {[
-          { emoji:'🔔', text:'Missed call from +1 (714) 555-0182. AI is handling it.', time:'2:14 PM' },
-          { emoji:'✅', text:'Appointment booked! Thu Jun 12 at 10:00 AM — Leaking faucet. Customer: +1 (714) 555-0182', time:'2:17 PM' },
-          { emoji:'⏳', text:'Pending approval needed. Fri Jun 13 at 3:00 PM — HVAC inspection. Confirm in dashboard.', time:'4:02 PM' },
-        ].map((n,i) => (
-          <div key={i} style={{ display:'flex',gap:8,padding:'6px 0',borderBottom:i<2?'1px solid #1a1a1a':'none',alignItems:'flex-start' }}>
-            <span style={{ fontSize:13,flexShrink:0 }}>{n.emoji}</span>
-            <div style={{ minWidth:0 }}>
-              <div style={{ fontSize:10,color:'#ccc',lineHeight:1.4 }}>{n.text}</div>
-              <div style={{ fontSize:9,color:'#555',marginTop:2 }}>Ansa · {n.time}</div>
-            </div>
+            <span className="ansa-sc-badge" style={{ color:SC_REAL[c.status].color,background:SC_REAL[c.status].bg }}>{c.status}</span>
           </div>
         ))}
       </div>
@@ -630,19 +615,16 @@ function ShowcaseOverview() {
 function ShowcaseMissedCalls() {
   return (
     <div>
-      <div style={{ fontSize:15,fontWeight:700,color:'#fff',marginBottom:12 }}>Missed Calls</div>
+      <div style={{ fontSize:18,fontWeight:700,color:'#fff',marginBottom:4 }}>Missed Calls</div>
+      <div style={{ fontSize:13,color:'#888',marginBottom:14 }}>Every missed call, captured and followed up automatically.</div>
       {MOCK_CALLS.map((c,i) => (
-        <div key={i} className="ansa-mini-conv">
-          <div style={{ display:'flex',alignItems:'center',gap:10,minWidth:0 }}>
-            <div style={{ width:32,height:32,borderRadius:'50%',background:'#1a1a1a',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0 }}>
-              <span style={{ fontSize:13 }}>📞</span>
-            </div>
-            <div style={{ minWidth:0 }}>
-              <div className="ansa-mini-conv-phone">{c.phone}</div>
-              <div style={{ fontSize:10,color:'#555' }}>{c.time}</div>
-            </div>
+        <div key={i} className="ansa-sc-row">
+          <div className="ansa-sc-avatar"><PhoneMissed size={15}/></div>
+          <div style={{ flex:1,minWidth:0 }}>
+            <div className="ansa-mini-conv-phone">{c.phone}</div>
+            <div style={{ fontSize:11,color:'#666' }}>{c.time}</div>
           </div>
-          <span className="ansa-mini-badge" style={{ color:SC[c.status].color,background:SC[c.status].bg,flexShrink:0 }}>{c.status}</span>
+          <span className="ansa-sc-badge" style={{ color:SC_REAL[c.status].color,background:SC_REAL[c.status].bg }}>{c.status}</span>
         </div>
       ))}
     </div>
@@ -654,26 +636,27 @@ function ShowcaseConversations() {
   const filtered = tab === 'all' ? MOCK_CONVS : MOCK_CONVS.filter(c => c.status === tab);
   return (
     <div>
-      <div style={{ fontSize:15,fontWeight:700,color:'#fff',marginBottom:10 }}>Conversations</div>
-      <div style={{ display:'flex',gap:3,marginBottom:10,background:'#1a1a28',borderRadius:7,padding:3,width:'fit-content' }}>
+      <div style={{ fontSize:18,fontWeight:700,color:'#fff',marginBottom:10 }}>Conversations</div>
+      <div style={{ display:'flex',gap:2,marginBottom:12,background:'#141414',borderRadius:10,padding:4,width:'fit-content',border:'1px solid #1e1e1e' }}>
         {['all','active','booked','closed'].map(t => (
           <button key={t} onClick={() => setTab(t)}
-            style={{ padding:'4px 10px',borderRadius:5,fontSize:10.5,fontWeight:500,cursor:'pointer',
-              background:tab===t?'#2a2a3e':'transparent',color:tab===t?'#fff':'#666',border:'none',
-              fontFamily:'inherit',textTransform:'capitalize' }}>
+            style={{ padding:'6px 12px',borderRadius:7,fontSize:11,fontWeight:500,cursor:'pointer',
+              background:tab===t?'#222':'transparent',color:tab===t?'#fff':'#888',border:'none',
+              fontFamily:'inherit',textTransform:'capitalize',transition:'all .15s' }}>
             {t}
           </button>
         ))}
       </div>
       {filtered.map((c,i) => (
-        <div key={i} className="ansa-mini-conv">
-          <div style={{ minWidth:0 }}>
+        <div key={i} className="ansa-sc-row">
+          <div className="ansa-sc-avatar"><MessageSquare size={15}/></div>
+          <div style={{ flex:1,minWidth:0 }}>
             <div className="ansa-mini-conv-phone">{c.phone}</div>
             <div className="ansa-mini-conv-last">{c.last}</div>
           </div>
-          <div style={{ display:'flex',flexDirection:'column',alignItems:'flex-end',gap:3,flexShrink:0,marginLeft:8 }}>
-            <span className="ansa-mini-badge" style={{ color:SC[c.status].color,background:SC[c.status].bg }}>{c.status}</span>
-            <span style={{ fontSize:10,color:'#555' }}>{c.time}</span>
+          <div style={{ display:'flex',flexDirection:'column',alignItems:'flex-end',gap:4,flexShrink:0,marginLeft:8 }}>
+            <span className="ansa-sc-badge" style={{ color:SC_REAL[c.status].color,background:SC_REAL[c.status].bg }}>{c.status}</span>
+            <span style={{ fontSize:10,color:'#666' }}>{c.time}</span>
           </div>
         </div>
       ))}
@@ -684,15 +667,16 @@ function ShowcaseConversations() {
 function ShowcaseAppointments() {
   return (
     <div>
-      <div style={{ fontSize:15,fontWeight:700,color:'#fff',marginBottom:12 }}>Appointments</div>
+      <div style={{ fontSize:18,fontWeight:700,color:'#fff',marginBottom:14 }}>Appointments</div>
       {MOCK_APPTS.map((a,i) => (
-        <div key={i} className="ansa-mini-conv" style={{ alignItems:'flex-start' }}>
-          <div style={{ minWidth:0 }}>
+        <div key={i} className="ansa-sc-row" style={{ alignItems:'flex-start' }}>
+          <div className="ansa-sc-avatar" style={{ marginTop:2 }}><CalendarCheck size={15}/></div>
+          <div style={{ flex:1,minWidth:0 }}>
             <div className="ansa-mini-conv-phone">{a.customer}</div>
-            <div style={{ fontSize:11,color:'#a1a1aa',marginTop:1 }}>{a.service}</div>
-            <div style={{ fontSize:10,color:'#555',marginTop:2 }}>{a.time}</div>
+            <div style={{ fontSize:11.5,color:'#aaa',marginTop:2 }}>{a.service}</div>
+            <div style={{ fontSize:11,color:'#666',marginTop:2 }}>{a.time}</div>
           </div>
-          <span className="ansa-mini-badge" style={{ color:SC[a.status].color,background:SC[a.status].bg,flexShrink:0,marginLeft:8,marginTop:2 }}>{a.status}</span>
+          <span className="ansa-sc-badge" style={{ color:SC_REAL[a.status].color,background:SC_REAL[a.status].bg,flexShrink:0,marginLeft:8,marginTop:2 }}>{a.status}</span>
         </div>
       ))}
     </div>
@@ -702,28 +686,35 @@ function ShowcaseAppointments() {
 function ShowcaseAnalytics() {
   return (
     <div>
-      <div style={{ fontSize:15,fontWeight:700,color:'#fff',marginBottom:10 }}>Analytics</div>
-      <div className="ansa-mini-grid" style={{ marginBottom:10 }}>
-        <MiniStat color="#4F6EF7" val="31"   label="Total Calls"/>
-        <MiniStat color="#8b5cf6" val="100%" label="Response Rate"/>
-        <MiniStat color="#22c55e" val="45%"  label="Booking Rate"/>
-        <MiniStat color="#f59e0b" val="14"   label="Jobs Booked"/>
+      <div style={{ fontSize:18,fontWeight:700,color:'#fff',marginBottom:14 }}>Analytics</div>
+      <div className="ansa-sc-statgrid">
+        {[
+          { icon:<PhoneMissed size={16}/>, color:'#3b82f6', val:'31',   label:'Total Calls' },
+          { icon:<MessageSquare size={16}/>, color:'#8b5cf6', val:'100%', label:'Response Rate' },
+          { icon:<CalendarCheck size={16}/>, color:'#22c55e', val:'45%',  label:'Booking Rate' },
+          { icon:<DollarSign size={16}/>, color:'#f59e0b', val:'14',   label:'Jobs Booked' },
+        ].map((s,i) => (
+          <div key={i} className="ansa-sc-stat">
+            <div className="ansa-sc-stat-icon" style={{ background:`${s.color}18` }}><span style={{ color:s.color }}>{s.icon}</span></div>
+            <div><div className="ansa-sc-stat-val">{s.val}</div><div className="ansa-sc-stat-label">{s.label}</div></div>
+          </div>
+        ))}
       </div>
-      <div className="ansa-mini-chart">
-        <div className="ansa-mini-chart-title">Calls vs Responses vs Bookings</div>
+      <div className="ansa-sc-card">
+        <div className="ansa-sc-card-title">Calls vs Responses vs Bookings</div>
         <AreaChart data={MOCK_WEEKLY} series={[
-          { key:'calls',     color:'#4F6EF7' },
+          { key:'calls',     color:'#3b82f6' },
           { key:'responses', color:'#8b5cf6' },
           { key:'bookings',  color:'#22c55e' },
         ]}/>
       </div>
-      <div className="ansa-mini-chart" style={{ marginBottom:0 }}>
-        <div className="ansa-mini-chart-title">Conversion Funnel</div>
+      <div className="ansa-sc-card" style={{ marginBottom:0 }}>
+        <div className="ansa-sc-card-title">Conversion Funnel</div>
         <Funnel rows={[
-          { label:'Missed Calls',      val:31, pct:100, color:'#4F6EF7' },
-          { label:'SMS Sent',          val:31, pct:100, color:'#8b5cf6' },
-          { label:'Customer Replied',  val:24, pct:77,  color:'#f59e0b' },
-          { label:'Booked',            val:14, pct:45,  color:'#22c55e' },
+          { label:'Missed Calls',     val:31, pct:100, color:'#3b82f6' },
+          { label:'SMS Sent',         val:31, pct:100, color:'#8b5cf6' },
+          { label:'Customer Replied', val:24, pct:77,  color:'#f59e0b' },
+          { label:'Booked',           val:14, pct:45,  color:'#22c55e' },
         ]}/>
       </div>
     </div>
@@ -733,32 +724,32 @@ function ShowcaseAnalytics() {
 function ShowcaseSettings() {
   return (
     <div>
-      <div style={{ fontSize:15,fontWeight:700,color:'#fff',marginBottom:12 }}>Settings</div>
-      <div className="ansa-mini-chart" style={{ marginBottom:10 }}>
-        <div className="ansa-mini-chart-title">Business Info</div>
+      <div style={{ fontSize:18,fontWeight:700,color:'#fff',marginBottom:14 }}>Settings</div>
+      <div className="ansa-sc-card" style={{ marginBottom:10 }}>
+        <div className="ansa-sc-card-title">Business Info</div>
         {[
-          { label:'Business Name',  val:'Johns Contracting' },
-          { label:'Phone Number',   val:'+1 (424) 622-5851' },
-          { label:'Trade',          val:'General Contractor' },
-          { label:'Service Area',   val:'Newport Beach, CA' },
+          { label:'Business Name', val:'Johns Contracting' },
+          { label:'Phone Number',  val:'+1 (424) 622-5851' },
+          { label:'Trade',         val:'General Contractor' },
+          { label:'Service Area',  val:'Newport Beach, CA' },
         ].map((f,i) => (
-          <div key={i} style={{ marginBottom:8 }}>
-            <div style={{ fontSize:9.5,color:'#555',marginBottom:2,textTransform:'uppercase',letterSpacing:'0.5px' }}>{f.label}</div>
-            <div style={{ background:'#1a1a1a',border:'1px solid #222',borderRadius:5,padding:'6px 9px',fontSize:11.5,color:'#d1d5db' }}>{f.val}</div>
+          <div key={i} style={{ marginBottom:10 }}>
+            <div style={{ fontSize:10,color:'#666',marginBottom:4,textTransform:'uppercase',letterSpacing:'0.5px',fontWeight:600 }}>{f.label}</div>
+            <div style={{ background:'#1a1a1a',border:'1px solid #1e1e1e',borderRadius:8,padding:'8px 12px',fontSize:12.5,color:'#ccc' }}>{f.val}</div>
           </div>
         ))}
       </div>
-      <div className="ansa-mini-chart" style={{ marginBottom:0 }}>
-        <div className="ansa-mini-chart-title">AI Greeting</div>
-        <div style={{ background:'#1a1a1a',border:'1px solid #222',borderRadius:5,padding:'8px 10px',fontSize:11.5,color:'#d1d5db',lineHeight:1.5,marginBottom:8 }}>
+      <div className="ansa-sc-card" style={{ marginBottom:0 }}>
+        <div className="ansa-sc-card-title">AI Greeting</div>
+        <div style={{ background:'#1a1a1a',border:'1px solid #1e1e1e',borderRadius:8,padding:'10px 12px',fontSize:12,color:'#ccc',lineHeight:1.6,marginBottom:10 }}>
           Hey! Thanks for calling Johns Contracting — sorry we missed you. How can we help?
         </div>
-        <div style={{ display:'flex',gap:5 }}>
+        <div style={{ display:'flex',gap:6 }}>
           {['Professional','Friendly','Casual'].map((t,i) => (
-            <div key={t} style={{ padding:'3px 9px',borderRadius:5,fontSize:10,fontWeight:600,
-              background:i===0?'rgba(79,110,247,.15)':'transparent',
-              color:i===0?'#818CF8':'#555',
-              border:`1px solid ${i===0?'rgba(79,110,247,.3)':'#222'}` }}>{t}</div>
+            <div key={t} style={{ padding:'4px 10px',borderRadius:6,fontSize:11,fontWeight:600,
+              background:i===1?'rgba(59,130,246,.15)':'transparent',
+              color:i===1?'#93c5fd':'#666',
+              border:`1px solid ${i===1?'rgba(59,130,246,.3)':'#1e1e1e'}` }}>{t}</div>
           ))}
         </div>
       </div>
@@ -767,12 +758,12 @@ function ShowcaseSettings() {
 }
 
 const SIDEBAR_NAV = [
-  { label:'Overview',      idx:0 },
-  { label:'Missed Calls',  idx:1 },
-  { label:'Conversations', idx:2 },
-  { label:'Appointments',  idx:3 },
-  { label:'Analytics',     idx:4 },
-  { label:'Settings',      idx:5 },
+  { label:'Overview',      idx:0, icon:<LayoutDashboard size={15}/> },
+  { label:'Missed Calls',  idx:1, icon:<PhoneMissed size={15}/> },
+  { label:'Conversations', idx:2, icon:<MessageSquare size={15}/> },
+  { label:'Appointments',  idx:3, icon:<CalendarCheck size={15}/> },
+  { label:'Analytics',     idx:4, icon:<BarChart3 size={15}/> },
+  { label:'Settings',      idx:5, icon:<Settings size={15}/> },
 ];
 const PAGE_TITLES = ['Overview','Missed Calls','Conversations','Appointments','Analytics','Settings'];
 const SHOWCASE_VIEWS = [ShowcaseOverview, ShowcaseMissedCalls, ShowcaseConversations, ShowcaseAppointments, ShowcaseAnalytics, ShowcaseSettings];
@@ -818,47 +809,43 @@ function DashboardShowcase() {
           {/* Sidebar */}
           <div className="ansa-showcase-sidebar">
             <div className="ansa-showcase-logo">ansa<span>.</span></div>
-            <div style={{ flex:1,padding:'8px 0' }}>
+            <div className="ansa-showcase-nav-section">
               {SIDEBAR_NAV.map(item => (
                 <div key={item.idx} onClick={() => handleNav(item.idx)}
-                  className={`ansa-showcase-nav-item${view===item.idx?' active':''}`}
-                  style={{ cursor:'pointer' }}>
+                  className={`ansa-showcase-nav-item${view===item.idx?' active':''}`}>
+                  {item.icon}
                   <span>{item.label}</span>
                 </div>
               ))}
             </div>
-            {/* Bottom: business card + links */}
-            <div style={{ borderTop:'1px solid #1a1a1a',padding:'12px 14px' }}>
-              <div style={{ display:'flex',alignItems:'center',gap:8,marginBottom:10 }}>
-                <div style={{ width:30,height:30,borderRadius:7,background:'#4F6EF7',display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontWeight:700,fontSize:12,flexShrink:0 }}>J</div>
+            <div className="ansa-showcase-sidebar-footer">
+              <div style={{ display:'flex',alignItems:'center',gap:10,marginBottom:12 }}>
+                <div style={{ width:34,height:34,borderRadius:8,background:'#3b82f6',display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontWeight:700,fontSize:13,flexShrink:0 }}>J</div>
                 <div style={{ overflow:'hidden' }}>
-                  <div style={{ fontSize:11.5,fontWeight:600,color:'#e5e5e5',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis' }}>Johns Contracting</div>
-                  <div style={{ fontSize:10,color:'#555' }}>Pro plan</div>
+                  <div style={{ fontSize:12,fontWeight:600,color:'#e5e5e5',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis' }}>Johns Contracting</div>
+                  <div style={{ fontSize:10.5,color:'#666' }}>Pro Plan</div>
                 </div>
               </div>
-              <div style={{ fontSize:11,color:'#555',padding:'4px 0',cursor:'pointer' }}>📞 Contact support</div>
-              <div style={{ fontSize:11,color:'#555',padding:'4px 0',cursor:'pointer' }}>↩ Log out</div>
+              <div style={{ display:'flex',alignItems:'center',gap:8,fontSize:12,color:'#666',padding:'5px 0',cursor:'pointer' }}><HeadphonesIcon size={13}/> Contact support</div>
+              <div style={{ display:'flex',alignItems:'center',gap:8,fontSize:12,color:'#666',padding:'5px 0',cursor:'pointer' }}><LogOut size={13}/> Log out</div>
             </div>
           </div>
           {/* Main area */}
-          <div className="ansa-showcase-main" style={{ display:'flex',flexDirection:'column' }}>
-            {/* Top bar */}
-            <div style={{ height:48,borderBottom:'1px solid #2a2a38',display:'flex',alignItems:'center',justifyContent:'space-between',padding:'0 18px',flexShrink:0,background:'#141420' }}>
-              <div style={{ fontSize:14,fontWeight:600,color:'#fff' }}>{PAGE_TITLES[view]}</div>
-              <div style={{ width:30,height:30,borderRadius:'50%',background:'#1e1e2e',display:'flex',alignItems:'center',justifyContent:'center',fontSize:11,fontWeight:600,color:'#aaa',border:'2px solid #3a3a4a' }}>JL</div>
+          <div className="ansa-showcase-main">
+            <div className="ansa-showcase-topbar">
+              <div style={{ fontSize:16,fontWeight:600,color:'#fff' }}>{PAGE_TITLES[view]}</div>
+              <div style={{ width:34,height:34,borderRadius:'50%',background:'#1e1e1e',display:'flex',alignItems:'center',justifyContent:'center',fontSize:12,fontWeight:600,color:'#999',border:'2px solid #333' }}>JL</div>
             </div>
-            {/* Content */}
-            <div style={{ flex:1,overflowY:'auto',padding:16,position:'relative' }}>
+            <div className="ansa-showcase-content">
               <ActiveView key={view}/>
             </div>
           </div>
         </div>
       </div>
-      {/* Progress bar */}
       <div className="ansa-showcase-progress">
         <div className="ansa-showcase-progress-bar" style={{ width:`${progress}%`,transition:progress===0?'none':'width .1s linear' }}/>
       </div>
-      <div style={{ textAlign:'center',marginTop:8,fontSize:12,color:'#3f3f46' }}>Click any section in the sidebar to explore ↑</div>
+      <div style={{ textAlign:'center',marginTop:8,fontSize:12,color:'#666' }}>Click any section in the sidebar to explore ↑</div>
     </div>
   );
 }
