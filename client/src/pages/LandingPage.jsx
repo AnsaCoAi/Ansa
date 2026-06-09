@@ -67,7 +67,8 @@ const injectStyles = () => {
     .ansa-phone-status{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding:0 2px}
     .ansa-phone-biz{font-size:12px;font-weight:600;color:#fff;letter-spacing:-.1px}
     .ansa-phone-time{font-size:11px;color:#555}
-    .ansa-chat-area{display:flex;flex-direction:column;gap:6px}
+    .ansa-chat-area{display:flex;flex-direction:column;gap:6px;align-items:flex-start;text-align:left}
+    .ansa-chat-outgoing{align-self:flex-end}
     .ansa-chat-bubble{padding:10px 14px;border-radius:20px;font-size:12.5px;line-height:1.55;max-width:82%;word-break:break-word}
     .ansa-chat-incoming{background:#2c2c2e;color:#e5e5ea;border-bottom-left-radius:5px;margin-right:auto}
     .ansa-chat-outgoing{background:${PRIMARY};color:#fff;border-bottom-right-radius:5px;margin-left:auto}
