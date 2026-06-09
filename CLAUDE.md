@@ -152,11 +152,22 @@
 - Favicon + OG image: deployed ✅
 - Node.js: pinned to >=20 ✅
 - PRELAUNCH.md is stale — ignore it
+- RLS policies added to businesses table: SELECT and UPDATE for owner ✅
+- Admin bypass: ADMIN_EMAILS env var on Railway skips Stripe, sets subscription_status=active directly ✅
+- Owner/demo account: tylerlofaro@yahoo.com, business "Johns Contracting" (General Contractor), Twilio +14246225851
+- Supabase Site URL fixed to https://www.ansaco.ai ✅
+- businesses table: tone (text) and faqs (jsonb) columns added ✅
+- All dead buttons fixed: settings save, AI tab, conversation close/send, appointment cancel, billing errors ✅
+- Silent reloadBusiness (no loading spinner) after settings save ✅
+- Smooth page transitions: fade-in on nav, button press animation ✅
+- Settings has Account tab: edit name, view email, member since, password reset ✅
+- Contact support link in sidebar (hello@ansaco.ai) ✅
 
 ## Outstanding Before Launch
-1. End-to-end test: full signup → Stripe → dashboard with real card (not done yet)
-2. Test SMS end-to-end: real missed call → AI text-back (A2P approved, ready to test)
-3. Supabase free tier pauses after 7 days inactivity — unpause at supabase.com if project is down. Upgrade to Pro ($25/mo) when first client onboards
+1. SMS end-to-end test: real missed call → AI text-back. Demo number: +14246225851
+2. Full signup test with real card (separate account, not admin email)
+3. Set up Namecheap email forwarding: hello@ansaco.ai → Tyler's personal email (not Yahoo)
+4. Supabase free tier pauses after 7 days inactivity — unpause at supabase.com if down. Upgrade to Pro ($25/mo) at first client
 
 ## Reminders
 - Supabase pauses every 7 days on free tier — check before each session and unpause if needed
@@ -165,6 +176,7 @@
 - CA $800 franchise tax due April 2027
 - GitHub token expires April 9, 2027
 - Brand polish todos: profile photo in app, logo in emails, Google Business profile
+- hello@ansaco.ai is send-only (Resend) — no inbox until Namecheap forwarding is configured
 
 ## Credentials
 Credentials are stored in Claude memory only — not in this file.
