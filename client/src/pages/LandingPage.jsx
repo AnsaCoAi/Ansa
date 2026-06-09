@@ -55,23 +55,31 @@ const injectStyles = () => {
     .ansa-hero-sub{font-size:clamp(16px,2vw,19px);color:#a1a1aa;max-width:620px;margin:0 auto 40px;line-height:1.65;animation:ansa-fadeUp .7s ease .2s both}
     .ansa-hero-ctas{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;animation:ansa-fadeUp .7s ease .3s both}
     .ansa-phone-wrap{margin:64px auto 0;max-width:380px;animation:ansa-fadeUp .8s ease .5s both}
-    .ansa-phones-row{display:flex;justify-content:center;align-items:flex-end;gap:20px;margin:64px auto 0;max-width:1100px;padding:0 24px}
-    .ansa-phone-side{flex:1;max-width:300px;opacity:.7;transform:scale(.93);transform-origin:bottom center;transition:opacity .2s}
-    .ansa-phone-center{flex:1;max-width:340px}
-    @media(max-width:768px){.ansa-phone-side{display:none!important}.ansa-phones-row{max-width:380px}}
-    .ansa-phone{background:#141414;border:1px solid #2a2a2a;border-radius:28px;padding:20px 18px;position:relative;box-shadow:0 24px 80px rgba(0,0,0,.5),0 0 60px rgba(79,110,247,.08);animation:ansa-float 6s ease-in-out infinite}
-    .ansa-phone-notch{width:120px;height:6px;background:#222;border-radius:99px;margin:0 auto 20px}
-    .ansa-phone-header{font-size:13px;color:#a1a1aa;text-align:center;margin-bottom:18px;font-weight:500}
-    .ansa-chat-bubble{padding:12px 16px;border-radius:18px;font-size:14px;line-height:1.5;margin-bottom:10px;max-width:85%}
-    .ansa-chat-incoming{background:#1e293b;color:#e2e8f0;border-bottom-left-radius:6px;margin-right:auto}
-    .ansa-chat-outgoing{background:${PRIMARY};color:#fff;border-bottom-right-radius:6px;margin-left:auto}
-    .ansa-chat-typing{display:flex;gap:4px;padding:12px 16px;max-width:70px;background:#1e293b;border-radius:18px;border-bottom-left-radius:6px;margin-right:auto}
-    .ansa-chat-typing span{width:7px;height:7px;background:#64748b;border-radius:50%;animation:ansa-typing 1.4s infinite}
+    .ansa-phones-row{display:flex;justify-content:center;align-items:flex-end;gap:16px;margin:64px auto 0;max-width:1060px;padding:0 24px}
+    .ansa-phone-slot{transition:all .35s cubic-bezier(.4,0,.2,1);transform-origin:bottom center}
+    .ansa-phone-slot.is-center{flex:0 0 340px;opacity:1;transform:scale(1)}
+    .ansa-phone-slot.is-side{flex:0 0 290px;opacity:.55;transform:scale(.92);cursor:pointer}
+    .ansa-phone-slot.is-side:hover{opacity:.75}
+    @media(max-width:820px){.ansa-phone-slot.is-side{display:none!important}.ansa-phones-row{justify-content:center}}
+    .ansa-phone{background:#1c1c1e;border:1px solid #2c2c2e;border-radius:36px;padding:20px 16px 24px;position:relative;box-shadow:0 32px 80px rgba(0,0,0,.6),0 0 60px rgba(79,110,247,.07)}
+    .ansa-phone-slot.is-center .ansa-phone{animation:ansa-float 6s ease-in-out infinite}
+    .ansa-phone-notch{width:100px;height:5px;background:#2c2c2e;border-radius:99px;margin:0 auto 18px}
+    .ansa-phone-status{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding:0 2px}
+    .ansa-phone-biz{font-size:12px;font-weight:600;color:#fff;letter-spacing:-.1px}
+    .ansa-phone-time{font-size:11px;color:#555}
+    .ansa-chat-area{display:flex;flex-direction:column;gap:6px}
+    .ansa-chat-bubble{padding:10px 14px;border-radius:20px;font-size:12.5px;line-height:1.55;max-width:82%;word-break:break-word}
+    .ansa-chat-incoming{background:#2c2c2e;color:#e5e5ea;border-bottom-left-radius:5px;margin-right:auto}
+    .ansa-chat-outgoing{background:${PRIMARY};color:#fff;border-bottom-right-radius:5px;margin-left:auto}
+    .ansa-chat-ts{font-size:10px;color:#48484a;text-align:center;margin:4px 0 2px}
+    .ansa-chat-typing{display:flex;gap:4px;padding:10px 14px;background:#2c2c2e;border-radius:20px;border-bottom-left-radius:5px;width:fit-content}
+    .ansa-chat-typing span{width:6px;height:6px;background:#636366;border-radius:50%;animation:ansa-typing 1.4s infinite}
     .ansa-chat-typing span:nth-child(2){animation-delay:.2s}
     .ansa-chat-typing span:nth-child(3){animation-delay:.4s}
-    .ansa-booked-banner{display:flex;align-items:center;gap:10px;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.25);border-radius:12px;padding:12px 14px;margin-top:14px}
-    .ansa-booked-banner-dot{width:8px;height:8px;border-radius:50%;background:#10b981;flex-shrink:0}
-    .ansa-booked-banner-text{font-size:12px;color:#6ee7b7;line-height:1.4}
+    .ansa-booked-banner{display:flex;align-items:center;gap:8px;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);border-radius:12px;padding:10px 12px;margin-top:10px}
+    .ansa-booked-banner-dot{width:7px;height:7px;border-radius:50%;background:#10b981;flex-shrink:0}
+    .ansa-booked-banner-text{font-size:11px;color:#6ee7b7;line-height:1.45}
+    .ansa-phone-hint{text-align:center;font-size:11px;color:#3a3a3c;margin-top:20px;letter-spacing:.2px}
 
     /* Social proof strip */
     .ansa-proof-strip{border-top:1px solid #1a1a1a;border-bottom:1px solid #1a1a1a;padding:20px 0;overflow:hidden;position:relative}
@@ -265,6 +273,46 @@ const injectStyles = () => {
   `;
   document.head.appendChild(style);
 };
+
+const HERO_PHONES = [
+  {
+    biz: "Mike's Plumbing",
+    time: '10:23 AM',
+    messages: [
+      { from:'ai',   text:"Thanks for calling — sorry we missed you. What can we help with?" },
+      { from:'user', text:"I have a leaking pipe under my kitchen sink" },
+      { from:'ai',   text:"We can definitely help with that. We have a 2:00 PM opening today if that works?" },
+      { from:'user', text:"That works, yes" },
+      { from:'ai',   text:"You're confirmed for today at 2:00 PM. We'll text you when we're on the way." },
+    ],
+    banner: 'Job booked: Leaking pipe · Today 2:00 PM',
+  },
+  {
+    biz: "Rodriguez Plumbing",
+    time: '1:47 PM',
+    messages: [
+      { from:'ai',   text:"Hi — thanks for calling. Mike is currently on a job and should be available around 3 PM. How can I help?" },
+      { from:'user', text:"Can you just have him call me back?" },
+      { from:'ai',   text:"Of course. I'll flag this for him the moment he's free. Is this the best number to reach you?" },
+      { from:'user', text:"Yes this number" },
+      { from:'ai',   text:"Got it — Mike will call you back by 3 PM. Anything you'd like me to pass along so he's prepared?" },
+    ],
+    banner: null,
+    callbackBanner: 'Callback request logged · Mike notified for 3 PM',
+  },
+  {
+    biz: "Chen's Heating & Air",
+    time: '11:42 PM',
+    messages: [
+      { from:'ai',   text:"Hi — we're closed for the evening but I can get you taken care of. What's going on?" },
+      { from:'user', text:"AC isn't working, it's 85 degrees in here" },
+      { from:'ai',   text:"Sorry to hear that — our first slot tomorrow is 8:00 AM. Want me to book that?" },
+      { from:'user', text:"Please yes" },
+      { from:'ai',   text:"Done. You're scheduled for tomorrow at 8:00 AM. We'll send a reminder in the morning." },
+    ],
+    banner: 'Booked overnight: AC repair · Tomorrow 8:00 AM',
+  },
+];
 
 const FAQ_DATA = [
   { q:'How does Ansa connect to my phone?', a:"Ansa works with call forwarding on your existing business number — no new hardware, no app to install. When a call goes unanswered, our system detects it instantly and fires the text-back within 15 seconds. Setup takes under 5 minutes." },
@@ -812,6 +860,7 @@ function DashboardShowcase() {
 
 export default function LandingPage() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [activePhone, setActivePhone] = useState(0);
   const revealRef = useRef(null);
 
   useEffect(() => {
@@ -872,49 +921,49 @@ export default function LandingPage() {
         </div>
         <div className="ansa-trust-line">No credit card required &nbsp;·&nbsp; Setup in 5 minutes &nbsp;·&nbsp; Cancel anytime</div>
         <div className="ansa-phones-row">
-          {/* Left — AI answering questions */}
-          <div className="ansa-phone-side">
-            <div className="ansa-phone" style={{ fontSize:13 }}>
-              <div className="ansa-phone-notch" />
-              <div className="ansa-phone-header"><strong>Peak Roofing</strong> · Just now</div>
-              <div className="ansa-chat-bubble ansa-chat-incoming" style={{ fontSize:12 }}>Hey! Sorry we missed your call — Travis is on a job right now. What can we help with?</div>
-              <div className="ansa-chat-bubble ansa-chat-outgoing" style={{ fontSize:12 }}>Do you do storm damage inspections? We had hail last week</div>
-              <div className="ansa-chat-bubble ansa-chat-incoming" style={{ fontSize:12 }}>Yes, we do free storm damage inspections and work directly with insurance. Want to schedule one?</div>
-              <div className="ansa-chat-bubble ansa-chat-outgoing" style={{ fontSize:12 }}>How long does it take?</div>
-              <div className="ansa-chat-bubble ansa-chat-incoming" style={{ fontSize:12 }}>Usually 30–45 min. We take photos, document everything, and give you a full report for your claim.</div>
-            </div>
-          </div>
-          {/* Center — full booking (hero) */}
-          <div className="ansa-phone-center">
-            <div className="ansa-phone">
-              <div className="ansa-phone-notch" />
-              <div className="ansa-phone-header"><strong>Ansa</strong> · Text Conversation</div>
-              <div className="ansa-chat-bubble ansa-chat-incoming">Hey! Thanks for calling Mike's Plumbing — sorry we missed you. How can we help? 🔧</div>
-              <div className="ansa-chat-bubble ansa-chat-outgoing">Hi! I have a leaking faucet. Can someone come today?</div>
-              <div className="ansa-chat-bubble ansa-chat-incoming">Absolutely! We have a 2:00 PM slot open today. Want me to lock that in for you?</div>
-              <div className="ansa-chat-bubble ansa-chat-outgoing">Yes, perfect!</div>
-              <div className="ansa-chat-bubble ansa-chat-incoming">You're all set ✅ Confirmed today at 2:00 PM. We'll text when we're on the way!</div>
-              <div className="ansa-booked-banner">
-                <div className="ansa-booked-banner-dot" />
-                <div className="ansa-booked-banner-text">💼 New job booked: Leaking faucet · Marcus T. · Today 2:00 PM · Est. $280</div>
+          {[
+            (activePhone + 2) % 3,
+            activePhone,
+            (activePhone + 1) % 3,
+          ].map((idx, pos) => {
+            const p = HERO_PHONES[idx];
+            const isCenter = pos === 1;
+            return (
+              <div
+                key={idx}
+                className={`ansa-phone-slot ${isCenter ? 'is-center' : 'is-side'}`}
+                onClick={isCenter ? undefined : () => setActivePhone(idx)}
+              >
+                <div className="ansa-phone">
+                  <div className="ansa-phone-notch" />
+                  <div className="ansa-phone-status">
+                    <span className="ansa-phone-biz">{p.biz}</span>
+                    <span className="ansa-phone-time">{p.time}</span>
+                  </div>
+                  <div className="ansa-chat-area">
+                    {p.messages.map((m, i) => (
+                      <div key={i} className={`ansa-chat-bubble ${m.from === 'ai' ? 'ansa-chat-incoming' : 'ansa-chat-outgoing'}`}>
+                        {m.text}
+                      </div>
+                    ))}
+                    {p.banner && (
+                      <div className="ansa-booked-banner">
+                        <div className="ansa-booked-banner-dot" />
+                        <div className="ansa-booked-banner-text">{p.banner}</div>
+                      </div>
+                    )}
+                    {p.callbackBanner && (
+                      <div className="ansa-booked-banner" style={{ background:'rgba(79,110,247,.08)',borderColor:'rgba(79,110,247,.2)' }}>
+                        <div className="ansa-booked-banner-dot" style={{ background:'#4F6EF7' }} />
+                        <div className="ansa-booked-banner-text" style={{ color:'#818cf8' }}>{p.callbackBanner}</div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+                {!isCenter && <div className="ansa-phone-hint">tap to expand</div>}
               </div>
-            </div>
-          </div>
-          {/* Right — after hours, next-day booking */}
-          <div className="ansa-phone-side">
-            <div className="ansa-phone" style={{ fontSize:13 }}>
-              <div className="ansa-phone-notch" />
-              <div className="ansa-phone-header"><strong>Chen's HVAC</strong> · 11:42 PM</div>
-              <div className="ansa-chat-bubble ansa-chat-incoming" style={{ fontSize:12 }}>Hi! Chen's Heating & Air here — we're closed for the night but I can get you scheduled. What's going on?</div>
-              <div className="ansa-chat-bubble ansa-chat-outgoing" style={{ fontSize:12 }}>AC stopped working, its 85 degrees in here</div>
-              <div className="ansa-chat-bubble ansa-chat-incoming" style={{ fontSize:12 }}>That's urgent — I'm sorry! Our first slot tomorrow is 8:00 AM. Want me to lock that in for you?</div>
-              <div className="ansa-chat-bubble ansa-chat-outgoing" style={{ fontSize:12 }}>Yes please!</div>
-              <div className="ansa-booked-banner">
-                <div className="ansa-booked-banner-dot" />
-                <div className="ansa-booked-banner-text">📅 Booked overnight: AC repair · Lisa M. · Tomorrow 8:00 AM</div>
-              </div>
-            </div>
-          </div>
+            );
+          })}
         </div>
       </section>
 
