@@ -809,8 +809,8 @@ export default function LandingPage() {
           <a href="#/" className="ansa-logo">ansa<span>.</span></a>
           <div className="ansa-nav-links">
             <a href="#how-it-works" onClick={scrollTo('how-it-works')}>How It Works</a>
-            <a href="#features" onClick={scrollTo('features')}>Features</a>
-            <a href="#pricing" onClick={scrollTo('pricing')}>Pricing</a>
+            <a href="#product" onClick={scrollTo('product')}>See the Dashboard</a>
+            <a href="#pricing" onClick={scrollTo('pricing')}>Pro Plan</a>
             <a href="#faq" onClick={scrollTo('faq')}>FAQ</a>
             <a href="#/login" style={{ color:'#a1a1aa',textDecoration:'none',fontSize:'14px',fontWeight:'500' }}>Log In</a>
             <a href="#/signup" className="ansa-btn ansa-btn-blue" style={{ padding:'10px 22px',fontSize:14,color:'#fff' }}>Get Started</a>
@@ -821,8 +821,8 @@ export default function LandingPage() {
         </div>
         <div className={`ansa-nav-mobile-menu${mobileOpen?' open':''}`}>
           <a href="#how-it-works" onClick={scrollTo('how-it-works')}>How It Works</a>
-          <a href="#features" onClick={scrollTo('features')}>Features</a>
-          <a href="#pricing" onClick={scrollTo('pricing')}>Pricing</a>
+          <a href="#product" onClick={scrollTo('product')}>See the Dashboard</a>
+          <a href="#pricing" onClick={scrollTo('pricing')}>Pro Plan</a>
           <a href="#faq" onClick={scrollTo('faq')}>FAQ</a>
           <a href="#/login" style={{ color:'#a1a1aa',textDecoration:'none',fontSize:'15px',fontWeight:'500' }}>Log In</a>
           <a href="#/signup" className="ansa-btn ansa-btn-blue" style={{ padding:'10px 22px',fontSize:14,textAlign:'center',color:'#fff' }}>Get Started</a>
