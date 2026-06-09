@@ -47,7 +47,10 @@ const injectStyles = () => {
     /* Hero */
     .ansa-hero{position:relative;padding:160px 24px 80px;text-align:center;overflow:hidden}
     .ansa-hero-glow{position:absolute;top:-120px;left:50%;transform:translateX(-50%);width:720px;height:720px;border-radius:50%;background:radial-gradient(circle,rgba(79,110,247,.15) 0%,transparent 70%);pointer-events:none;animation:ansa-pulse 6s ease-in-out infinite}
-    .ansa-hero-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 16px;border-radius:999px;font-size:13px;font-weight:600;background:rgba(79,110,247,.1);border:1px solid rgba(79,110,247,.25);color:${PRIMARY_LIGHT};margin-bottom:28px;animation:ansa-fadeUp .7s ease both}
+    .ansa-hero-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 16px;border-radius:999px;font-size:13px;font-weight:600;background:rgba(79,110,247,.1);border:1px solid rgba(79,110,247,.25);color:${PRIMARY_LIGHT};margin-bottom:16px;animation:ansa-fadeUp .7s ease both}
+    .ansa-hero-announce{display:inline-flex;align-items:center;gap:7px;padding:6px 14px 6px 10px;border-radius:999px;font-size:13px;font-weight:500;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#a1a1aa;text-decoration:none;margin-bottom:28px;animation:ansa-fadeUp .8s ease .1s both;transition:border-color .2s,color .2s}
+    .ansa-hero-announce:hover{border-color:rgba(79,110,247,.5);color:#fff}
+    .ansa-hero-announce-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;flex-shrink:0;box-shadow:0 0 6px #22c55e}
     .ansa-hero h1{font-size:clamp(36px,5.5vw,64px);font-weight:900;line-height:1.08;max-width:820px;margin:0 auto 24px;letter-spacing:-1.5px;animation:ansa-fadeUp .7s ease .1s both}
     .ansa-hero-sub{font-size:clamp(16px,2vw,19px);color:#a1a1aa;max-width:620px;margin:0 auto 40px;line-height:1.65;animation:ansa-fadeUp .7s ease .2s both}
     .ansa-hero-ctas{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;animation:ansa-fadeUp .7s ease .3s both}
@@ -203,7 +206,9 @@ const injectStyles = () => {
     .ansa-showcase-dots span:nth-child(1){background:#ef4444}
     .ansa-showcase-dots span:nth-child(2){background:#f59e0b}
     .ansa-showcase-dots span:nth-child(3){background:#22c55e}
-    .ansa-showcase-url{flex:1;background:#0a0a0a;border:1px solid #1e1e1e;border-radius:6px;padding:4px 12px;font-size:12px;color:#555;text-align:center;font-family:monospace;letter-spacing:.2px}
+    .ansa-showcase-url{flex:1;background:#0a0a0a;border:1px solid #1e1e1e;border-radius:6px;padding:4px 12px;font-size:12px;color:#888;text-align:center;font-family:-apple-system,BlinkMacSystemFont,sans-serif;display:flex;align-items:center;justify-content:center;gap:5px}
+    .ansa-showcase-url svg{color:#22c55e;flex-shrink:0}
+    .ansa-showcase-url span{color:#aaa;font-weight:500}.ansa-showcase-url em{color:#555;font-style:normal}
     .ansa-showcase-app{display:flex;height:500px;overflow:hidden}
     .ansa-showcase-sidebar{width:196px;flex-shrink:0;background:#0d0d0d;border-right:1px solid #1a1a1a;padding:0;display:flex;flex-direction:column}
     .ansa-showcase-logo{padding:16px;font-size:17px;font-weight:800;color:#fff;border-bottom:1px solid #1a1a1a;margin-bottom:6px;letter-spacing:-.3px}
@@ -264,6 +269,7 @@ const FAQ_DATA = [
   { q:"How fast does Ansa respond?", a:"The first text-back fires within 10–15 seconds of a missed call. Speed matters — research shows the first business to respond wins the job over 70% of the time. Ansa beats every competitor on response time." },
   { q:"Can I jump into a conversation?", a:"Yes — open your dashboard, tap any active conversation, and take over instantly. The AI steps back the moment you reply. You stay in full control at all times." },
   { q:"Is there a setup fee or long-term contract?", a:"No setup fee, no contracts. Ansa is month-to-month. Start your 30-day free trial today, and if it's not the best decision you've made for your business, cancel with one click — no questions asked." },
+  { q:"Can I approve bookings before they're confirmed?", a:"Yes — turn on 'Require approval before confirming' in Settings. When it's on, the AI holds appointments as pending and texts the customer that you'll confirm shortly. You'll see a Confirm button in your Appointments dashboard. One tap confirms it, sends the customer a confirmation text, and adds the job to your Google Calendar." },
 ];
 
 const TESTIMONIALS = [
@@ -728,7 +734,10 @@ function DashboardShowcase() {
         {/* Browser chrome */}
         <div className="ansa-showcase-chrome">
           <div className="ansa-showcase-dots"><span/><span/><span/></div>
-          <div className="ansa-showcase-url">app.ansaco.ai/dashboard</div>
+          <div className="ansa-showcase-url">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <span>ansaco.ai</span>
+          </div>
         </div>
         <div className="ansa-showcase-app">
           {/* Sidebar */}
@@ -833,6 +842,10 @@ export default function LandingPage() {
       <section className="ansa-hero">
         <div className="ansa-hero-glow" />
         <div className="ansa-hero-badge"><Zap size={14} /> Built for Home Service Pros</div>
+        <a href="#product" onClick={scrollTo('product')} className="ansa-hero-announce">
+          <span className="ansa-hero-announce-dot" />
+          See the live dashboard <ArrowRight size={13} />
+        </a>
         <h1>Every Missed Call Is a Job You Didn't Book</h1>
         <p className="ansa-hero-sub">
           Built for contractors, plumbers, roofers, and HVAC pros — Ansa texts back within 15 seconds of a missed call, answers their questions with AI, and books the appointment. While you're still on the job.

@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const supabase = require('../services/supabase');
 const twilio = require('twilio');
+const { bookAppointment } = require('../services/calendar');
 
 const twilioClient = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TOKEN);
 const WEBHOOK_BASE = process.env.RAILWAY_PUBLIC_DOMAIN
@@ -129,14 +130,54 @@ router.patch('/appointments/:id', async (req, res) => {
   const { status } = req.body;
   const allowed = ['confirmed', 'pending', 'completed', 'cancelled'];
   if (!allowed.includes(status)) return res.status(400).json({ error: 'Invalid status' });
-  const { data, error } = await supabase
+
+  const { data: appt, error: apptErr } = await supabase
     .from('appointments')
     .update({ status })
     .eq('id', req.params.id)
     .select()
     .single();
-  if (error) return res.status(500).json({ error: error.message });
-  res.json(data);
+  if (apptErr) return res.status(500).json({ error: apptErr.message });
+
+  // When owner confirms a pending appointment: send SMS + book calendar
+  if (status === 'confirmed') {
+    try {
+      const { data: biz } = await supabase
+        .from('businesses')
+        .select('*')
+        .eq('id', appt.business_id)
+        .single();
+
+      if (biz) {
+        // Send confirmation SMS to customer
+        if (biz.twilio_number && appt.customer_phone) {
+          const dt = new Date(appt.scheduled_at);
+          const dateStr = dt.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric' });
+          const timeStr = dt.toLocaleTimeString('en-US', { hour:'numeric', minute:'2-digit', hour12:true });
+          await twilioClient.messages.create({
+            body: `Hi ${appt.customer_name || 'there'} — your appointment with ${biz.name} is confirmed for ${dateStr} at ${timeStr}. We'll see you then!`,
+            from: biz.twilio_number,
+            to: appt.customer_phone,
+          });
+        }
+
+        // Book Google Calendar event
+        const booking = await bookAppointment(
+          biz.id, biz, appt.scheduled_at,
+          appt.customer_name, appt.service_description
+        );
+        if (booking.eventId) {
+          await supabase.from('appointments').update({ google_event_id: booking.eventId }).eq('id', appt.id);
+          appt.google_event_id = booking.eventId;
+        }
+      }
+    } catch (e) {
+      console.error('[Confirm] SMS/calendar error:', e.message);
+      // Don't fail the request — status is already confirmed
+    }
+  }
+
+  res.json(appt);
 });
 
 // POST /api/conversations/:id/send
