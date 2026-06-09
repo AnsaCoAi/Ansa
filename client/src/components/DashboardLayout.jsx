@@ -108,7 +108,9 @@ export default function DashboardLayout({ children, currentHash }) {
             <a href="#/dashboard/settings" style={{ color: '#3b82f6', fontWeight: 600, textDecoration: 'none' }}>Upgrade to Pro →</a>
           </div>
         )}
-        <main style={styles.content}>{children}</main>
+        <main style={styles.content}>
+          <div key={currentHash} className="ansa-page">{children}</div>
+        </main>
       </div>
       <style>{`
         @media (min-width: 768px) {
