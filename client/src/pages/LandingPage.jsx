@@ -195,6 +195,48 @@ const injectStyles = () => {
     .ansa-sticky-cta{display:none;position:fixed;bottom:0;left:0;right:0;padding:12px 16px 20px;background:rgba(10,10,10,.96);border-top:1px solid #1e1e1e;z-index:98;backdrop-filter:blur(12px)}
     .ansa-sticky-cta a{display:flex;align-items:center;justify-content:center;gap:8px;background:${PRIMARY};color:#fff;font-size:15px;font-weight:700;padding:14px;border-radius:12px;text-decoration:none;box-shadow:0 0 24px rgba(79,110,247,.4)}
 
+    /* Dashboard Showcase */
+    .ansa-showcase-wrap{border-radius:16px;overflow:hidden;border:1px solid #222;background:#0d0d0d;box-shadow:0 40px 100px rgba(0,0,0,.7),0 0 80px rgba(79,110,247,.07)}
+    .ansa-showcase-chrome{background:#141414;border-bottom:1px solid #1a1a1a;padding:11px 16px;display:flex;align-items:center;gap:12px}
+    .ansa-showcase-dots{display:flex;gap:6px}
+    .ansa-showcase-dots span{width:11px;height:11px;border-radius:50%}
+    .ansa-showcase-dots span:nth-child(1){background:#ef4444}
+    .ansa-showcase-dots span:nth-child(2){background:#f59e0b}
+    .ansa-showcase-dots span:nth-child(3){background:#22c55e}
+    .ansa-showcase-url{flex:1;background:#0a0a0a;border:1px solid #1e1e1e;border-radius:6px;padding:4px 12px;font-size:12px;color:#555;text-align:center;font-family:monospace;letter-spacing:.2px}
+    .ansa-showcase-app{display:flex;height:500px;overflow:hidden}
+    .ansa-showcase-sidebar{width:196px;flex-shrink:0;background:#0d0d0d;border-right:1px solid #1a1a1a;padding:0;display:flex;flex-direction:column}
+    .ansa-showcase-logo{padding:16px;font-size:17px;font-weight:800;color:#fff;border-bottom:1px solid #1a1a1a;margin-bottom:6px;letter-spacing:-.3px}
+    .ansa-showcase-logo span{color:#4F6EF7}
+    .ansa-showcase-nav-item{display:flex;align-items:center;gap:9px;padding:9px 16px;font-size:12.5px;font-weight:500;color:#555;transition:all .15s}
+    .ansa-showcase-nav-item.active{color:#fff;background:rgba(255,255,255,.04);border-right:2px solid #4F6EF7}
+    .ansa-showcase-main{flex:1;overflow:hidden;background:#0a0a0a;position:relative}
+    .ansa-showcase-view{position:absolute;inset:0;overflow-y:auto;padding:20px;opacity:0;transition:opacity .35s ease;pointer-events:none}
+    .ansa-showcase-view.active{opacity:1;pointer-events:auto}
+    .ansa-showcase-tabs-row{display:flex;justify-content:center;gap:8px;margin-top:16px}
+    .ansa-showcase-tab-btn{padding:7px 18px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;border:1px solid #222;background:transparent;color:#71717a;transition:all .2s;font-family:inherit}
+    .ansa-showcase-tab-btn:hover{border-color:#333;color:#ccc}
+    .ansa-showcase-tab-btn.active{background:#4F6EF7;color:#fff;border-color:#4F6EF7}
+    .ansa-showcase-progress{height:2px;background:#1a1a1a;border-radius:1px;margin:10px auto 0;overflow:hidden;max-width:220px}
+    .ansa-showcase-progress-bar{height:100%;background:#4F6EF7;border-radius:1px}
+    .ansa-mini-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:10px}
+    .ansa-mini-stat{background:#141414;border:1px solid #1e1e1e;border-radius:9px;padding:12px 14px;display:flex;align-items:center;gap:10px}
+    .ansa-mini-stat-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+    .ansa-mini-stat-val{font-size:20px;font-weight:700;color:#fff;line-height:1}
+    .ansa-mini-stat-label{font-size:10.5px;color:#71717a;margin-top:2px}
+    .ansa-mini-chart{background:#141414;border:1px solid #1e1e1e;border-radius:9px;padding:14px;margin-bottom:10px}
+    .ansa-mini-chart-title{font-size:12px;font-weight:600;color:#fff;margin-bottom:10px}
+    .ansa-mini-bars{display:flex;align-items:flex-end;gap:5px;height:72px}
+    .ansa-mini-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}
+    .ansa-mini-bar{width:100%;border-radius:2px 2px 0 0}
+    .ansa-mini-bar-label{font-size:9.5px;color:#3f3f46}
+    .ansa-mini-conv{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:#141414;border:1px solid #1e1e1e;border-radius:8px;margin-bottom:5px}
+    .ansa-mini-conv-phone{font-size:12.5px;font-weight:600;color:#fff;margin-bottom:2px}
+    .ansa-mini-conv-last{font-size:11px;color:#71717a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px}
+    .ansa-mini-badge{font-size:10px;font-weight:600;padding:3px 8px;border-radius:999px;white-space:nowrap}
+    .ansa-funnel-row{margin-bottom:9px}
+    .ansa-funnel-bar-outer{width:100%;height:20px;background:#1a1a1a;border-radius:5px;overflow:hidden}
+    .ansa-funnel-bar-inner{height:100%;border-radius:5px}
     @media(max-width:768px){
       .ansa-problem-grid,.ansa-testimonials{grid-template-columns:1fr}
       .ansa-chess-row,.ansa-chess-row.flip{grid-template-columns:1fr;direction:ltr}
@@ -207,6 +249,9 @@ const injectStyles = () => {
       .ansa-proof-stats{gap:24px;flex-wrap:wrap}
       .ansa-sticky-cta{display:block}
       .ansa-final-cta-inner{padding:48px 24px}
+      .ansa-showcase-sidebar{display:none}
+      .ansa-showcase-app{height:380px}
+      .ansa-mini-grid{grid-template-columns:repeat(2,1fr)}
     }
   `;
   document.head.appendChild(style);
@@ -350,6 +395,257 @@ const PROOF_ITEMS = [
   'Plumbers', 'HVAC Techs', 'Roofers', 'Electricians', 'Landscapers',
   'General Contractors', 'Painters', 'Pest Control', 'Pool Service', 'Garage Door Pros',
 ];
+
+// ─── Dashboard Showcase ───────────────────────────────────────────────────────
+
+const MOCK_WEEKLY = [
+  { day:'Mon', calls:4, bookings:2 },
+  { day:'Tue', calls:3, bookings:1 },
+  { day:'Wed', calls:6, bookings:4 },
+  { day:'Thu', calls:2, bookings:1 },
+  { day:'Fri', calls:7, bookings:5 },
+  { day:'Sat', calls:5, bookings:3 },
+  { day:'Sun', calls:3, bookings:2 },
+];
+
+const MOCK_CONVS = [
+  { phone:'(949) 555-0182', last:'Yes, 2:00 PM works perfectly!', status:'booked', time:'12m ago' },
+  { phone:'(714) 555-0347', last:'Do you do tankless water heaters?', status:'active', time:'34m ago' },
+  { phone:'(562) 555-0901', last:'Thanks, we got it sorted.', status:'closed', time:'2h ago' },
+  { phone:'(310) 555-0264', last:'What areas do you service?', status:'active', time:'3h ago' },
+  { phone:'(949) 555-0773', last:'Appointment confirmed for tomorrow!', status:'booked', time:'5h ago' },
+];
+
+const SC = {
+  booked: { color:'#22c55e', bg:'rgba(34,197,94,0.15)' },
+  active:  { color:'#4F6EF7', bg:'rgba(79,110,247,0.15)' },
+  closed:  { color:'#6b7280', bg:'rgba(107,114,128,0.15)' },
+};
+
+function ShowcaseOverview() {
+  return (
+    <div>
+      <div style={{ fontSize:16,fontWeight:700,color:'#fff',marginBottom:2 }}>Good afternoon, John</div>
+      <div style={{ fontSize:11,color:'#555',marginBottom:14 }}>Here's what happened while you were on the job.</div>
+      <div className="ansa-mini-grid">
+        {[
+          { color:'#4F6EF7', val:'3', label:'Missed Calls Today' },
+          { color:'#8b5cf6', val:'100%', label:'Response Rate' },
+          { color:'#22c55e', val:'67%', label:'Booking Rate' },
+          { color:'#f59e0b', val:'8', label:'Jobs Booked' },
+        ].map((s,i) => (
+          <div key={i} className="ansa-mini-stat">
+            <div className="ansa-mini-stat-dot" style={{ background:s.color }} />
+            <div>
+              <div className="ansa-mini-stat-val">{s.val}</div>
+              <div className="ansa-mini-stat-label">{s.label}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="ansa-mini-chart">
+        <div className="ansa-mini-chart-title">This Week</div>
+        <div className="ansa-mini-bars">
+          {MOCK_WEEKLY.map((d,i) => (
+            <div key={i} className="ansa-mini-bar-wrap">
+              <div style={{ flex:1,display:'flex',alignItems:'flex-end',gap:2,width:'100%' }}>
+                <div className="ansa-mini-bar" style={{ background:'#4F6EF7',height:`${(d.calls/7)*100}%`,flex:1,minHeight:3 }} />
+                <div className="ansa-mini-bar" style={{ background:'#22c55e',height:`${(d.bookings/7)*100}%`,flex:1,minHeight:3 }} />
+              </div>
+              <div className="ansa-mini-bar-label">{d.day}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ display:'flex',gap:12,marginTop:8 }}>
+          {[['#4F6EF7','Calls'],['#22c55e','Booked']].map(([c,l]) => (
+            <span key={l} style={{ fontSize:10,color:'#555',display:'flex',alignItems:'center',gap:4 }}>
+              <span style={{ width:8,height:8,borderRadius:2,background:c,display:'inline-block' }} />{l}
+            </span>
+          ))}
+        </div>
+      </div>
+      <div className="ansa-mini-chart" style={{ marginBottom:0 }}>
+        <div className="ansa-mini-chart-title">Recent Activity</div>
+        {MOCK_CONVS.slice(0,3).map((c,i) => (
+          <div key={i} style={{ display:'flex',justifyContent:'space-between',alignItems:'center',padding:'7px 0',borderBottom:i<2?'1px solid #1a1a1a':'none' }}>
+            <div>
+              <div style={{ fontSize:12,fontWeight:600,color:'#fff' }}>{c.phone}</div>
+              <div style={{ fontSize:10,color:'#555' }}>{c.time}</div>
+            </div>
+            <span className="ansa-mini-badge" style={{ color:SC[c.status].color, background:SC[c.status].bg }}>{c.status}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ShowcaseConversations() {
+  const [tab, setTab] = useState('all');
+  const filtered = tab === 'all' ? MOCK_CONVS : MOCK_CONVS.filter(c => c.status === tab);
+  return (
+    <div>
+      <div style={{ fontSize:16,fontWeight:700,color:'#fff',marginBottom:12 }}>Conversations</div>
+      <div style={{ display:'flex',gap:3,marginBottom:12,background:'#141414',borderRadius:7,padding:3,width:'fit-content' }}>
+        {['all','active','booked','closed'].map(t => (
+          <button key={t} onClick={() => setTab(t)}
+            style={{ padding:'5px 11px',borderRadius:5,fontSize:11,fontWeight:500,cursor:'pointer',
+              background:tab===t?'#222':'transparent',color:tab===t?'#fff':'#666',border:'none',
+              fontFamily:'inherit',textTransform:'capitalize' }}>
+            {t}
+          </button>
+        ))}
+      </div>
+      {filtered.map((c,i) => (
+        <div key={i} className="ansa-mini-conv">
+          <div style={{ minWidth:0 }}>
+            <div className="ansa-mini-conv-phone">{c.phone}</div>
+            <div className="ansa-mini-conv-last">{c.last}</div>
+          </div>
+          <div style={{ display:'flex',flexDirection:'column',alignItems:'flex-end',gap:3,flexShrink:0,marginLeft:8 }}>
+            <span className="ansa-mini-badge" style={{ color:SC[c.status].color, background:SC[c.status].bg }}>{c.status}</span>
+            <span style={{ fontSize:10,color:'#555' }}>{c.time}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ShowcaseAnalytics() {
+  const funnel = [
+    { label:'Missed Calls', val:31, pct:100, color:'#4F6EF7' },
+    { label:'SMS Sent', val:31, pct:100, color:'#8b5cf6' },
+    { label:'Customer Replied', val:24, pct:77, color:'#f59e0b' },
+    { label:'Booked', val:14, pct:45, color:'#22c55e' },
+  ];
+  return (
+    <div>
+      <div style={{ fontSize:16,fontWeight:700,color:'#fff',marginBottom:12 }}>Analytics</div>
+      <div className="ansa-mini-grid">
+        {[
+          { color:'#4F6EF7', val:'31', label:'Total Calls' },
+          { color:'#8b5cf6', val:'100%', label:'Response Rate' },
+          { color:'#22c55e', val:'45%', label:'Booking Rate' },
+          { color:'#f59e0b', val:'14', label:'Jobs Booked' },
+        ].map((s,i) => (
+          <div key={i} className="ansa-mini-stat">
+            <div className="ansa-mini-stat-dot" style={{ background:s.color }} />
+            <div>
+              <div className="ansa-mini-stat-val">{s.val}</div>
+              <div className="ansa-mini-stat-label">{s.label}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="ansa-mini-chart">
+        <div className="ansa-mini-chart-title">This Week's Activity</div>
+        <div className="ansa-mini-bars">
+          {MOCK_WEEKLY.map((d,i) => (
+            <div key={i} className="ansa-mini-bar-wrap">
+              <div style={{ flex:1,display:'flex',alignItems:'flex-end',gap:2,width:'100%' }}>
+                <div className="ansa-mini-bar" style={{ background:'#4F6EF7',height:`${(d.calls/7)*100}%`,flex:1,minHeight:3 }} />
+                <div className="ansa-mini-bar" style={{ background:'#22c55e',height:`${(d.bookings/7)*100}%`,flex:1,minHeight:3 }} />
+              </div>
+              <div className="ansa-mini-bar-label">{d.day}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="ansa-mini-chart" style={{ marginBottom:0 }}>
+        <div className="ansa-mini-chart-title">Conversion Funnel</div>
+        {funnel.map((f,i) => (
+          <div key={i} className="ansa-funnel-row">
+            <div style={{ display:'flex',justifyContent:'space-between',marginBottom:4 }}>
+              <span style={{ fontSize:11,color:'#a1a1aa',fontWeight:500 }}>{f.label}</span>
+              <span style={{ fontSize:11,color:'#555' }}>{f.val}</span>
+            </div>
+            <div className="ansa-funnel-bar-outer">
+              <div className="ansa-funnel-bar-inner" style={{ width:`${f.pct}%`,background:f.color }} />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+const SHOWCASE_TABS = ['Overview', 'Conversations', 'Analytics'];
+const SIDEBAR_NAV = [
+  { label:'Overview', emoji:'⊞' },
+  { label:'Missed Calls', emoji:'✆' },
+  { label:'Conversations', emoji:'✉' },
+  { label:'Appointments', emoji:'▦' },
+  { label:'Analytics', emoji:'↗' },
+  { label:'Settings', emoji:'⚙' },
+];
+const TAB_TO_NAV = { 0:'Overview', 1:'Conversations', 2:'Analytics' };
+const SHOWCASE_DURATION = 5000;
+
+function DashboardShowcase() {
+  const [tab, setTab] = useState(0);
+  const [progress, setProgress] = useState(0);
+  const tabRef = useRef(tab);
+  tabRef.current = tab;
+
+  useEffect(() => {
+    let start = null;
+    let raf;
+    const animate = ts => {
+      if (!start) start = ts;
+      const elapsed = ts - start;
+      const pct = Math.min((elapsed / SHOWCASE_DURATION) * 100, 100);
+      setProgress(pct);
+      if (elapsed < SHOWCASE_DURATION) {
+        raf = requestAnimationFrame(animate);
+      } else {
+        setTab(t => (t + 1) % SHOWCASE_TABS.length);
+      }
+    };
+    raf = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(raf);
+  }, [tab]);
+
+  const handleTabClick = i => { setTab(i); setProgress(0); };
+  const activeNav = TAB_TO_NAV[tab];
+
+  return (
+    <div>
+      <div className="ansa-showcase-wrap">
+        <div className="ansa-showcase-chrome">
+          <div className="ansa-showcase-dots"><span /><span /><span /></div>
+          <div className="ansa-showcase-url">app.ansaco.ai/dashboard</div>
+        </div>
+        <div className="ansa-showcase-app">
+          <div className="ansa-showcase-sidebar">
+            <div className="ansa-showcase-logo">ansa<span>.</span></div>
+            {SIDEBAR_NAV.map(item => (
+              <div key={item.label} className={`ansa-showcase-nav-item${activeNav===item.label?' active':''}`}>
+                <span style={{ fontSize:13,fontFamily:'monospace',width:16,textAlign:'center' }}>{item.emoji}</span>
+                <span>{item.label}</span>
+              </div>
+            ))}
+          </div>
+          <div className="ansa-showcase-main">
+            <div className={`ansa-showcase-view${tab===0?' active':''}`}><ShowcaseOverview /></div>
+            <div className={`ansa-showcase-view${tab===1?' active':''}`}><ShowcaseConversations /></div>
+            <div className={`ansa-showcase-view${tab===2?' active':''}`}><ShowcaseAnalytics /></div>
+          </div>
+        </div>
+      </div>
+      <div className="ansa-showcase-tabs-row">
+        {SHOWCASE_TABS.map((t,i) => (
+          <button key={i} onClick={() => handleTabClick(i)} className={`ansa-showcase-tab-btn${tab===i?' active':''}`}>{t}</button>
+        ))}
+      </div>
+      <div className="ansa-showcase-progress">
+        <div className="ansa-showcase-progress-bar" style={{ width:`${progress}%`,transition:progress===0?'none':'width .1s linear' }} />
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 
 export default function LandingPage() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -593,6 +889,19 @@ export default function LandingPage() {
               <f.Visual />
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* Dashboard Showcase */}
+      <div className="ansa-divider" />
+      <section className="ansa-section" id="product">
+        <div className="ansa-reveal">
+          <p className="ansa-section-label">The Product</p>
+          <h2 className="ansa-section-title">Your Command Center for Every Lead</h2>
+          <p className="ansa-section-sub">Real-time dashboard. Every missed call, every conversation, every booked job — the moment it happens.</p>
+        </div>
+        <div className="ansa-reveal">
+          <DashboardShowcase />
         </div>
       </section>
 
