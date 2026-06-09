@@ -55,6 +55,10 @@ const injectStyles = () => {
     .ansa-hero-sub{font-size:clamp(16px,2vw,19px);color:#a1a1aa;max-width:620px;margin:0 auto 40px;line-height:1.65;animation:ansa-fadeUp .7s ease .2s both}
     .ansa-hero-ctas{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;animation:ansa-fadeUp .7s ease .3s both}
     .ansa-phone-wrap{margin:64px auto 0;max-width:380px;animation:ansa-fadeUp .8s ease .5s both}
+    .ansa-phones-row{display:flex;justify-content:center;align-items:flex-end;gap:20px;margin:64px auto 0;max-width:1100px;padding:0 24px}
+    .ansa-phone-side{flex:1;max-width:300px;opacity:.7;transform:scale(.93);transform-origin:bottom center;transition:opacity .2s}
+    .ansa-phone-center{flex:1;max-width:340px}
+    @media(max-width:768px){.ansa-phone-side{display:none!important}.ansa-phones-row{max-width:380px}}
     .ansa-phone{background:#141414;border:1px solid #2a2a2a;border-radius:28px;padding:20px 18px;position:relative;box-shadow:0 24px 80px rgba(0,0,0,.5),0 0 60px rgba(79,110,247,.08);animation:ansa-float 6s ease-in-out infinite}
     .ansa-phone-notch{width:120px;height:6px;background:#222;border-radius:99px;margin:0 auto 20px}
     .ansa-phone-header{font-size:13px;color:#a1a1aa;text-align:center;margin-bottom:18px;font-weight:500}
@@ -867,18 +871,48 @@ export default function LandingPage() {
           <a href="#how-it-works" className="ansa-btn ansa-btn-outline" onClick={scrollTo('how-it-works')}>See How It Works</a>
         </div>
         <div className="ansa-trust-line">No credit card required &nbsp;·&nbsp; Setup in 5 minutes &nbsp;·&nbsp; Cancel anytime</div>
-        <div className="ansa-phone-wrap">
-          <div className="ansa-phone">
-            <div className="ansa-phone-notch" />
-            <div className="ansa-phone-header"><strong>Ansa</strong> · Text Conversation</div>
-            <div className="ansa-chat-bubble ansa-chat-incoming">Hey! Thanks for calling Mike's Plumbing — sorry we missed you. How can we help? 🔧</div>
-            <div className="ansa-chat-bubble ansa-chat-outgoing">Hi! I have a leaking faucet. Can someone come today?</div>
-            <div className="ansa-chat-bubble ansa-chat-incoming">Absolutely! We have a 2:00 PM slot open today. Want me to lock that in for you?</div>
-            <div className="ansa-chat-bubble ansa-chat-outgoing">Yes, perfect!</div>
-            <div className="ansa-chat-bubble ansa-chat-incoming">You're all set ✅ Confirmed today at 2:00 PM. We'll text when we're on the way!</div>
-            <div className="ansa-booked-banner">
-              <div className="ansa-booked-banner-dot" />
-              <div className="ansa-booked-banner-text">💼 New job booked: Leaking faucet · Marcus T. · Today 2:00 PM · Est. $280</div>
+        <div className="ansa-phones-row">
+          {/* Left — AI answering questions */}
+          <div className="ansa-phone-side">
+            <div className="ansa-phone" style={{ fontSize:13 }}>
+              <div className="ansa-phone-notch" />
+              <div className="ansa-phone-header"><strong>Peak Roofing</strong> · Just now</div>
+              <div className="ansa-chat-bubble ansa-chat-incoming" style={{ fontSize:12 }}>Hey! Sorry we missed your call — Travis is on a job right now. What can we help with?</div>
+              <div className="ansa-chat-bubble ansa-chat-outgoing" style={{ fontSize:12 }}>Do you do storm damage inspections? We had hail last week</div>
+              <div className="ansa-chat-bubble ansa-chat-incoming" style={{ fontSize:12 }}>Yes, we do free storm damage inspections and work directly with insurance. Want to schedule one?</div>
+              <div className="ansa-chat-bubble ansa-chat-outgoing" style={{ fontSize:12 }}>How long does it take?</div>
+              <div className="ansa-chat-bubble ansa-chat-incoming" style={{ fontSize:12 }}>Usually 30–45 min. We take photos, document everything, and give you a full report for your claim.</div>
+            </div>
+          </div>
+          {/* Center — full booking (hero) */}
+          <div className="ansa-phone-center">
+            <div className="ansa-phone">
+              <div className="ansa-phone-notch" />
+              <div className="ansa-phone-header"><strong>Ansa</strong> · Text Conversation</div>
+              <div className="ansa-chat-bubble ansa-chat-incoming">Hey! Thanks for calling Mike's Plumbing — sorry we missed you. How can we help? 🔧</div>
+              <div className="ansa-chat-bubble ansa-chat-outgoing">Hi! I have a leaking faucet. Can someone come today?</div>
+              <div className="ansa-chat-bubble ansa-chat-incoming">Absolutely! We have a 2:00 PM slot open today. Want me to lock that in for you?</div>
+              <div className="ansa-chat-bubble ansa-chat-outgoing">Yes, perfect!</div>
+              <div className="ansa-chat-bubble ansa-chat-incoming">You're all set ✅ Confirmed today at 2:00 PM. We'll text when we're on the way!</div>
+              <div className="ansa-booked-banner">
+                <div className="ansa-booked-banner-dot" />
+                <div className="ansa-booked-banner-text">💼 New job booked: Leaking faucet · Marcus T. · Today 2:00 PM · Est. $280</div>
+              </div>
+            </div>
+          </div>
+          {/* Right — after hours, next-day booking */}
+          <div className="ansa-phone-side">
+            <div className="ansa-phone" style={{ fontSize:13 }}>
+              <div className="ansa-phone-notch" />
+              <div className="ansa-phone-header"><strong>Chen's HVAC</strong> · 11:42 PM</div>
+              <div className="ansa-chat-bubble ansa-chat-incoming" style={{ fontSize:12 }}>Hi! Chen's Heating & Air here — we're closed for the night but I can get you scheduled. What's going on?</div>
+              <div className="ansa-chat-bubble ansa-chat-outgoing" style={{ fontSize:12 }}>AC stopped working, its 85 degrees in here</div>
+              <div className="ansa-chat-bubble ansa-chat-incoming" style={{ fontSize:12 }}>That's urgent — I'm sorry! Our first slot tomorrow is 8:00 AM. Want me to lock that in for you?</div>
+              <div className="ansa-chat-bubble ansa-chat-outgoing" style={{ fontSize:12 }}>Yes please!</div>
+              <div className="ansa-booked-banner">
+                <div className="ansa-booked-banner-dot" />
+                <div className="ansa-booked-banner-text">📅 Booked overnight: AC repair · Lisa M. · Tomorrow 8:00 AM</div>
+              </div>
             </div>
           </div>
         </div>
