@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Calendar, Clock, User, Tag, FileText, List, CalendarDays, Eye, XCircle } from 'lucide-react';
+import { Calendar, Clock, User, Tag, List, CalendarDays, Eye, XCircle, CheckCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
 
@@ -77,6 +77,15 @@ export default function AppointmentsPage() {
       setAppointments(prev => prev.map(a => a.id === id ? { ...a, status: 'cancelled' } : a));
     } catch (_) {
       alert('Failed to cancel appointment. Please try again.');
+    }
+  };
+
+  const confirmAppointment = async (id) => {
+    try {
+      await api.updateAppointment(id, { status: 'confirmed' });
+      setAppointments(prev => prev.map(a => a.id === id ? { ...a, status: 'confirmed' } : a));
+    } catch (_) {
+      alert('Failed to confirm appointment. Please try again.');
     }
   };
 
@@ -166,6 +175,11 @@ export default function AppointmentsPage() {
                 title={apt.conversation_id ? 'View conversation' : 'No conversation linked'}>
                 <Eye size={13} /> View Details
               </button>
+              {apt.status === 'pending' && (
+                <button style={{ ...styles.actionBtn(true), background: 'rgba(34,197,94,0.15)', borderColor: 'rgba(34,197,94,0.3)', color: '#22c55e' }} onClick={() => confirmAppointment(apt.id)}>
+                  <CheckCircle size={13} /> Confirm
+                </button>
+              )}
               {(apt.status === 'confirmed' || apt.status === 'pending') && (
                 <button style={styles.actionBtn(false)} onClick={() => cancelAppointment(apt.id)}>
                   <XCircle size={13} /> Cancel

@@ -100,27 +100,58 @@ router.post("/sms", async (req, res) => {
 
       if (match) {
         const dateTimeISO = new Date(match[1]).toISOString();
-        const booking = await bookAppointment(business.id, business, dateTimeISO, From, Body);
+        const requireApproval = !!business.require_approval;
 
-        await supabase.from("appointments").insert({
-          business_id: business.id,
-          conversation_id: conversation.id,
-          customer_phone: From,
-          service_description: Body,
-          scheduled_at: dateTimeISO,
-          google_event_id: booking.eventId || null,
-          status: "booked",
-        });
+        if (requireApproval) {
+          // Hold as pending — don't book calendar yet
+          await supabase.from("appointments").insert({
+            business_id: business.id,
+            conversation_id: conversation.id,
+            customer_phone: From,
+            service_description: Body,
+            scheduled_at: dateTimeISO,
+            google_event_id: null,
+            status: "pending",
+          });
 
-        await supabase
-          .from("conversations")
-          .update({ status: "booked" })
-          .eq("id", conversation.id);
+          await supabase
+            .from("conversations")
+            .update({ status: "active" })
+            .eq("id", conversation.id);
 
-        await notifyOwner(business, From, `${match[1]} — ${Body}`, "booked");
+          await notifyOwner(business, From, `Pending approval: ${match[1]} — ${Body}`, "pending");
+
+          // Override the AI reply to tell customer we'll confirm shortly
+          const pendingReply = cleanReply.replace(
+            /you('re| are) (all set|confirmed|booked)[^.!]*/i,
+            "we'll confirm your appointment shortly"
+          );
+          await sendSMS(From, To, pendingReply.includes("confirm") ? pendingReply : `Got it! We'll review and confirm your appointment for ${match[1]}. You'll hear from us shortly.`);
+        } else {
+          // Standard flow — book immediately
+          const booking = await bookAppointment(business.id, business, dateTimeISO, From, Body);
+
+          await supabase.from("appointments").insert({
+            business_id: business.id,
+            conversation_id: conversation.id,
+            customer_phone: From,
+            service_description: Body,
+            scheduled_at: dateTimeISO,
+            google_event_id: booking.eventId || null,
+            status: "booked",
+          });
+
+          await supabase
+            .from("conversations")
+            .update({ status: "booked" })
+            .eq("id", conversation.id);
+
+          await notifyOwner(business, From, `${match[1]} — ${Body}`, "booked");
+          await sendSMS(From, To, cleanReply);
+        }
+      } else {
+        await sendSMS(From, To, cleanReply);
       }
-
-      await sendSMS(From, To, cleanReply);
     } else {
       await sendSMS(From, To, aiReply);
     }

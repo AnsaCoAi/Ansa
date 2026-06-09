@@ -32,7 +32,7 @@ router.get('/conversations/:id', async (req, res) => {
 
 // PATCH /api/businesses/:id
 router.patch('/businesses/:id', async (req, res) => {
-  const allowed = ['name', 'owner_name', 'owner_phone', 'trade', 'services', 'business_hours', 'timezone', 'appointment_duration', 'greeting', 'tone', 'faqs'];
+  const allowed = ['name', 'owner_name', 'owner_phone', 'trade', 'services', 'business_hours', 'timezone', 'appointment_duration', 'greeting', 'tone', 'faqs', 'require_approval'];
   const updates = Object.fromEntries(Object.entries(req.body).filter(([k]) => allowed.includes(k)));
   const { data, error } = await supabase
     .from('businesses')

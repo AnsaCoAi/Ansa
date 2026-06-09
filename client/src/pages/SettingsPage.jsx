@@ -79,6 +79,7 @@ export default function SettingsPage() {
   const [pwResetSent, setPwResetSent] = useState(false);
 
   const [bizForm, setBizForm] = useState({ name: '', owner_phone: '', services: '' });
+  const [requireApproval, setRequireApproval] = useState(false);
   const [hours, setHours] = useState(defaultHours);
   const [greeting, setGreeting] = useState('');
   const [tone, setTone] = useState('friendly');
@@ -99,6 +100,7 @@ export default function SettingsPage() {
     setGreeting(authBusiness.greeting || '');
     setTone(authBusiness.tone || 'friendly');
     setFaqs(authBusiness.faqs || []);
+    setRequireApproval(!!authBusiness.require_approval);
   }, [authBusiness]);
 
   function flash() {
@@ -115,6 +117,7 @@ export default function SettingsPage() {
         owner_phone: bizForm.owner_phone,
         services: bizForm.services.split(',').map(s => s.trim()).filter(Boolean),
         business_hours: hours,
+        require_approval: requireApproval,
       });
       await reloadBusiness();
       flash();
@@ -248,6 +251,29 @@ export default function SettingsPage() {
             )}
           </div>
         ))}
+
+        <div style={{ ...s.sectionTitle, marginTop: 28 }}>Appointment Settings</div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: 10, padding: '16px 18px', marginBottom: 20 }}>
+          <div>
+            <div style={{ fontSize: 14, fontWeight: 600, color: '#fff', marginBottom: 4 }}>Require approval before confirming</div>
+            <div style={{ fontSize: 13, color: '#666', lineHeight: 1.5 }}>
+              When on, appointments are held as <span style={{ color: '#f59e0b', fontWeight: 600 }}>Pending</span> until you approve them in the Appointments page. Customer is told you'll confirm shortly.
+            </div>
+          </div>
+          <button
+            onClick={() => setRequireApproval(v => !v)}
+            style={{
+              width: 48, height: 26, borderRadius: 13, border: 'none', cursor: 'pointer', flexShrink: 0, marginLeft: 20,
+              background: requireApproval ? '#4F6EF7' : '#333',
+              position: 'relative', transition: 'background .2s',
+            }}>
+            <span style={{
+              position: 'absolute', top: 3, left: requireApproval ? 25 : 3,
+              width: 20, height: 20, borderRadius: '50%', background: '#fff',
+              transition: 'left .2s', display: 'block',
+            }} />
+          </button>
+        </div>
 
         <SaveButton onClick={saveBusiness} />
       </div>
