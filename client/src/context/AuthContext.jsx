@@ -6,6 +6,7 @@ const AuthContext = createContext(null);
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(undefined); // undefined = loading
   const [business, setBusiness] = useState(null);
+  const [businessLoading, setBusinessLoading] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -16,19 +17,21 @@ export function AuthProvider({ children }) {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
       if (session?.user) loadBusiness(session.user.id);
-      else setBusiness(null);
+      else { setBusiness(null); setBusinessLoading(false); }
     });
 
     return () => subscription.unsubscribe();
   }, []);
 
   async function loadBusiness(userId) {
+    setBusinessLoading(true);
     const { data } = await supabase
       .from('businesses')
       .select('*')
       .eq('owner_auth_id', userId)
       .single();
     setBusiness(data || null);
+    setBusinessLoading(false);
   }
 
   // Creates auth user + business row + provisions Twilio. Returns { error } or { businessId }.
@@ -86,7 +89,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, business, signUp, signIn, signOut, loading: user === undefined }}>
+    <AuthContext.Provider value={{ user, business, signUp, signIn, signOut, loading: user === undefined || businessLoading }}>
       {children}
     </AuthContext.Provider>
   );
