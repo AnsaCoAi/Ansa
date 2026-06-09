@@ -55,13 +55,13 @@ const injectStyles = () => {
     .ansa-hero-sub{font-size:clamp(16px,2vw,19px);color:#a1a1aa;max-width:620px;margin:0 auto 40px;line-height:1.65;animation:ansa-fadeUp .7s ease .2s both}
     .ansa-hero-ctas{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;animation:ansa-fadeUp .7s ease .3s both}
     .ansa-phone-wrap{margin:64px auto 0;max-width:380px;animation:ansa-fadeUp .8s ease .5s both}
-    .ansa-phones-row{display:flex;justify-content:center;align-items:flex-end;gap:16px;margin:64px auto 0;max-width:1060px;padding:0 24px}
-    .ansa-phone-slot{transition:all .35s cubic-bezier(.4,0,.2,1);transform-origin:bottom center}
+    .ansa-phones-row{display:flex;justify-content:center;align-items:center;gap:16px;margin:64px auto 0;max-width:1060px;padding:0 24px}
+    .ansa-phone-slot{transition:opacity .3s ease,transform .3s ease,flex-basis .3s ease;transform-origin:center}
     .ansa-phone-slot.is-center{flex:0 0 340px;opacity:1;transform:scale(1)}
-    .ansa-phone-slot.is-side{flex:0 0 290px;opacity:.55;transform:scale(.92);cursor:pointer}
-    .ansa-phone-slot.is-side:hover{opacity:.75}
+    .ansa-phone-slot.is-side{flex:0 0 280px;opacity:.45;transform:scale(.9);cursor:pointer}
+    .ansa-phone-slot.is-side:hover{opacity:.65;transform:scale(.92)}
     @media(max-width:820px){.ansa-phone-slot.is-side{display:none!important}.ansa-phones-row{justify-content:center}}
-    .ansa-phone{background:#1c1c1e;border:1px solid #2c2c2e;border-radius:36px;padding:20px 16px 24px;position:relative;box-shadow:0 32px 80px rgba(0,0,0,.6),0 0 60px rgba(79,110,247,.07)}
+    .ansa-phone{background:#1c1c1e;border:1px solid #2c2c2e;border-radius:36px;padding:20px 16px 24px;position:relative;box-shadow:0 32px 80px rgba(0,0,0,.6),0 0 60px rgba(79,110,247,.07);height:420px;display:flex;flex-direction:column;overflow:hidden}
     .ansa-phone-slot.is-center .ansa-phone{animation:ansa-float 6s ease-in-out infinite}
     .ansa-phone-notch{width:100px;height:5px;background:#2c2c2e;border-radius:99px;margin:0 auto 18px}
     .ansa-phone-status{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding:0 2px}
@@ -922,13 +922,8 @@ export default function LandingPage() {
         </div>
         <div className="ansa-trust-line">No credit card required &nbsp;·&nbsp; Setup in 5 minutes &nbsp;·&nbsp; Cancel anytime</div>
         <div className="ansa-phones-row">
-          {[
-            (activePhone + 2) % 3,
-            activePhone,
-            (activePhone + 1) % 3,
-          ].map((idx, pos) => {
-            const p = HERO_PHONES[idx];
-            const isCenter = pos === 1;
+          {HERO_PHONES.map((p, idx) => {
+            const isCenter = idx === activePhone;
             return (
               <div
                 key={idx}
@@ -941,7 +936,7 @@ export default function LandingPage() {
                     <span className="ansa-phone-biz">{p.biz}</span>
                     <span className="ansa-phone-time">{p.time}</span>
                   </div>
-                  <div className="ansa-chat-area">
+                  <div className="ansa-chat-area" style={{ flex:1,overflowY:'hidden' }}>
                     {p.messages.map((m, i) => (
                       <div key={i} className={`ansa-chat-bubble ${m.from === 'ai' ? 'ansa-chat-incoming' : 'ansa-chat-outgoing'}`}>
                         {m.text}
