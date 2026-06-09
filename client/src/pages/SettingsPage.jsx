@@ -190,7 +190,7 @@ export default function SettingsPage() {
           <div style={{ marginBottom: 20 }}>
             <label style={{ display: 'block', fontSize: 13, color: '#888', marginBottom: 6 }}>Email</label>
             <input style={{ ...inp, color: '#666', cursor: 'not-allowed' }} value={email} readOnly />
-            <div style={{ fontSize: 12, color: '#555', marginTop: 4 }}>Email cannot be changed here.</div>
+            <div style={{ fontSize: 12, color: '#555', marginTop: 4 }}>To change your email, contact <a href="mailto:hello@ansaco.ai" style={{ color: '#3b82f6' }}>hello@ansaco.ai</a>.</div>
           </div>
           <div style={{ fontSize: 13, color: '#666', marginBottom: 20 }}>
             Member since <span style={{ color: '#aaa', fontWeight: 500 }}>{memberSince}</span>

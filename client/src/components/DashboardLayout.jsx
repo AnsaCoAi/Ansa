@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import {
   LayoutDashboard, PhoneMissed, MessageSquare, CalendarCheck,
-  BarChart3, Settings, LogOut, Menu, X,
+  BarChart3, Settings, LogOut, Menu, X, Phone,
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 
@@ -84,6 +84,9 @@ export default function DashboardLayout({ children, currentHash }) {
               <div style={styles.businessPlan}>Pro plan</div>
             </div>
           </div>
+          <a href="mailto:hello@ansaco.ai" style={styles.logoutBtn}>
+            <Phone size={16} /><span>Contact support</span>
+          </a>
           <button style={styles.logoutBtn} onClick={() => { setSidebarOpen(false); signOut(); }}>
             <LogOut size={16} /><span>Log out</span>
           </button>
