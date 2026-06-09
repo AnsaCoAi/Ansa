@@ -62,13 +62,16 @@ const injectStyles = () => {
     .ansa-phone-slot.is-side:hover{opacity:.65;transform:scale(.92)}
     .ansa-phone-slot.is-side:hover .ansa-phone{border-color:#4F6EF7;box-shadow:0 0 0 1px #4F6EF7,0 32px 80px rgba(0,0,0,.6)}
     @media(max-width:820px){.ansa-phone-slot.is-side{display:none!important}.ansa-phones-row{justify-content:center}}
-    .ansa-phone{background:#1c1c1e;border:1px solid #2c2c2e;border-radius:36px;padding:20px 16px 24px;position:relative;box-shadow:0 32px 80px rgba(0,0,0,.6),0 0 60px rgba(79,110,247,.07);height:420px;display:flex;flex-direction:column;overflow:hidden}
+    .ansa-phone{background:#1c1c1e;border:1px solid #2c2c2e;border-radius:36px;padding:20px 16px 24px;position:relative;box-shadow:0 32px 80px rgba(0,0,0,.6),0 0 60px rgba(79,110,247,.07);height:520px;display:flex;flex-direction:column;overflow:hidden}
+    .ansa-chat-area{display:flex;flex-direction:column;gap:6px;align-items:flex-start;text-align:left;flex:1;overflow-y:auto;padding-right:2px}
+    .ansa-chat-area::-webkit-scrollbar{width:3px}
+    .ansa-chat-area::-webkit-scrollbar-track{background:transparent}
+    .ansa-chat-area::-webkit-scrollbar-thumb{background:#3a3a3c;border-radius:99px}
     .ansa-phone-slot.is-center .ansa-phone{animation:ansa-float 6s ease-in-out infinite;border-color:rgba(79,110,247,.5);box-shadow:0 0 0 1px rgba(79,110,247,.3),0 32px 80px rgba(0,0,0,.6),0 0 40px rgba(79,110,247,.12)}
     .ansa-phone-notch{width:100px;height:5px;background:#2c2c2e;border-radius:99px;margin:0 auto 18px}
     .ansa-phone-status{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding:0 2px}
     .ansa-phone-biz{font-size:12px;font-weight:600;color:#fff;letter-spacing:-.1px}
     .ansa-phone-time{font-size:11px;color:#555}
-    .ansa-chat-area{display:flex;flex-direction:column;gap:6px;align-items:flex-start;text-align:left}
     .ansa-chat-outgoing{align-self:flex-end}
     .ansa-chat-bubble{padding:10px 14px;border-radius:20px;font-size:12.5px;line-height:1.55;max-width:82%;word-break:break-word}
     .ansa-chat-incoming{background:#2c2c2e;color:#e5e5ea;border-bottom-left-radius:5px;margin-right:auto}
@@ -81,7 +84,7 @@ const injectStyles = () => {
     .ansa-booked-banner{display:flex;align-items:center;gap:8px;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);border-radius:12px;padding:10px 12px;margin-top:10px}
     .ansa-booked-banner-dot{width:7px;height:7px;border-radius:50%;background:#10b981;flex-shrink:0}
     .ansa-booked-banner-text{font-size:11px;color:#6ee7b7;line-height:1.45}
-    .ansa-phone-hint{text-align:center;font-size:11px;color:#666;margin-top:20px;letter-spacing:.2px}
+    .ansa-phone-hint{text-align:center;font-size:11px;color:#aaa;margin-top:12px;letter-spacing:.2px}
 
     /* Social proof strip */
     .ansa-proof-strip{border-top:1px solid #1a1a1a;border-bottom:1px solid #1a1a1a;padding:20px 0;overflow:hidden;position:relative}
