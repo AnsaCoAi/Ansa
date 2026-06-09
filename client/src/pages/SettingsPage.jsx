@@ -66,10 +66,11 @@ const s = {
 };
 
 export default function SettingsPage() {
-  const { business: authBusiness } = useAuth();
+  const { business: authBusiness, reloadBusiness } = useAuth();
   const [activeTab, setActiveTab] = useState('business');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState('');
 
   const [bizForm, setBizForm] = useState({ name: '', owner_phone: '', services: '' });
   const [hours, setHours] = useState(defaultHours);
@@ -94,8 +95,8 @@ export default function SettingsPage() {
   }
 
   async function saveBusiness() {
-    if (!authBusiness?.id) return;
-    setSaving(true);
+    if (!authBusiness?.id) { setSaveError('Business not loaded — try refreshing.'); return; }
+    setSaving(true); setSaveError('');
     try {
       await api.updateBusiness(authBusiness.id, {
         name: bizForm.name,
@@ -103,18 +104,24 @@ export default function SettingsPage() {
         services: bizForm.services.split(',').map(s => s.trim()).filter(Boolean),
         business_hours: hours,
       });
+      await reloadBusiness();
       flash();
+    } catch (e) {
+      setSaveError(e.message || 'Save failed.');
     } finally {
       setSaving(false);
     }
   }
 
   async function saveAi() {
-    if (!authBusiness?.id) return;
-    setSaving(true);
+    if (!authBusiness?.id) { setSaveError('Business not loaded — try refreshing.'); return; }
+    setSaving(true); setSaveError('');
     try {
       await api.updateBusiness(authBusiness.id, { greeting });
+      await reloadBusiness();
       flash();
+    } catch (e) {
+      setSaveError(e.message || 'Save failed.');
     } finally {
       setSaving(false);
     }
@@ -124,9 +131,12 @@ export default function SettingsPage() {
   function removeFaq(id) { setFaqs(faqs.filter(f => f.id !== id)); }
 
   const SaveButton = ({ onClick }) => (
-    <button style={{ ...s.saveBtn, background: saved ? '#22c55e' : '#3b82f6' }} onClick={onClick} disabled={saving}>
-      {saved ? <><Check size={16} /> Saved</> : saving ? 'Saving...' : <><Save size={16} /> Save Changes</>}
-    </button>
+    <div>
+      <button style={{ ...s.saveBtn, background: saved ? '#22c55e' : '#3b82f6' }} onClick={onClick} disabled={saving}>
+        {saved ? <><Check size={16} /> Saved</> : saving ? 'Saving...' : <><Save size={16} /> Save Changes</>}
+      </button>
+      {saveError && <div style={{ marginTop: 8, fontSize: 13, color: '#ef4444' }}>{saveError}</div>}
+    </div>
   );
 
   function renderBusinessTab() {

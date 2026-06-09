@@ -179,11 +179,13 @@ router.post('/conversations/:id/send', async (req, res) => {
 // POST /api/create-business
 // Called during signup — uses service role to bypass RLS
 router.post('/create-business', async (req, res) => {
-  const { id, owner_auth_id, name, owner_name, owner_phone, trade, greeting } = req.body;
+  const { id, owner_auth_id, name, owner_name, owner_phone, trade, greeting, business_hours, services } = req.body;
   if (!id || !owner_auth_id) return res.status(400).json({ error: 'id and owner_auth_id required' });
 
   const { error } = await supabase.from('businesses').insert({
     id, owner_auth_id, name, owner_name, owner_phone, trade, greeting,
+    ...(business_hours && { business_hours }),
+    ...(services && { services }),
   });
 
   if (error) return res.status(500).json({ error: error.message });

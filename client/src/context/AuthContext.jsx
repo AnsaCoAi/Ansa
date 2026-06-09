@@ -24,13 +24,18 @@ export function AuthProvider({ children }) {
   }, []);
 
   async function loadBusiness(userId) {
-    setBusiness(undefined); // mark as loading
+    setBusiness(undefined);
     const { data } = await supabase
       .from('businesses')
       .select('*')
       .eq('owner_auth_id', userId)
       .single();
     setBusiness(data ?? null);
+  }
+
+  async function reloadBusiness() {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user) await loadBusiness(session.user.id);
   }
 
   // Creates auth user + business row + provisions Twilio. Returns { error } or { businessId }.
@@ -88,7 +93,7 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, business, signUp, signIn, signOut, loading: user === undefined || business === undefined }}>
+    <AuthContext.Provider value={{ user, business, reloadBusiness, signUp, signIn, signOut, loading: user === undefined || business === undefined }}>
       {children}
     </AuthContext.Provider>
   );
