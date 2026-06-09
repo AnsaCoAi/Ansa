@@ -23,11 +23,7 @@ const injectStyles = () => {
     .ansa-reveal.visible{opacity:1;transform:translateY(0)}
 
     /* Nav */
-    .ansa-announce-bar{position:fixed;top:0;left:0;right:0;z-index:101;background:#4F6EF7;text-align:center;padding:9px 16px;font-size:13px;font-weight:500;color:#fff;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;text-decoration:none;transition:background .2s}
-    .ansa-announce-bar:hover{background:#3D55E8}
-    .ansa-announce-bar-dot{width:7px;height:7px;border-radius:50%;background:#fff;opacity:.6;flex-shrink:0}
-    .ansa-announce-bar-arrow{opacity:.7}
-    .ansa-nav{position:fixed;top:42px;left:0;right:0;z-index:100;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);background:rgba(10,10,10,.7);border-bottom:1px solid rgba(255,255,255,.06);transition:background .3s}
+    .ansa-nav{position:fixed;top:0;left:0;right:0;z-index:100;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);background:rgba(10,10,10,.7);border-bottom:1px solid rgba(255,255,255,.06);transition:background .3s}
     .ansa-nav-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:16px 24px}
     .ansa-logo{font-weight:800;font-size:24px;letter-spacing:-.5px;color:#fff;text-decoration:none}
     .ansa-logo span{color:${PRIMARY}}
@@ -831,13 +827,6 @@ export default function LandingPage() {
 
   return (
     <div className="ansa-landing">
-
-      {/* Announcement bar */}
-      <a href="#product" onClick={scrollTo('product')} className="ansa-announce-bar">
-        <span className="ansa-announce-bar-dot" />
-        New: See the live dashboard in action
-        <ArrowRight size={13} className="ansa-announce-bar-arrow" />
-      </a>
 
       {/* Nav */}
       <nav className="ansa-nav">
