@@ -80,7 +80,7 @@ const injectStyles = () => {
     .ansa-booked-banner{display:flex;align-items:center;gap:8px;background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);border-radius:12px;padding:10px 12px;margin-top:10px}
     .ansa-booked-banner-dot{width:7px;height:7px;border-radius:50%;background:#10b981;flex-shrink:0}
     .ansa-booked-banner-text{font-size:11px;color:#6ee7b7;line-height:1.45}
-    .ansa-phone-hint{text-align:center;font-size:11px;color:#3a3a3c;margin-top:20px;letter-spacing:.2px}
+    .ansa-phone-hint{text-align:center;font-size:11px;color:#666;margin-top:20px;letter-spacing:.2px}
 
     /* Social proof strip */
     .ansa-proof-strip{border-top:1px solid #1a1a1a;border-bottom:1px solid #1a1a1a;padding:20px 0;overflow:hidden;position:relative}
