@@ -23,8 +23,8 @@ export function AuthProvider({ children }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  async function loadBusiness(userId) {
-    setBusiness(undefined);
+  async function loadBusiness(userId, { silent = false } = {}) {
+    if (!silent) setBusiness(undefined);
     const { data } = await supabase
       .from('businesses')
       .select('*')
@@ -35,7 +35,7 @@ export function AuthProvider({ children }) {
 
   async function reloadBusiness() {
     const { data: { session } } = await supabase.auth.getSession();
-    if (session?.user) await loadBusiness(session.user.id);
+    if (session?.user) await loadBusiness(session.user.id, { silent: true });
   }
 
   // Creates auth user + business row + provisions Twilio. Returns { error } or { businessId }.
