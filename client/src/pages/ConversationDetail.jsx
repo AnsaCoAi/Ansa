@@ -24,6 +24,8 @@ export default function ConversationDetail() {
   const [loading, setLoading] = useState(true);
   const [aiMode, setAiMode] = useState(true);
   const [inputVal, setInputVal] = useState('');
+  const [sendError, setSendError] = useState('');
+  const [closing, setClosing] = useState(false);
   const bottomRef = useRef(null);
 
   useEffect(() => {
@@ -39,15 +41,27 @@ export default function ConversationDetail() {
     if (!inputVal.trim() || aiMode) return;
     const msg = inputVal;
     setInputVal('');
-    setConv(c => ({ ...c, messages: [...(c.messages || []), { role: 'assistant', content: msg, created_at: new Date().toISOString() }] }));
-    try { await api.sendMessage(convId, msg); } catch (_) {}
+    setSendError('');
+    const optimistic = { role: 'assistant', content: msg, created_at: new Date().toISOString() };
+    setConv(c => ({ ...c, messages: [...(c.messages || []), optimistic] }));
+    try {
+      await api.sendMessage(convId, msg);
+    } catch (_) {
+      setConv(c => ({ ...c, messages: (c.messages || []).filter(m => m !== optimistic) }));
+      setSendError('Failed to send — check your connection and try again.');
+    }
   };
 
   const handleClose = async () => {
+    setClosing(true);
     try {
       await api.updateConversation(convId, { status: 'closed' });
       setConv(c => ({ ...c, status: 'closed' }));
-    } catch (_) {}
+    } catch (_) {
+      alert('Failed to close conversation. Please try again.');
+    } finally {
+      setClosing(false);
+    }
   };
 
   if (loading) return <div style={{ padding: '24px 32px', color: '#666' }}>Loading...</div>;
@@ -103,6 +117,7 @@ export default function ConversationDetail() {
             <div ref={bottomRef} />
           </div>
 
+          {sendError && <div style={{ padding: '8px 20px', background: 'rgba(239,68,68,0.1)', color: '#ef4444', fontSize: 12 }}>{sendError}</div>}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '14px 20px', borderTop: '1px solid #1e1e1e', background: '#111' }}>
             <input
               style={{ flex: 1, background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: 10, padding: '10px 16px', color: '#fff', fontSize: 14, outline: 'none' }}
@@ -144,9 +159,9 @@ export default function ConversationDetail() {
           <div style={{ borderTop: '1px solid #1e1e1e', margin: '20px 0' }} />
 
           {conv.status !== 'closed' && (
-            <button onClick={handleClose}
-              style={{ display: 'block', width: '100%', padding: '10px 16px', borderRadius: 10, fontSize: 13, fontWeight: 600, cursor: 'pointer', background: 'transparent', color: '#aaa', border: '1px solid #333' }}>
-              <XCircle size={14} style={{ marginRight: 6, verticalAlign: 'middle' }} />Mark as Closed
+            <button onClick={handleClose} disabled={closing}
+              style={{ display: 'block', width: '100%', padding: '10px 16px', borderRadius: 10, fontSize: 13, fontWeight: 600, cursor: closing ? 'not-allowed' : 'pointer', background: 'transparent', color: '#aaa', border: '1px solid #333', opacity: closing ? 0.6 : 1 }}>
+              <XCircle size={14} style={{ marginRight: 6, verticalAlign: 'middle' }} />{closing ? 'Closing...' : 'Mark as Closed'}
             </button>
           )}
         </div>

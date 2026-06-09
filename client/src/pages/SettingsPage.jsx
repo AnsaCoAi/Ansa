@@ -87,6 +87,8 @@ export default function SettingsPage() {
     });
     setHours(authBusiness.business_hours || defaultHours);
     setGreeting(authBusiness.greeting || '');
+    setTone(authBusiness.tone || 'friendly');
+    setFaqs(authBusiness.faqs || []);
   }, [authBusiness]);
 
   function flash() {
@@ -117,7 +119,7 @@ export default function SettingsPage() {
     if (!authBusiness?.id) { setSaveError('Business not loaded — try refreshing.'); return; }
     setSaving(true); setSaveError('');
     try {
-      await api.updateBusiness(authBusiness.id, { greeting });
+      await api.updateBusiness(authBusiness.id, { greeting, tone, faqs });
       await reloadBusiness();
       flash();
     } catch (e) {

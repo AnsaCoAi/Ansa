@@ -5,21 +5,30 @@ import { CreditCard } from 'lucide-react';
 export default function BillingPage() {
   const { business } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const openStripe = async () => {
     const params = new URLSearchParams(window.location.search);
     const businessId = business?.id || params.get('b');
-    if (!businessId) return;
+    if (!businessId) { setError('Business not found. Try refreshing.'); return; }
     setLoading(true);
-    const apiUrl = import.meta.env.VITE_API_URL || 'https://ansa-production.up.railway.app';
-    const res = await fetch(`${apiUrl}/api/stripe/checkout`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ businessId }),
-    });
-    const data = await res.json();
-    if (data.url) window.location.href = data.url;
-    else setLoading(false);
+    setError('');
+    try {
+      const apiUrl = import.meta.env.VITE_API_URL || 'https://ansa-production.up.railway.app';
+      const res = await fetch(`${apiUrl}/api/stripe/checkout`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ businessId }),
+      });
+      const data = await res.json();
+      if (data.url) { window.location.href = data.url; return; }
+      if (data.bypass) { window.location.hash = '#/dashboard'; return; }
+      setError(data.error || 'Something went wrong. Please try again.');
+    } catch (_) {
+      setError('Connection error. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -38,6 +47,7 @@ export default function BillingPage() {
         <button onClick={openStripe} disabled={loading} style={{ width: '100%', padding: '13px', backgroundColor: '#3b82f6', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '15px', fontWeight: '600', cursor: loading ? 'not-allowed' : 'pointer' }}>
           {loading ? 'Loading...' : 'Add payment method'}
         </button>
+        {error && <p style={{ fontSize: '13px', color: '#ef4444', marginTop: '12px' }}>{error}</p>}
         <p style={{ fontSize: '13px', color: '#555', marginTop: '16px' }}>No charge for 30 days. Cancel anytime.</p>
         <button onClick={() => window.location.hash = '#/onboarding'} style={{ marginTop: '16px', background: 'none', border: 'none', color: '#666', fontSize: '13px', cursor: 'pointer', textDecoration: 'underline' }}>
           ← Back to onboarding

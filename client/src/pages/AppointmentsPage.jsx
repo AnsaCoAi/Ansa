@@ -75,7 +75,9 @@ export default function AppointmentsPage() {
     try {
       await api.updateAppointment(id, { status: 'cancelled' });
       setAppointments(prev => prev.map(a => a.id === id ? { ...a, status: 'cancelled' } : a));
-    } catch (_) {}
+    } catch (_) {
+      alert('Failed to cancel appointment. Please try again.');
+    }
   };
 
   useEffect(() => {
@@ -158,7 +160,10 @@ export default function AppointmentsPage() {
             </div>
 
             <div style={styles.actions}>
-              <button style={styles.actionBtn(true)} onClick={() => { if (apt.conversation_id) window.location.hash = `#/dashboard/conversations/${apt.conversation_id}`; }}>
+              <button
+                style={{ ...styles.actionBtn(!!apt.conversation_id), opacity: apt.conversation_id ? 1 : 0.4, cursor: apt.conversation_id ? 'pointer' : 'not-allowed' }}
+                onClick={() => { if (apt.conversation_id) window.location.hash = `#/dashboard/conversations/${apt.conversation_id}`; }}
+                title={apt.conversation_id ? 'View conversation' : 'No conversation linked'}>
                 <Eye size={13} /> View Details
               </button>
               {(apt.status === 'confirmed' || apt.status === 'pending') && (
