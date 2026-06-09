@@ -218,23 +218,23 @@ const injectStyles = () => {
     .ansa-sticky-cta a{display:flex;align-items:center;justify-content:center;gap:8px;background:${PRIMARY};color:#fff;font-size:15px;font-weight:700;padding:14px;border-radius:12px;text-decoration:none;box-shadow:0 0 24px rgba(79,110,247,.4)}
 
     /* Dashboard Showcase */
-    .ansa-showcase-wrap{border-radius:16px;overflow:hidden;border:1px solid #222;background:#0d0d0d;box-shadow:0 40px 100px rgba(0,0,0,.7),0 0 80px rgba(79,110,247,.07)}
-    .ansa-showcase-chrome{background:#141414;border-bottom:1px solid #1a1a1a;padding:11px 16px;display:flex;align-items:center;gap:12px}
+    .ansa-showcase-wrap{border-radius:16px;overflow:hidden;border:1px solid #3a3a4a;background:#111118;box-shadow:0 0 0 1px rgba(79,110,247,.25),0 40px 100px rgba(0,0,0,.8),0 0 120px rgba(79,110,247,.18)}
+    .ansa-showcase-chrome{background:#1a1a24;border-bottom:1px solid #2a2a38;padding:11px 16px;display:flex;align-items:center;gap:12px}
     .ansa-showcase-dots{display:flex;gap:6px}
     .ansa-showcase-dots span{width:11px;height:11px;border-radius:50%}
     .ansa-showcase-dots span:nth-child(1){background:#ef4444}
     .ansa-showcase-dots span:nth-child(2){background:#f59e0b}
     .ansa-showcase-dots span:nth-child(3){background:#22c55e}
-    .ansa-showcase-url{flex:1;background:#0a0a0a;border:1px solid #1e1e1e;border-radius:6px;padding:4px 12px;font-size:12px;color:#888;text-align:center;font-family:-apple-system,BlinkMacSystemFont,sans-serif;display:flex;align-items:center;justify-content:center;gap:5px}
+    .ansa-showcase-url{flex:1;background:#13131c;border:1px solid #2a2a38;border-radius:6px;padding:4px 12px;font-size:12px;color:#888;text-align:center;font-family:-apple-system,BlinkMacSystemFont,sans-serif;display:flex;align-items:center;justify-content:center;gap:5px}
     .ansa-showcase-url svg{color:#22c55e;flex-shrink:0}
-    .ansa-showcase-url span{color:#aaa;font-weight:500}.ansa-showcase-url em{color:#555;font-style:normal}
+    .ansa-showcase-url span{color:#bbb;font-weight:500}.ansa-showcase-url em{color:#666;font-style:normal}
     .ansa-showcase-app{display:flex;height:500px;overflow:hidden}
-    .ansa-showcase-sidebar{width:196px;flex-shrink:0;background:#0d0d0d;border-right:1px solid #1a1a1a;padding:0;display:flex;flex-direction:column}
-    .ansa-showcase-logo{padding:16px;font-size:17px;font-weight:800;color:#fff;border-bottom:1px solid #1a1a1a;margin-bottom:6px;letter-spacing:-.3px}
+    .ansa-showcase-sidebar{width:196px;flex-shrink:0;background:#141420;border-right:1px solid #2a2a38;padding:0;display:flex;flex-direction:column}
+    .ansa-showcase-logo{padding:16px;font-size:17px;font-weight:800;color:#fff;border-bottom:1px solid #2a2a38;margin-bottom:6px;letter-spacing:-.3px}
     .ansa-showcase-logo span{color:#4F6EF7}
-    .ansa-showcase-nav-item{display:flex;align-items:center;gap:9px;padding:9px 16px;font-size:12.5px;font-weight:500;color:#555;transition:all .15s}
-    .ansa-showcase-nav-item.active{color:#fff;background:rgba(255,255,255,.04);border-right:2px solid #4F6EF7}
-    .ansa-showcase-main{flex:1;overflow:hidden;background:#0a0a0a;position:relative}
+    .ansa-showcase-nav-item{display:flex;align-items:center;gap:9px;padding:9px 16px;font-size:12.5px;font-weight:500;color:#666;transition:all .15s}
+    .ansa-showcase-nav-item.active{color:#fff;background:rgba(79,110,247,.12);border-right:2px solid #4F6EF7}
+    .ansa-showcase-main{flex:1;overflow:hidden;background:#0f0f18;position:relative}
     .ansa-showcase-view{position:absolute;inset:0;overflow-y:auto;padding:20px;opacity:0;transition:opacity .35s ease;pointer-events:none}
     .ansa-showcase-view.active{opacity:1;pointer-events:auto}
     .ansa-showcase-tabs-row{display:flex;justify-content:center;gap:8px;margin-top:16px}
@@ -254,7 +254,7 @@ const injectStyles = () => {
     .ansa-mini-bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}
     .ansa-mini-bar{width:100%;border-radius:2px 2px 0 0}
     .ansa-mini-bar-label{font-size:9.5px;color:#3f3f46}
-    .ansa-mini-conv{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:#141414;border:1px solid #1e1e1e;border-radius:8px;margin-bottom:5px}
+    .ansa-mini-conv{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;background:#1a1a28;border:1px solid #2a2a3a;border-radius:8px;margin-bottom:5px}
     .ansa-mini-conv-phone{font-size:12.5px;font-weight:600;color:#fff;margin-bottom:2px}
     .ansa-mini-conv-last{font-size:11px;color:#71717a;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px}
     .ansa-mini-badge{font-size:10px;font-weight:600;padding:3px 8px;border-radius:999px;white-space:nowrap}
@@ -655,11 +655,11 @@ function ShowcaseConversations() {
   return (
     <div>
       <div style={{ fontSize:15,fontWeight:700,color:'#fff',marginBottom:10 }}>Conversations</div>
-      <div style={{ display:'flex',gap:3,marginBottom:10,background:'#141414',borderRadius:7,padding:3,width:'fit-content' }}>
+      <div style={{ display:'flex',gap:3,marginBottom:10,background:'#1a1a28',borderRadius:7,padding:3,width:'fit-content' }}>
         {['all','active','booked','closed'].map(t => (
           <button key={t} onClick={() => setTab(t)}
             style={{ padding:'4px 10px',borderRadius:5,fontSize:10.5,fontWeight:500,cursor:'pointer',
-              background:tab===t?'#222':'transparent',color:tab===t?'#fff':'#666',border:'none',
+              background:tab===t?'#2a2a3e':'transparent',color:tab===t?'#fff':'#666',border:'none',
               fontFamily:'inherit',textTransform:'capitalize' }}>
             {t}
           </button>
@@ -843,9 +843,9 @@ function DashboardShowcase() {
           {/* Main area */}
           <div className="ansa-showcase-main" style={{ display:'flex',flexDirection:'column' }}>
             {/* Top bar */}
-            <div style={{ height:48,borderBottom:'1px solid #1a1a1a',display:'flex',alignItems:'center',justifyContent:'space-between',padding:'0 18px',flexShrink:0 }}>
+            <div style={{ height:48,borderBottom:'1px solid #2a2a38',display:'flex',alignItems:'center',justifyContent:'space-between',padding:'0 18px',flexShrink:0,background:'#141420' }}>
               <div style={{ fontSize:14,fontWeight:600,color:'#fff' }}>{PAGE_TITLES[view]}</div>
-              <div style={{ width:30,height:30,borderRadius:'50%',background:'#1e1e1e',display:'flex',alignItems:'center',justifyContent:'center',fontSize:11,fontWeight:600,color:'#888',border:'2px solid #2a2a2a' }}>JL</div>
+              <div style={{ width:30,height:30,borderRadius:'50%',background:'#1e1e2e',display:'flex',alignItems:'center',justifyContent:'center',fontSize:11,fontWeight:600,color:'#aaa',border:'2px solid #3a3a4a' }}>JL</div>
             </div>
             {/* Content */}
             <div style={{ flex:1,overflowY:'auto',padding:16,position:'relative' }}>
