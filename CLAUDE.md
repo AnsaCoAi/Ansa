@@ -166,28 +166,59 @@
 ## Landing Page — Full Overhaul (2026-06-08 session)
 - New accent color #4F6EF7 (blue-indigo, not Tailwind default)
 - Hero headline: "Every Missed Call Is a Job You Didn't Book"
-- Trust micro-copy under all CTAs: "No credit card required · Setup in 5 minutes · Cancel anytime"
+- Trust micro-copy under all CTAs: "No credit card required · Setup in 5 minutes · Cancel anytime" — color #888
 - Social proof marquee strip (10 trade types) + stats row below hero
 - Before/After comparison table section
 - Features in chess layout (alternating text/visual blocks) with live mock UIs
 - Animated stat counters on scroll (62%, 85%, $1,200)
-- Integrations row: Google Calendar, Phone, SMS, Claude AI
+- Integrations row: Google Calendar, Phone, SMS, Claude AI — Lucide SVG icons (no emojis)
 - ROI anchor on pricing: avg $2,400/mo recovery = 8× ROI
 - Testimonials moved above features (right after Problem section)
 - Sticky mobile CTA bar at bottom of screen
 - Nav updated: How It Works | See the Dashboard | Pro Plan | FAQ
-- Dashboard showcase section: animated browser-chrome mockup, full sidebar + top bar + business card, 6 clickable views (Overview, Missed Calls, Conversations, Appointments, Analytics, Settings), SVG area chart, auto-cycles every 5s with progress bar
-- Final CTA copy: outcome-focused, removed "hundreds of pros" unverifiable claim
-- Footer email corrected to hello@ansaco.ai
+- "Most Popular" badge removed from pricing (only one plan)
+
+## Dashboard Showcase (landing page — updated 2026-06-08 session 2)
+- Browser chrome mockup: lock icon + "ansaco.ai" URL bar (no path)
+- Sidebar: #111111 bg, #1e1e1e border, Lucide icons on all 6 nav items, active state rgba(59,130,246,.1) + #3b82f6 text/icon
+- Accent color in showcase: #3b82f6 (matches real dashboard, NOT landing page #4F6EF7)
+- Top bar: #0a0a0a bg, #1e1e1e border, JL avatar #1e1e1e bg #333 border
+- Sidebar footer: Johns Contracting business card, HeadphonesIcon + LogOut icons
+- Stat cards: icon circle (36px round, color-matched bg), 2×2 grid
+- Rows: 36px round avatar with Lucide icon, proper phone/preview/badge/time
+- Conversations tabs: #141414 bg, #222 active — matches real app
+- Settings: proper input styling, Friendly tone active (blue)
+- Auto-cycles every 5s, clickable sidebar nav, progress bar below
+- "Click any section in the sidebar to explore ↑" hint at #666
+
+## Hero Phone Mockups (3-up, 2026-06-08 session 2)
+- 3 phones in a row below hero CTAs
+- Fixed DOM order (no position swapping) — clicking a side phone only changes CSS class for smooth transition
+- Active phone: blue border glow, side phones: brightness(.75) filter on .ansa-phone only (hint text unaffected)
+- Height: 520px fixed, messages scroll inside with thin scrollbar
+- "tap to expand" hint: #aaa (visible)
+- Conversations:
+  1. Mike's Plumbing — instant same-day booking (no customer name)
+  2. Rodriguez Plumbing — team is on a job, customer requests callback, blue banner
+  3. Chen's HVAC — after-hours emergency, booked for 8 AM
+- Chat bubbles: iOS dark mode style (#2c2c2e incoming, #4F6EF7 outgoing), align-items:flex-start + align-self:flex-end
+
+## Owner Notification Texts Section (landing page)
+- Phone lock screen mockup between Integrations and Pricing
+- Shows 3 stacked notification cards: Missed Call, Appointment Booked, Callback Requested
+- Section header: "You'll Know the Second Anything Happens"
 
 ## Appointment Approval Feature (2026-06-08 session)
 - Settings > Business Info: toggle "Require approval before confirming"
 - When ON: AI books appointment as status=pending, customer gets "we'll confirm shortly" SMS
-- When OFF (default): AI confirms instantly as before
+- When OFF (default): AI confirms instantly as before — DEFAULT IS OFF
 - Appointments page: green Confirm button appears on pending appointments
-- Confirming sets status=confirmed; calendar booking happens on confirm
+- Confirming: sets status=confirmed + sends customer confirmation SMS + books Google Calendar event + saves google_event_id
+- Owner always gets SMS notifications (missed call, booked, pending) via notifyOwner()
+- Bug fixed: was using business.ownerPhone (wrong) → now business.owner_phone ✅
+- Bug fixed: "pending" type was missing from notifications.js messages object ✅
 - Supabase: require_approval boolean column added (migration run 2026-06-08) ✅
-- Files changed: src/routes/webhooks.js, src/routes/api.js, client/src/pages/SettingsPage.jsx, client/src/pages/AppointmentsPage.jsx
+- Files changed: src/routes/webhooks.js, src/routes/api.js, src/services/notifications.js, client/src/pages/SettingsPage.jsx, client/src/pages/AppointmentsPage.jsx
 
 ## Outstanding Before Launch
 1. SMS end-to-end test: real missed call → AI text-back. Demo number: +14246225851
@@ -196,7 +227,6 @@
 4. Supabase free tier pauses after 7 days inactivity — unpause at supabase.com if down. Upgrade to Pro ($25/mo) at first client
 
 ## Future Features (not yet built)
-- When approving a pending appointment: auto-send customer confirmation SMS + book Google Calendar event
 - Profile photo support in dashboard
 - Logo image in emails (currently text)
 - Google Business profile setup
