@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Building2, Bot, Plug, CreditCard, Save, Plus, Trash2, Phone, Clock, Wifi, WifiOff, Check } from 'lucide-react';
+import { Building2, Bot, Plug, CreditCard, Save, Plus, Trash2, Phone, Clock, Wifi, WifiOff, Check, User } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
+import supabase from '../services/supabase';
 
 const tabConfig = [
+  { key: 'account', label: 'Account', icon: User },
   { key: 'business', label: 'Business Info', icon: Building2 },
   { key: 'ai', label: 'AI Assistant', icon: Bot },
   { key: 'integrations', label: 'Integrations', icon: Plug },
@@ -66,17 +68,25 @@ const s = {
 };
 
 export default function SettingsPage() {
-  const { business: authBusiness, reloadBusiness } = useAuth();
-  const [activeTab, setActiveTab] = useState('business');
+  const { business: authBusiness, reloadBusiness, user } = useAuth();
+  const [activeTab, setActiveTab] = useState('account');
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [saveError, setSaveError] = useState('');
+
+  // Account tab state
+  const [accountName, setAccountName] = useState('');
+  const [pwResetSent, setPwResetSent] = useState(false);
 
   const [bizForm, setBizForm] = useState({ name: '', owner_phone: '', services: '' });
   const [hours, setHours] = useState(defaultHours);
   const [greeting, setGreeting] = useState('');
   const [tone, setTone] = useState('friendly');
   const [faqs, setFaqs] = useState([]);
+
+  useEffect(() => {
+    if (authBusiness) setAccountName(authBusiness.owner_name || '');
+  }, [authBusiness]);
 
   useEffect(() => {
     if (!authBusiness) return;
@@ -140,6 +150,65 @@ export default function SettingsPage() {
       {saveError && <div style={{ marginTop: 8, fontSize: 13, color: '#ef4444' }}>{saveError}</div>}
     </div>
   );
+
+  function renderAccountTab() {
+    const email = user?.email || '';
+    const memberSince = authBusiness?.created_at
+      ? new Date(authBusiness.created_at).toLocaleDateString([], { month: 'long', day: 'numeric', year: 'numeric' })
+      : '—';
+
+    const saveAccount = async () => {
+      if (!authBusiness?.id) return;
+      setSaving(true); setSaveError('');
+      try {
+        await api.updateBusiness(authBusiness.id, { owner_name: accountName });
+        await reloadBusiness();
+        flash();
+      } catch (e) {
+        setSaveError(e.message || 'Save failed.');
+      } finally {
+        setSaving(false);
+      }
+    };
+
+    const sendPasswordReset = async () => {
+      if (!email) return;
+      await supabase.auth.resetPasswordForEmail(email, { redirectTo: 'https://www.ansaco.ai' });
+      setPwResetSent(true);
+    };
+
+    const inp = { width: '100%', padding: '10px 12px', backgroundColor: '#141414', border: '1px solid #333', borderRadius: 10, color: '#fff', fontSize: 14, outline: 'none', boxSizing: 'border-box' };
+
+    return (
+      <div style={{ maxWidth: 560 }}>
+        <div style={{ background: '#141414', borderRadius: 12, border: '1px solid #222', padding: 24, marginBottom: 16 }}>
+          <div style={{ fontSize: 15, fontWeight: 600, color: '#fff', marginBottom: 20 }}>Profile</div>
+          <div style={{ marginBottom: 16 }}>
+            <label style={{ display: 'block', fontSize: 13, color: '#888', marginBottom: 6 }}>Full name</label>
+            <input style={inp} value={accountName} onChange={e => setAccountName(e.target.value)} placeholder="Your name" />
+          </div>
+          <div style={{ marginBottom: 20 }}>
+            <label style={{ display: 'block', fontSize: 13, color: '#888', marginBottom: 6 }}>Email</label>
+            <input style={{ ...inp, color: '#666', cursor: 'not-allowed' }} value={email} readOnly />
+            <div style={{ fontSize: 12, color: '#555', marginTop: 4 }}>Email cannot be changed here.</div>
+          </div>
+          <div style={{ fontSize: 13, color: '#666', marginBottom: 20 }}>
+            Member since <span style={{ color: '#aaa', fontWeight: 500 }}>{memberSince}</span>
+          </div>
+          <SaveButton onClick={saveAccount} />
+        </div>
+
+        <div style={{ background: '#141414', borderRadius: 12, border: '1px solid #222', padding: 24 }}>
+          <div style={{ fontSize: 15, fontWeight: 600, color: '#fff', marginBottom: 6 }}>Password</div>
+          <div style={{ fontSize: 13, color: '#666', marginBottom: 16 }}>We'll send a reset link to <span style={{ color: '#aaa' }}>{email}</span>.</div>
+          {pwResetSent
+            ? <div style={{ fontSize: 13, color: '#22c55e', display: 'flex', alignItems: 'center', gap: 6 }}><Check size={15} /> Reset email sent — check your inbox.</div>
+            : <button onClick={sendPasswordReset} style={{ padding: '10px 20px', background: 'transparent', border: '1px solid #333', borderRadius: 10, color: '#aaa', fontSize: 13, fontWeight: 500, cursor: 'pointer' }}>Send password reset email</button>
+          }
+        </div>
+      </div>
+    );
+  }
 
   function renderBusinessTab() {
     return (
@@ -326,6 +395,7 @@ export default function SettingsPage() {
           );
         })}
       </div>
+      {activeTab === 'account' && renderAccountTab()}
       {activeTab === 'business' && renderBusinessTab()}
       {activeTab === 'ai' && renderAiTab()}
       {activeTab === 'integrations' && renderIntegrationsTab()}
