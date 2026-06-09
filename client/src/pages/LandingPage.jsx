@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { PhoneOff, MessageSquareOff, DollarSign, Phone, MessageCircle, CalendarCheck, Zap, Bot, Calendar, LayoutDashboard, Mic, Clock, Check, ChevronDown, Star, ArrowRight, Menu, X } from 'lucide-react';
+import { PhoneOff, MessageSquareOff, DollarSign, Phone, MessageCircle, CalendarCheck, Zap, Check, ChevronDown, Star, ArrowRight, Menu, X, CheckCircle, XCircle } from 'lucide-react';
 
 const STYLE_ID = 'ansa-landing-styles';
+const PRIMARY = '#4F6EF7';
+const PRIMARY_HOVER = '#3D55E8';
+const PRIMARY_LIGHT = '#818CF8';
 
 const injectStyles = () => {
   if (document.getElementById(STYLE_ID)) return;
@@ -14,78 +17,143 @@ const injectStyles = () => {
     @keyframes ansa-float { 0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)} }
     @keyframes ansa-typing { 0%{opacity:.2}20%{opacity:1}100%{opacity:.2} }
     @keyframes ansa-gradient { 0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%} }
+    @keyframes ansa-marquee { from{transform:translateX(0)}to{transform:translateX(-50%)} }
+    @keyframes ansa-count { from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)} }
     .ansa-reveal{opacity:0;transform:translateY(32px);transition:opacity .7s ease,transform .7s ease}
     .ansa-reveal.visible{opacity:1;transform:translateY(0)}
+
+    /* Nav */
     .ansa-nav{position:fixed;top:0;left:0;right:0;z-index:100;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);background:rgba(10,10,10,.7);border-bottom:1px solid rgba(255,255,255,.06);transition:background .3s}
     .ansa-nav-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:16px 24px}
     .ansa-logo{font-weight:800;font-size:24px;letter-spacing:-.5px;color:#fff;text-decoration:none}
-    .ansa-logo span{color:#3b82f6}
+    .ansa-logo span{color:${PRIMARY}}
     .ansa-nav-links{display:flex;align-items:center;gap:32px}
     .ansa-nav-links a{color:#a1a1aa;text-decoration:none;font-size:14px;font-weight:500;transition:color .2s}
     .ansa-nav-links a:hover{color:#fff}
     .ansa-nav-mobile-toggle{display:none;background:none;border:none;color:#fff;cursor:pointer}
     .ansa-nav-mobile-menu{display:none;flex-direction:column;gap:16px;position:absolute;top:64px;left:0;right:0;background:rgba(10,10,10,.97);padding:24px;border-bottom:1px solid #222}
     .ansa-nav-mobile-menu a{color:#a1a1aa;text-decoration:none;font-size:15px;font-weight:500}
+
+    /* Buttons */
     .ansa-btn{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;transition:all .25s;text-decoration:none;border:none;font-family:inherit}
-    .ansa-btn-blue{background:#3b82f6;color:#fff!important;box-shadow:0 0 20px rgba(59,130,246,.3)}
-    .ansa-btn-blue:hover{background:#2563eb;box-shadow:0 0 32px rgba(59,130,246,.45);transform:translateY(-1px)}
+    .ansa-btn-blue{background:${PRIMARY};color:#fff!important;box-shadow:0 0 20px rgba(79,110,247,.3)}
+    .ansa-btn-blue:hover{background:${PRIMARY_HOVER};box-shadow:0 0 32px rgba(79,110,247,.45);transform:translateY(-1px)}
     .ansa-btn-outline{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.15)}
     .ansa-btn-outline:hover{border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.04);transform:translateY(-1px)}
+
+    /* Trust line under CTAs */
+    .ansa-trust-line{font-size:12px;color:#52525b;margin-top:12px;text-align:center;letter-spacing:.2px}
+
+    /* Hero */
     .ansa-hero{position:relative;padding:160px 24px 80px;text-align:center;overflow:hidden}
-    .ansa-hero-glow{position:absolute;top:-120px;left:50%;transform:translateX(-50%);width:720px;height:720px;border-radius:50%;background:radial-gradient(circle,rgba(59,130,246,.15) 0%,transparent 70%);pointer-events:none;animation:ansa-pulse 6s ease-in-out infinite}
-    .ansa-hero-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 16px;border-radius:999px;font-size:13px;font-weight:600;background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.25);color:#60a5fa;margin-bottom:28px;animation:ansa-fadeUp .7s ease both}
+    .ansa-hero-glow{position:absolute;top:-120px;left:50%;transform:translateX(-50%);width:720px;height:720px;border-radius:50%;background:radial-gradient(circle,rgba(79,110,247,.15) 0%,transparent 70%);pointer-events:none;animation:ansa-pulse 6s ease-in-out infinite}
+    .ansa-hero-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 16px;border-radius:999px;font-size:13px;font-weight:600;background:rgba(79,110,247,.1);border:1px solid rgba(79,110,247,.25);color:${PRIMARY_LIGHT};margin-bottom:28px;animation:ansa-fadeUp .7s ease both}
     .ansa-hero h1{font-size:clamp(36px,5.5vw,64px);font-weight:900;line-height:1.08;max-width:820px;margin:0 auto 24px;letter-spacing:-1.5px;animation:ansa-fadeUp .7s ease .1s both}
     .ansa-hero-sub{font-size:clamp(16px,2vw,19px);color:#a1a1aa;max-width:620px;margin:0 auto 40px;line-height:1.65;animation:ansa-fadeUp .7s ease .2s both}
     .ansa-hero-ctas{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;animation:ansa-fadeUp .7s ease .3s both}
     .ansa-phone-wrap{margin:64px auto 0;max-width:380px;animation:ansa-fadeUp .8s ease .5s both}
-    .ansa-phone{background:#141414;border:1px solid #2a2a2a;border-radius:28px;padding:20px 18px;position:relative;box-shadow:0 24px 80px rgba(0,0,0,.5),0 0 60px rgba(59,130,246,.08);animation:ansa-float 6s ease-in-out infinite}
+    .ansa-phone{background:#141414;border:1px solid #2a2a2a;border-radius:28px;padding:20px 18px;position:relative;box-shadow:0 24px 80px rgba(0,0,0,.5),0 0 60px rgba(79,110,247,.08);animation:ansa-float 6s ease-in-out infinite}
     .ansa-phone-notch{width:120px;height:6px;background:#222;border-radius:99px;margin:0 auto 20px}
     .ansa-phone-header{font-size:13px;color:#a1a1aa;text-align:center;margin-bottom:18px;font-weight:500}
     .ansa-chat-bubble{padding:12px 16px;border-radius:18px;font-size:14px;line-height:1.5;margin-bottom:10px;max-width:85%}
     .ansa-chat-incoming{background:#1e293b;color:#e2e8f0;border-bottom-left-radius:6px;margin-right:auto}
-    .ansa-chat-outgoing{background:#3b82f6;color:#fff;border-bottom-right-radius:6px;margin-left:auto}
+    .ansa-chat-outgoing{background:${PRIMARY};color:#fff;border-bottom-right-radius:6px;margin-left:auto}
     .ansa-chat-typing{display:flex;gap:4px;padding:12px 16px;max-width:70px;background:#1e293b;border-radius:18px;border-bottom-left-radius:6px;margin-right:auto}
     .ansa-chat-typing span{width:7px;height:7px;background:#64748b;border-radius:50%;animation:ansa-typing 1.4s infinite}
     .ansa-chat-typing span:nth-child(2){animation-delay:.2s}
     .ansa-chat-typing span:nth-child(3){animation-delay:.4s}
+    .ansa-booked-banner{display:flex;align-items:center;gap:10px;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.25);border-radius:12px;padding:12px 14px;margin-top:14px}
+    .ansa-booked-banner-dot{width:8px;height:8px;border-radius:50%;background:#10b981;flex-shrink:0}
+    .ansa-booked-banner-text{font-size:12px;color:#6ee7b7;line-height:1.4}
+
+    /* Social proof strip */
+    .ansa-proof-strip{border-top:1px solid #1a1a1a;border-bottom:1px solid #1a1a1a;padding:20px 0;overflow:hidden;position:relative}
+    .ansa-proof-strip::before,.ansa-proof-strip::after{content:'';position:absolute;top:0;bottom:0;width:80px;z-index:2;pointer-events:none}
+    .ansa-proof-strip::before{left:0;background:linear-gradient(to right,#0a0a0a,transparent)}
+    .ansa-proof-strip::after{right:0;background:linear-gradient(to left,#0a0a0a,transparent)}
+    .ansa-proof-track{display:flex;animation:ansa-marquee 28s linear infinite;white-space:nowrap}
+    .ansa-proof-item{display:inline-flex;align-items:center;gap:8px;padding:0 32px;font-size:13px;color:#71717a;font-weight:500;flex-shrink:0}
+    .ansa-proof-dot{width:4px;height:4px;border-radius:50%;background:#3f3f46;flex-shrink:0}
+    .ansa-proof-stats{display:flex;justify-content:center;gap:48px;padding:28px 24px;max-width:800px;margin:0 auto}
+    .ansa-proof-stat{text-align:center}
+    .ansa-proof-stat-num{font-size:28px;font-weight:800;letter-spacing:-1px;color:#fff}
+    .ansa-proof-stat-label{font-size:12px;color:#71717a;margin-top:2px}
+
+    /* Sections */
     .ansa-section{max-width:1200px;margin:0 auto;padding:100px 24px}
-    .ansa-section-label{font-size:13px;font-weight:600;color:#3b82f6;text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;text-align:center}
+    .ansa-section-label{font-size:13px;font-weight:600;color:${PRIMARY};text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;text-align:center}
     .ansa-section-title{font-size:clamp(28px,4vw,44px);font-weight:800;text-align:center;max-width:700px;margin:0 auto 16px;letter-spacing:-1px;line-height:1.15}
     .ansa-section-sub{font-size:17px;color:#a1a1aa;text-align:center;max-width:560px;margin:0 auto 56px;line-height:1.6}
+
+    /* Problem cards */
     .ansa-problem-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
     .ansa-problem-card{background:#141414;border:1px solid #222;border-radius:20px;padding:36px 28px;text-align:center;transition:border-color .3s,transform .3s}
     .ansa-problem-card:hover{border-color:#333;transform:translateY(-4px)}
-    .ansa-problem-icon{width:56px;height:56px;border-radius:16px;background:rgba(59,130,246,.1);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;color:#3b82f6}
-    .ansa-problem-stat{font-size:32px;font-weight:800;margin-bottom:8px;letter-spacing:-.5px}
+    .ansa-problem-icon{width:56px;height:56px;border-radius:16px;background:rgba(79,110,247,.1);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;color:${PRIMARY}}
+    .ansa-problem-stat{font-size:32px;font-weight:800;margin-bottom:8px;letter-spacing:-.5px;transition:all .3s}
     .ansa-problem-desc{font-size:15px;color:#a1a1aa;line-height:1.5}
-    .ansa-steps{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:0;align-items:flex-start}
-    .ansa-step-card{background:#141414;border:1px solid #222;border-radius:20px;padding:36px 24px;text-align:center;position:relative;transition:border-color .3s,transform .3s}
-    .ansa-step-card:hover{border-color:#3b82f6;transform:translateY(-4px)}
-    .ansa-step-num{position:absolute;top:-14px;left:50%;transform:translateX(-50%);width:28px;height:28px;border-radius:50%;background:#3b82f6;color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center}
-    .ansa-step-icon{width:52px;height:52px;border-radius:14px;background:rgba(59,130,246,.1);display:flex;align-items:center;justify-content:center;margin:8px auto 18px;color:#3b82f6}
-    .ansa-step-title{font-size:18px;font-weight:700;margin-bottom:10px}
-    .ansa-step-desc{font-size:14px;color:#a1a1aa;line-height:1.6}
-    .ansa-step-arrow{display:flex;align-items:center;justify-content:center;color:#3b82f6;padding-top:60px;font-size:24px;opacity:.5}
-    .ansa-features-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-    .ansa-feature-card{background:#141414;border:1px solid #1e1e1e;border-radius:18px;padding:32px 26px;transition:border-color .3s,transform .3s}
-    .ansa-feature-card:hover{border-color:#333;transform:translateY(-3px)}
-    .ansa-feature-icon{width:46px;height:46px;border-radius:12px;background:rgba(59,130,246,.08);display:flex;align-items:center;justify-content:center;margin-bottom:18px;color:#3b82f6}
-    .ansa-feature-title{font-size:16px;font-weight:700;margin-bottom:8px}
-    .ansa-feature-desc{font-size:14px;color:#a1a1aa;line-height:1.6}
+
+    /* Testimonials */
     .ansa-testimonials{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
     .ansa-testimonial-card{background:#141414;border:1px solid #1e1e1e;border-radius:20px;padding:32px 28px;transition:border-color .3s}
     .ansa-testimonial-card:hover{border-color:#333}
     .ansa-testimonial-stars{display:flex;gap:3px;margin-bottom:16px;color:#facc15}
     .ansa-testimonial-text{font-size:15px;color:#d1d5db;line-height:1.65;margin-bottom:20px}
     .ansa-testimonial-author{display:flex;align-items:center;gap:12px}
-    .ansa-testimonial-avatar{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:#fff}
+    .ansa-testimonial-avatar{width:42px;height:42px;border-radius:50%;object-fit:cover;flex-shrink:0}
+    .ansa-testimonial-avatar-initials{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:#fff;flex-shrink:0}
     .ansa-testimonial-name{font-size:14px;font-weight:600}
     .ansa-testimonial-biz{font-size:13px;color:#71717a}
+
+    /* Steps */
+    .ansa-steps{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:0;align-items:flex-start}
+    .ansa-step-card{background:#141414;border:1px solid #222;border-radius:20px;padding:36px 24px;text-align:center;position:relative;transition:border-color .3s,transform .3s}
+    .ansa-step-card:hover{border-color:${PRIMARY};transform:translateY(-4px)}
+    .ansa-step-num{position:absolute;top:-14px;left:50%;transform:translateX(-50%);width:28px;height:28px;border-radius:50%;background:${PRIMARY};color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center}
+    .ansa-step-icon{width:52px;height:52px;border-radius:14px;background:rgba(79,110,247,.1);display:flex;align-items:center;justify-content:center;margin:8px auto 18px;color:${PRIMARY}}
+    .ansa-step-title{font-size:18px;font-weight:700;margin-bottom:10px}
+    .ansa-step-desc{font-size:14px;color:#a1a1aa;line-height:1.6}
+    .ansa-step-arrow{display:flex;align-items:center;justify-content:center;color:${PRIMARY};padding-top:60px;font-size:24px;opacity:.5}
+
+    /* Before/After */
+    .ansa-compare{display:grid;grid-template-columns:1fr 1fr;gap:20px;max-width:860px;margin:0 auto}
+    .ansa-compare-col{border-radius:20px;padding:32px 28px}
+    .ansa-compare-col-bad{background:#1a0e0e;border:1px solid #3a1a1a}
+    .ansa-compare-col-good{background:#0e1a12;border:1px solid #1a3a20}
+    .ansa-compare-col-title{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:700;margin-bottom:20px}
+    .ansa-compare-row{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:14px;color:#d1d5db;line-height:1.5}
+    .ansa-compare-row:last-child{border-bottom:none}
+    .ansa-compare-icon-bad{color:#ef4444;flex-shrink:0;margin-top:1px}
+    .ansa-compare-icon-good{color:#10b981;flex-shrink:0;margin-top:1px}
+
+    /* Chess features layout */
+    .ansa-chess{display:flex;flex-direction:column;gap:64px}
+    .ansa-chess-row{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+    .ansa-chess-row.flip{direction:rtl}
+    .ansa-chess-row.flip > *{direction:ltr}
+    .ansa-chess-text{}
+    .ansa-chess-eyebrow{font-size:12px;font-weight:600;color:${PRIMARY};text-transform:uppercase;letter-spacing:2px;margin-bottom:12px}
+    .ansa-chess-title{font-size:clamp(22px,3vw,30px);font-weight:800;letter-spacing:-.5px;line-height:1.2;margin-bottom:16px}
+    .ansa-chess-body{font-size:16px;color:#a1a1aa;line-height:1.7;margin-bottom:24px}
+    .ansa-chess-points{list-style:none;padding:0;display:flex;flex-direction:column;gap:10px}
+    .ansa-chess-points li{display:flex;align-items:center;gap:10px;font-size:14px;color:#d1d5db}
+    .ansa-chess-visual{background:#141414;border:1px solid #222;border-radius:20px;padding:28px;min-height:240px;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden}
+    .ansa-chess-visual::before{content:'';position:absolute;top:-60px;right:-60px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(79,110,247,.08) 0%,transparent 70%);pointer-events:none}
+
+    /* Integrations */
+    .ansa-integrations{display:flex;justify-content:center;align-items:center;gap:20px;flex-wrap:wrap}
+    .ansa-integration-pill{display:flex;align-items:center;gap:10px;background:#141414;border:1px solid #222;border-radius:14px;padding:14px 22px;font-size:14px;font-weight:500;color:#d1d5db;transition:border-color .2s}
+    .ansa-integration-pill:hover{border-color:#333}
+    .ansa-integration-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}
+    .ansa-integration-plus{font-size:18px;color:#3f3f46;font-weight:300}
+
+    /* Pricing */
     .ansa-pricing-grid{display:grid;grid-template-columns:1fr;gap:24px;max-width:480px;margin:0 auto}
-    .ansa-pricing-card{background:#141414;border:1px solid #222;border-radius:22px;padding:40px 32px;position:relative;transition:border-color .3s,transform .3s}
+    .ansa-pricing-card{background:#141414;border:1px solid ${PRIMARY};border-radius:22px;padding:40px 32px;position:relative;transition:border-color .3s,transform .3s}
     .ansa-pricing-card:hover{transform:translateY(-4px)}
-    .ansa-pricing-card.popular{border-color:#3b82f6}
-    .ansa-pricing-popular-badge{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:#3b82f6;color:#fff;font-size:12px;font-weight:700;padding:4px 16px;border-radius:999px;text-transform:uppercase;letter-spacing:.5px}
+    .ansa-pricing-roi{font-size:13px;color:#a1a1aa;text-align:center;margin-bottom:20px;padding:10px 14px;background:rgba(79,110,247,.06);border-radius:10px;border:1px solid rgba(79,110,247,.15)}
+    .ansa-pricing-roi strong{color:${PRIMARY_LIGHT}}
+    .ansa-pricing-popular-badge{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:${PRIMARY};color:#fff;font-size:12px;font-weight:700;padding:4px 16px;border-radius:999px;text-transform:uppercase;letter-spacing:.5px}
     .ansa-pricing-tier{font-size:18px;font-weight:700;margin-bottom:6px}
     .ansa-pricing-price{font-size:48px;font-weight:900;letter-spacing:-2px;margin-bottom:4px}
     .ansa-pricing-price span{font-size:18px;font-weight:500;color:#71717a;letter-spacing:0}
@@ -93,10 +161,10 @@ const injectStyles = () => {
     .ansa-pricing-features{list-style:none;padding:0;margin-bottom:32px}
     .ansa-pricing-features li{display:flex;align-items:center;gap:10px;font-size:14px;color:#d1d5db;padding:8px 0}
     .ansa-pricing-cta{display:block;width:100%;text-align:center;padding:14px;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;text-decoration:none;font-family:inherit;transition:all .25s}
-    .ansa-pricing-cta-primary{background:#3b82f6;color:#fff;border:none;box-shadow:0 0 20px rgba(59,130,246,.25)}
-    .ansa-pricing-cta-primary:hover{background:#2563eb}
-    .ansa-pricing-cta-secondary{background:transparent;color:#fff;border:1px solid #333}
-    .ansa-pricing-cta-secondary:hover{border-color:#555}
+    .ansa-pricing-cta-primary{background:${PRIMARY};color:#fff;border:none;box-shadow:0 0 20px rgba(79,110,247,.25)}
+    .ansa-pricing-cta-primary:hover{background:${PRIMARY_HOVER}}
+
+    /* FAQ */
     .ansa-faq-list{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
     .ansa-faq-item{background:#141414;border:1px solid #1e1e1e;border-radius:16px;overflow:hidden;transition:border-color .3s}
     .ansa-faq-item:hover{border-color:#333}
@@ -106,40 +174,55 @@ const injectStyles = () => {
     .ansa-faq-a{max-height:0;overflow:hidden;transition:max-height .35s ease}
     .ansa-faq-a.open{max-height:300px}
     .ansa-faq-a-inner{padding:0 24px 20px;font-size:14px;color:#a1a1aa;line-height:1.7}
+
+    /* Final CTA */
     .ansa-final-cta{max-width:1200px;margin:0 auto 80px;padding:0 24px}
-    .ansa-final-cta-inner{background:linear-gradient(135deg,#1e3a5f 0%,#1e40af 40%,#3b82f6 100%);border-radius:28px;padding:72px 40px;text-align:center;position:relative;overflow:hidden;background-size:200% 200%;animation:ansa-gradient 8s ease infinite}
+    .ansa-final-cta-inner{background:linear-gradient(135deg,#1a1a4e 0%,#2D3DB0 40%,${PRIMARY} 100%);border-radius:28px;padding:72px 40px;text-align:center;position:relative;overflow:hidden;background-size:200% 200%;animation:ansa-gradient 8s ease infinite}
     .ansa-final-cta h2{font-size:clamp(28px,4vw,40px);font-weight:800;margin-bottom:16px;letter-spacing:-.5px;position:relative}
     .ansa-final-cta p{font-size:17px;color:rgba(255,255,255,.8);margin-bottom:36px;position:relative}
+
+    /* Footer */
     .ansa-footer{border-top:1px solid #1a1a1a;padding:40px 24px;max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px}
     .ansa-footer-links{display:flex;gap:24px}
     .ansa-footer-links a{color:#71717a;text-decoration:none;font-size:13px;transition:color .2s}
     .ansa-footer-links a:hover{color:#fff}
     .ansa-footer-copy{font-size:13px;color:#52525b}
+
+    /* Divider */
     .ansa-divider{height:1px;max-width:1200px;margin:0 auto;background:linear-gradient(90deg,transparent,#222 50%,transparent)}
+
+    /* Sticky mobile CTA */
+    .ansa-sticky-cta{display:none;position:fixed;bottom:0;left:0;right:0;padding:12px 16px 20px;background:rgba(10,10,10,.96);border-top:1px solid #1e1e1e;z-index:98;backdrop-filter:blur(12px)}
+    .ansa-sticky-cta a{display:flex;align-items:center;justify-content:center;gap:8px;background:${PRIMARY};color:#fff;font-size:15px;font-weight:700;padding:14px;border-radius:12px;text-decoration:none;box-shadow:0 0 24px rgba(79,110,247,.4)}
+
     @media(max-width:768px){
       .ansa-problem-grid,.ansa-testimonials{grid-template-columns:1fr}
-      .ansa-features-grid{grid-template-columns:1fr}
+      .ansa-chess-row,.ansa-chess-row.flip{grid-template-columns:1fr;direction:ltr}
+      .ansa-compare{grid-template-columns:1fr}
       .ansa-steps{grid-template-columns:1fr;gap:20px}
       .ansa-step-arrow{display:none}
       .ansa-nav-links{display:none!important}
       .ansa-nav-mobile-toggle{display:block!important}
       .ansa-nav-mobile-menu.open{display:flex!important}
+      .ansa-proof-stats{gap:24px;flex-wrap:wrap}
+      .ansa-sticky-cta{display:block}
+      .ansa-final-cta-inner{padding:48px 24px}
     }
   `;
   document.head.appendChild(style);
 };
 
 const FAQ_DATA = [
-  { q:'How does Ansa connect to my phone?', a:"Ansa integrates with your existing business phone number through simple call-forwarding. When a call goes unanswered, our system detects it instantly and triggers the text-back within seconds. Setup takes less than 5 minutes with no hardware required." },
-  { q:"Will callers know they're texting with AI?", a:"Our AI is trained to match your business tone and style, so conversations feel natural and human. Most customers won't notice the difference. You can customize the AI's personality, responses, and even its name to match your brand." },
-  { q:"What if I want to take over a conversation?", a:"You can jump into any conversation at any time from your dashboard. The AI will seamlessly hand off to you, and the customer will never know the difference. You stay in control." },
-  { q:"How fast does Ansa respond?", a:"Ansa sends the first text-back within 10-15 seconds of a missed call. Speed matters — the faster you respond, the more likely you are to win the job. Our response time beats 99% of businesses." },
-  { q:"Can I customize the messages?", a:"Absolutely. You can customize the initial text-back message, train the AI on your specific services, pricing, FAQs, and service area. The AI learns from your business details to give accurate, helpful responses." },
-  { q:"Is there a contract?", a:"No long-term contracts. Ansa is month-to-month, and you can cancel anytime. We believe in earning your business every month." },
+  { q:'How does Ansa connect to my phone?', a:"Ansa works with call forwarding on your existing business number — no new hardware, no app to install. When a call goes unanswered, our system detects it instantly and fires the text-back within 15 seconds. Setup takes under 5 minutes." },
+  { q:"Will callers know they're texting with AI?", a:"Your AI is trained to match your business tone, services, and FAQs — so conversations feel natural and on-brand. You can customize everything: the AI's name, personality, responses, and even its opening message." },
+  { q:"What happens after the 30-day free trial?", a:"After your trial, billing starts at $297/month, no contract required. You can cancel anytime before your trial ends and you won't be charged. We'll send you a reminder before the trial expires." },
+  { q:"How fast does Ansa respond?", a:"The first text-back fires within 10–15 seconds of a missed call. Speed matters — research shows the first business to respond wins the job over 70% of the time. Ansa beats every competitor on response time." },
+  { q:"Can I jump into a conversation?", a:"Yes — open your dashboard, tap any active conversation, and take over instantly. The AI steps back the moment you reply. You stay in full control at all times." },
+  { q:"Is there a setup fee or long-term contract?", a:"No setup fee, no contracts. Ansa is month-to-month. Start your 30-day free trial today, and if it's not the best decision you've made for your business, cancel with one click — no questions asked." },
 ];
 
 const TESTIMONIALS = [
-  { text:"I was skeptical at first, but Ansa booked 14 jobs in its first month. That's over $18,000 in revenue I would have lost. This thing pays for itself ten times over.", name:'Mike Rodriguez', biz:"Rodriguez Plumbing Co.", initials:'MR', color:'#3b82f6' },
+  { text:"I was skeptical at first, but Ansa booked 14 jobs in its first month. That's over $18,000 in revenue I would have lost. This thing pays for itself ten times over.", name:'Mike Rodriguez', biz:"Rodriguez Plumbing Co.", initials:'MR', color:'#4F6EF7' },
   { text:"We're a two-man crew. We can't answer the phone when we're on a roof. Ansa catches every single call and the customers love how fast we respond. Game changer.", name:'Travis Johnson', biz:'Peak Roofing Solutions', initials:'TJ', color:'#8b5cf6' },
   { text:"My wife and I run our HVAC business together. Ansa lets us focus on the work instead of constantly checking our phones. We've grown 40% since we started using it.", name:'Sarah Chen', biz:"Chen's Heating & Air", initials:'SC', color:'#10b981' },
 ];
@@ -153,6 +236,120 @@ function FaqItem({ q, a }) {
     </div>
   );
 }
+
+// Animated counter on scroll
+function AnimatedStat({ prefix='', value, suffix='', decimals=0 }) {
+  const [display, setDisplay] = useState('0');
+  const ref = useRef(null);
+  const ran = useRef(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && !ran.current) {
+        ran.current = true;
+        const duration = 1800;
+        const start = performance.now();
+        const step = ts => {
+          const progress = Math.min((ts - start) / duration, 1);
+          const eased = 1 - Math.pow(1 - progress, 3);
+          const current = eased * value;
+          setDisplay(decimals ? current.toFixed(decimals) : Math.floor(current).toLocaleString());
+          if (progress < 1) requestAnimationFrame(step);
+          else setDisplay(value.toLocaleString());
+        };
+        requestAnimationFrame(step);
+        obs.disconnect();
+      }
+    }, { threshold: 0.6 });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [value, decimals]);
+  return <div className="ansa-problem-stat" ref={ref}>{prefix}{display}{suffix}</div>;
+}
+
+// Chess feature visuals
+function VisualTextBack() {
+  return (
+    <div className="ansa-chess-visual">
+      <div style={{ fontSize:11,color:'#52525b',marginBottom:12,fontWeight:600,textTransform:'uppercase',letterSpacing:'1px' }}>Ansa · Live</div>
+      <div style={{ display:'flex',alignItems:'center',gap:8,background:'#0e1a12',border:'1px solid rgba(16,185,129,.2)',borderRadius:10,padding:'10px 14px',marginBottom:12 }}>
+        <div style={{ width:7,height:7,borderRadius:'50%',background:'#10b981',animation:'ansa-pulse 2s infinite' }} />
+        <span style={{ fontSize:12,color:'#6ee7b7',fontWeight:600 }}>Missed call detected — texting back</span>
+      </div>
+      <div style={{ fontSize:12,color:'#52525b',marginBottom:8 }}>⚡ Response sent in 11 seconds</div>
+      <div className="ansa-chat-bubble ansa-chat-incoming" style={{ fontSize:13 }}>
+        Hey! This is Jake from Jake's Plumbing — sorry we missed you. How can we help? 🔧
+      </div>
+      <div style={{ fontSize:11,color:'#3f3f46',marginTop:4 }}>Delivered · 11s after missed call</div>
+    </div>
+  );
+}
+
+function VisualConversation() {
+  return (
+    <div className="ansa-chess-visual">
+      <div style={{ fontSize:11,color:'#52525b',marginBottom:12,fontWeight:600,textTransform:'uppercase',letterSpacing:'1px' }}>Conversation · AI Handling</div>
+      <div className="ansa-chat-bubble ansa-chat-outgoing" style={{ fontSize:13,marginLeft:'auto' }}>Do you guys do water heater installs?</div>
+      <div className="ansa-chat-bubble ansa-chat-incoming" style={{ fontSize:13 }}>Yes! We install gas and tankless units. Labor starts at $325. Want to book a free estimate?</div>
+      <div className="ansa-chat-bubble ansa-chat-outgoing" style={{ fontSize:13,marginLeft:'auto' }}>Yes please, tomorrow afternoon works</div>
+      <div className="ansa-chat-bubble ansa-chat-incoming" style={{ fontSize:13 }}>Perfect — I've got 1:00 PM or 3:00 PM open tomorrow. Which works best?</div>
+      <div className="ansa-chat-typing"><span /><span /><span /></div>
+    </div>
+  );
+}
+
+function VisualBooking() {
+  return (
+    <div className="ansa-chess-visual">
+      <div style={{ fontSize:11,color:'#52525b',marginBottom:12,fontWeight:600,textTransform:'uppercase',letterSpacing:'1px' }}>Dashboard · New Booking</div>
+      <div style={{ background:'rgba(79,110,247,.08)',border:'1px solid rgba(79,110,247,.2)',borderRadius:14,padding:'16px 18px',marginBottom:12 }}>
+        <div style={{ display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:8 }}>
+          <div>
+            <div style={{ fontSize:14,fontWeight:700,color:'#fff' }}>Water Heater Install</div>
+            <div style={{ fontSize:12,color:'#818CF8',marginTop:2 }}>Marcus T. · Tomorrow 1:00 PM</div>
+          </div>
+          <div style={{ background:'rgba(16,185,129,.15)',color:'#10b981',fontSize:11,fontWeight:700,padding:'3px 10px',borderRadius:999 }}>CONFIRMED</div>
+        </div>
+        <div style={{ fontSize:12,color:'#71717a' }}>📍 147 Elm Street, Newport Beach · Est. $325</div>
+      </div>
+      <div className="ansa-booked-banner">
+        <div className="ansa-booked-banner-dot" />
+        <div className="ansa-booked-banner-text">🎉 Job booked automatically while you were on-site. No calls needed.</div>
+      </div>
+    </div>
+  );
+}
+
+const CHESS_FEATURES = [
+  {
+    eyebrow: 'Response Speed',
+    title: 'Texts back in under 15 seconds — before they call someone else',
+    body: 'The window between a missed call and a lost customer is about 30 seconds. Ansa fires a text the instant a call goes unanswered. Your competitors are still letting it ring.',
+    points: ['Texts back in 10–15 seconds', 'Personalised with your business name', 'Works 24/7, including after-hours'],
+    Visual: VisualTextBack,
+  },
+  {
+    eyebrow: 'AI Conversations',
+    title: 'Answers questions like you would — without you lifting a finger',
+    body: 'Your AI is trained on your exact services, pricing, service area, and FAQs. It handles the back-and-forth so customers are ready to book before you even know they called.',
+    points: ['Trained on your services & pricing', 'Natural, two-way texting', 'You can jump in anytime from your dashboard'],
+    Visual: VisualConversation,
+    flip: true,
+  },
+  {
+    eyebrow: 'Smart Booking',
+    title: 'Books the job into your calendar — automatically',
+    body: 'No phone tag. No back-and-forth. Ansa checks your real availability, confirms the appointment, and sends you a notification. The customer gets a confirmation text. Done.',
+    points: ['Syncs with Google Calendar', 'Real-time availability checking', 'Instant confirmation to customer & you'],
+    Visual: VisualBooking,
+  },
+];
+
+const PROOF_ITEMS = [
+  'Plumbers', 'HVAC Techs', 'Roofers', 'Electricians', 'Landscapers',
+  'General Contractors', 'Painters', 'Pest Control', 'Pool Service', 'Garage Door Pros',
+];
 
 export default function LandingPage() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -170,13 +367,19 @@ export default function LandingPage() {
 
   const scrollTo = id => e => { e.preventDefault(); document.getElementById(id)?.scrollIntoView({ behavior:'smooth' }); setMobileOpen(false); };
 
+  // Doubled for seamless marquee loop
+  const marqueeItems = [...PROOF_ITEMS, ...PROOF_ITEMS];
+
   return (
     <div className="ansa-landing">
+
+      {/* Nav */}
       <nav className="ansa-nav">
         <div className="ansa-nav-inner">
           <a href="#/" className="ansa-logo">ansa<span>.</span></a>
           <div className="ansa-nav-links">
             <a href="#how-it-works" onClick={scrollTo('how-it-works')}>How It Works</a>
+            <a href="#features" onClick={scrollTo('features')}>Features</a>
             <a href="#pricing" onClick={scrollTo('pricing')}>Pricing</a>
             <a href="#faq" onClick={scrollTo('faq')}>FAQ</a>
             <a href="#/login" style={{ color:'#a1a1aa',textDecoration:'none',fontSize:'14px',fontWeight:'500' }}>Log In</a>
@@ -188,6 +391,7 @@ export default function LandingPage() {
         </div>
         <div className={`ansa-nav-mobile-menu${mobileOpen?' open':''}`}>
           <a href="#how-it-works" onClick={scrollTo('how-it-works')}>How It Works</a>
+          <a href="#features" onClick={scrollTo('features')}>Features</a>
           <a href="#pricing" onClick={scrollTo('pricing')}>Pricing</a>
           <a href="#faq" onClick={scrollTo('faq')}>FAQ</a>
           <a href="#/login" style={{ color:'#a1a1aa',textDecoration:'none',fontSize:'15px',fontWeight:'500' }}>Log In</a>
@@ -195,102 +399,93 @@ export default function LandingPage() {
         </div>
       </nav>
 
+      {/* Hero */}
       <section className="ansa-hero">
         <div className="ansa-hero-glow" />
         <div className="ansa-hero-badge"><Zap size={14} /> Built for Home Service Pros</div>
-        <h1>Never Lose Another Customer to a Missed Call</h1>
-        <p className="ansa-hero-sub">Ansa automatically texts back missed callers, answers their questions with AI, and books appointments — so you never lose a job again.</p>
+        <h1>Every Missed Call Is a Job You Didn't Book</h1>
+        <p className="ansa-hero-sub">
+          Built for contractors, plumbers, roofers, and HVAC pros — Ansa texts back within 15 seconds of a missed call, answers their questions with AI, and books the appointment. While you're still on the job.
+        </p>
         <div className="ansa-hero-ctas">
           <a href="#/signup" className="ansa-btn ansa-btn-blue">Start Free Trial <ArrowRight size={16} /></a>
           <a href="#how-it-works" className="ansa-btn ansa-btn-outline" onClick={scrollTo('how-it-works')}>See How It Works</a>
         </div>
+        <div className="ansa-trust-line">No credit card required &nbsp;·&nbsp; Setup in 5 minutes &nbsp;·&nbsp; Cancel anytime</div>
         <div className="ansa-phone-wrap">
           <div className="ansa-phone">
             <div className="ansa-phone-notch" />
             <div className="ansa-phone-header"><strong>Ansa</strong> · Text Conversation</div>
-            <div className="ansa-chat-bubble ansa-chat-incoming">Hey! Thanks for calling Mike's Plumbing. We missed your call — how can we help? 🔧</div>
-            <div className="ansa-chat-bubble ansa-chat-outgoing">Hi! I have a leaking faucet in my kitchen. Can someone come out today?</div>
-            <div className="ansa-chat-bubble ansa-chat-incoming">Absolutely! We have a 2:00 PM slot available today. Want me to book that for you?</div>
-            <div className="ansa-chat-bubble ansa-chat-outgoing">Yes, that works perfectly!</div>
-            <div className="ansa-chat-bubble ansa-chat-incoming">You're all set! ✅ Confirmed for today at 2:00 PM. We'll text you when we're on the way.</div>
-            <div className="ansa-chat-typing"><span /><span /><span /></div>
+            <div className="ansa-chat-bubble ansa-chat-incoming">Hey! Thanks for calling Mike's Plumbing — sorry we missed you. How can we help? 🔧</div>
+            <div className="ansa-chat-bubble ansa-chat-outgoing">Hi! I have a leaking faucet. Can someone come today?</div>
+            <div className="ansa-chat-bubble ansa-chat-incoming">Absolutely! We have a 2:00 PM slot open today. Want me to lock that in for you?</div>
+            <div className="ansa-chat-bubble ansa-chat-outgoing">Yes, perfect!</div>
+            <div className="ansa-chat-bubble ansa-chat-incoming">You're all set ✅ Confirmed today at 2:00 PM. We'll text when we're on the way!</div>
+            <div className="ansa-booked-banner">
+              <div className="ansa-booked-banner-dot" />
+              <div className="ansa-booked-banner-text">💼 New job booked: Leaking faucet · Marcus T. · Today 2:00 PM · Est. $280</div>
+            </div>
           </div>
         </div>
       </section>
 
-      <div className="ansa-divider" />
+      {/* Social proof strip */}
+      <div className="ansa-proof-strip">
+        <div className="ansa-proof-track">
+          {marqueeItems.map((item, i) => (
+            <span className="ansa-proof-item" key={i}>
+              <span className="ansa-proof-dot" />
+              {item}
+            </span>
+          ))}
+        </div>
+      </div>
+      <div style={{ borderBottom:'1px solid #1a1a1a' }}>
+        <div className="ansa-proof-stats ansa-reveal">
+          <div className="ansa-proof-stat">
+            <div className="ansa-proof-stat-num">15s</div>
+            <div className="ansa-proof-stat-label">Average text-back time</div>
+          </div>
+          <div className="ansa-proof-stat">
+            <div className="ansa-proof-stat-num">30 days</div>
+            <div className="ansa-proof-stat-label">Free trial — no card needed</div>
+          </div>
+          <div className="ansa-proof-stat">
+            <div className="ansa-proof-stat-num">24/7</div>
+            <div className="ansa-proof-stat-label">Always on, even after hours</div>
+          </div>
+        </div>
+      </div>
 
+      {/* Problem */}
       <section className="ansa-section" id="problem">
         <div className="ansa-reveal">
           <p className="ansa-section-label">The Problem</p>
           <h2 className="ansa-section-title">You're Losing Money Every Time You Miss a Call</h2>
-          <p className="ansa-section-sub">When you can't pick up the phone, your next customer calls the competition instead.</p>
+          <p className="ansa-section-sub">When you can't pick up, your next customer calls the competition instead.</p>
         </div>
         <div className="ansa-problem-grid ansa-reveal">
           {[
-            { icon:<PhoneOff size={26}/>, stat:'62%', desc:"of calls to home service businesses go unanswered during work hours" },
-            { icon:<MessageSquareOff size={26}/>, stat:'85%', desc:"of callers won't leave a voicemail — they just call the next company" },
-            { icon:<DollarSign size={26}/>, stat:'$1,200', desc:"average revenue lost per missed call for home service businesses" },
+            { icon:<PhoneOff size={26}/>, value:62, suffix:'%', desc:"of calls to home service businesses go unanswered during work hours" },
+            { icon:<MessageSquareOff size={26}/>, value:85, suffix:'%', desc:"of callers won't leave a voicemail — they just call the next company" },
+            { icon:<DollarSign size={26}/>, prefix:'$', value:1200, suffix:'', desc:"average revenue lost per missed call for home service businesses" },
           ].map((item,i) => (
             <div className="ansa-problem-card" key={i}>
               <div className="ansa-problem-icon">{item.icon}</div>
-              <div className="ansa-problem-stat">{item.stat}</div>
+              <AnimatedStat prefix={item.prefix||''} value={item.value} suffix={item.suffix} />
               <div className="ansa-problem-desc">{item.desc}</div>
             </div>
           ))}
         </div>
       </section>
 
+      {/* Testimonials — moved up, right after problem */}
       <div className="ansa-divider" />
-
-      <section className="ansa-section" id="how-it-works">
-        <div className="ansa-reveal">
-          <p className="ansa-section-label">How It Works</p>
-          <h2 className="ansa-section-title">Three Steps Between a Missed Call and a Booked Job</h2>
-          <p className="ansa-section-sub">Simple, automatic, and done before you finish the job you're on.</p>
-        </div>
-        <div className="ansa-steps ansa-reveal">
-          <div className="ansa-step-card"><div className="ansa-step-num">1</div><div className="ansa-step-icon"><Phone size={24}/></div><div className="ansa-step-title">Miss a Call</div><div className="ansa-step-desc">You're on the job. A customer calls. You can't answer.</div></div>
-          <div className="ansa-step-arrow"><ArrowRight size={28}/></div>
-          <div className="ansa-step-card"><div className="ansa-step-num">2</div><div className="ansa-step-icon"><MessageCircle size={24}/></div><div className="ansa-step-title">Ansa Texts Back</div><div className="ansa-step-desc">Within seconds, Ansa sends a friendly text from your business number.</div></div>
-          <div className="ansa-step-arrow"><ArrowRight size={28}/></div>
-          <div className="ansa-step-card"><div className="ansa-step-num">3</div><div className="ansa-step-icon"><CalendarCheck size={24}/></div><div className="ansa-step-title">Appointment Booked</div><div className="ansa-step-desc">AI handles the conversation and books the appointment into your calendar.</div></div>
-        </div>
-      </section>
-
-      <div className="ansa-divider" />
-
-      <section className="ansa-section" id="features">
-        <div className="ansa-reveal">
-          <p className="ansa-section-label">Features</p>
-          <h2 className="ansa-section-title">Everything You Need to Capture Every Lead</h2>
-          <p className="ansa-section-sub">Powerful tools designed specifically for home service businesses.</p>
-        </div>
-        <div className="ansa-features-grid ansa-reveal">
-          {[
-            { icon:<Zap size={22}/>, title:'Instant Text-Back', desc:"Responds to missed calls in under 15 seconds — before they call a competitor." },
-            { icon:<Bot size={22}/>, title:'AI Conversations', desc:"Natural, two-way texting that feels human. Answers questions and gathers info." },
-            { icon:<Calendar size={22}/>, title:'Smart Booking', desc:"Books appointments directly into your calendar based on your real availability." },
-            { icon:<LayoutDashboard size={22}/>, title:'Owner Dashboard', desc:"See every call, conversation, and booking in one clean, real-time dashboard." },
-            { icon:<Mic size={22}/>, title:'Custom AI Voice', desc:"AI trained on your business, services, pricing, and FAQs. Sounds like you." },
-            { icon:<Clock size={22}/>, title:'Works 24/7', desc:"Never miss an after-hours opportunity. Ansa is always on, even when you're not." },
-          ].map((f,i) => (
-            <div className="ansa-feature-card" key={i}>
-              <div className="ansa-feature-icon">{f.icon}</div>
-              <div className="ansa-feature-title">{f.title}</div>
-              <div className="ansa-feature-desc">{f.desc}</div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <div className="ansa-divider" />
-
       <section className="ansa-section" id="testimonials">
         <div className="ansa-reveal">
-          <p className="ansa-section-label">Testimonials</p>
-          <h2 className="ansa-section-title">Trusted by Home Service Pros</h2>
-          <p className="ansa-section-sub">Real results from real business owners who stopped losing leads.</p>
+          <p className="ansa-section-label">Real Results</p>
+          <h2 className="ansa-section-title">Home Service Pros Who Stopped Losing Leads</h2>
+          <p className="ansa-section-sub">What happens when you stop letting missed calls go to voicemail.</p>
         </div>
         <div className="ansa-testimonials ansa-reveal">
           {TESTIMONIALS.map((t,i) => (
@@ -298,7 +493,7 @@ export default function LandingPage() {
               <div className="ansa-testimonial-stars">{[...Array(5)].map((_,j) => <Star key={j} size={16} fill="#facc15" stroke="#facc15"/>)}</div>
               <div className="ansa-testimonial-text">"{t.text}"</div>
               <div className="ansa-testimonial-author">
-                <div className="ansa-testimonial-avatar" style={{ background:t.color }}>{t.initials}</div>
+                <div className="ansa-testimonial-avatar-initials" style={{ background:t.color }}>{t.initials}</div>
                 <div><div className="ansa-testimonial-name">{t.name}</div><div className="ansa-testimonial-biz">{t.biz}</div></div>
               </div>
             </div>
@@ -308,6 +503,131 @@ export default function LandingPage() {
 
       <div className="ansa-divider" />
 
+      {/* How It Works */}
+      <section className="ansa-section" id="how-it-works">
+        <div className="ansa-reveal">
+          <p className="ansa-section-label">How It Works</p>
+          <h2 className="ansa-section-title">Three Steps Between a Missed Call and a Booked Job</h2>
+          <p className="ansa-section-sub">Automatic, instant, and done before you finish the job you're on.</p>
+        </div>
+        <div className="ansa-steps ansa-reveal">
+          <div className="ansa-step-card"><div className="ansa-step-num">1</div><div className="ansa-step-icon"><Phone size={24}/></div><div className="ansa-step-title">Miss a Call</div><div className="ansa-step-desc">You're on the job. A customer calls. You can't answer. Ansa detects it instantly.</div></div>
+          <div className="ansa-step-arrow"><ArrowRight size={28}/></div>
+          <div className="ansa-step-card"><div className="ansa-step-num">2</div><div className="ansa-step-icon"><MessageCircle size={24}/></div><div className="ansa-step-title">Ansa Texts Back</div><div className="ansa-step-desc">Within 15 seconds, a personalized text goes out from your number. No app, no action needed.</div></div>
+          <div className="ansa-step-arrow"><ArrowRight size={28}/></div>
+          <div className="ansa-step-card"><div className="ansa-step-num">3</div><div className="ansa-step-icon"><CalendarCheck size={24}/></div><div className="ansa-step-title">Job Booked</div><div className="ansa-step-desc">AI handles the conversation and locks in the appointment. You get a notification.</div></div>
+        </div>
+      </section>
+
+      {/* Before / After */}
+      <div className="ansa-divider" />
+      <section className="ansa-section">
+        <div className="ansa-reveal">
+          <p className="ansa-section-label">The Difference</p>
+          <h2 className="ansa-section-title">What Changes When You Have Ansa</h2>
+          <p className="ansa-section-sub">Every missed call used to mean a lost job. Not anymore.</p>
+        </div>
+        <div className="ansa-compare ansa-reveal">
+          <div className="ansa-compare-col ansa-compare-col-bad">
+            <div className="ansa-compare-col-title">
+              <XCircle size={18} color="#ef4444" />
+              <span style={{ color:'#fca5a5' }}>Without Ansa</span>
+            </div>
+            {[
+              "Phone rings while you're on a job",
+              "Call goes to voicemail — or just rings out",
+              "Customer Googles the next plumber/HVAC/roofer",
+              "You find out hours later, if at all",
+              "Job goes to a competitor",
+              "You lose $1,200+ in revenue",
+            ].map((row,i) => (
+              <div className="ansa-compare-row" key={i}>
+                <XCircle size={15} className="ansa-compare-icon-bad" />
+                {row}
+              </div>
+            ))}
+          </div>
+          <div className="ansa-compare-col ansa-compare-col-good">
+            <div className="ansa-compare-col-title">
+              <CheckCircle size={18} color="#10b981" />
+              <span style={{ color:'#6ee7b7' }}>With Ansa</span>
+            </div>
+            {[
+              "Phone rings while you're on a job",
+              "Ansa detects the missed call in seconds",
+              "Customer gets a friendly text from your number",
+              "AI answers questions and books the appointment",
+              "You get a notification: new job confirmed",
+              "You earn $1,200+ without picking up the phone",
+            ].map((row,i) => (
+              <div className="ansa-compare-row" key={i}>
+                <CheckCircle size={15} className="ansa-compare-icon-good" />
+                {row}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Features — chess layout */}
+      <div className="ansa-divider" />
+      <section className="ansa-section" id="features">
+        <div className="ansa-reveal">
+          <p className="ansa-section-label">Features</p>
+          <h2 className="ansa-section-title">Everything Built to Capture Every Lead</h2>
+          <p className="ansa-section-sub">Three things Ansa does better than any person with a phone.</p>
+        </div>
+        <div className="ansa-chess">
+          {CHESS_FEATURES.map((f, i) => (
+            <div key={i} className={`ansa-chess-row ansa-reveal${f.flip?' flip':''}`}>
+              <div className="ansa-chess-text">
+                <div className="ansa-chess-eyebrow">{f.eyebrow}</div>
+                <h3 className="ansa-chess-title">{f.title}</h3>
+                <p className="ansa-chess-body">{f.body}</p>
+                <ul className="ansa-chess-points">
+                  {f.points.map((p,j) => (
+                    <li key={j}><Check size={15} color={PRIMARY} />{p}</li>
+                  ))}
+                </ul>
+              </div>
+              <f.Visual />
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Integrations */}
+      <div className="ansa-divider" />
+      <section className="ansa-section">
+        <div className="ansa-reveal">
+          <p className="ansa-section-label">Integrations</p>
+          <h2 className="ansa-section-title">Works With the Tools You Already Use</h2>
+          <p className="ansa-section-sub">No new software to learn. Ansa plugs into your existing workflow in minutes.</p>
+        </div>
+        <div className="ansa-integrations ansa-reveal">
+          {[
+            { emoji:'📅', label:'Google Calendar', sub:'Syncs your real availability' },
+            { emoji:'📱', label:'Your Phone Number', sub:'Texts from your existing number' },
+            { emoji:'💬', label:'SMS / Text', sub:'Native, carrier-grade messaging' },
+            { emoji:'🤖', label:'Claude AI', sub:'Powered by Anthropic AI' },
+          ].map((int,i) => (
+            <React.Fragment key={i}>
+              {i > 0 && <div className="ansa-integration-plus">+</div>}
+              <div className="ansa-integration-pill">
+                <div className="ansa-integration-icon">{int.emoji}</div>
+                <div>
+                  <div style={{ fontWeight:600,fontSize:13 }}>{int.label}</div>
+                  <div style={{ fontSize:11,color:'#71717a',marginTop:1 }}>{int.sub}</div>
+                </div>
+              </div>
+            </React.Fragment>
+          ))}
+        </div>
+      </section>
+
+      <div className="ansa-divider" />
+
+      {/* Pricing */}
       <section className="ansa-section" id="pricing">
         <div className="ansa-reveal">
           <p className="ansa-section-label">Pricing</p>
@@ -315,54 +635,77 @@ export default function LandingPage() {
           <p className="ansa-section-sub">One missed call recovered pays for an entire month. No contracts, cancel anytime.</p>
         </div>
         <div className="ansa-pricing-grid ansa-reveal">
-          <div className="ansa-pricing-card popular">
+          <div className="ansa-pricing-card">
+            <div className="ansa-pricing-popular-badge">Most Popular</div>
+            <div className="ansa-pricing-roi">
+              Home service businesses recover an average of <strong>$2,400/month</strong> in missed revenue with Ansa. That's 8× your investment.
+            </div>
             <div className="ansa-pricing-tier">Pro</div>
             <div className="ansa-pricing-price">$297<span>/mo</span></div>
             <div className="ansa-pricing-subtitle">Everything you need to never lose another lead</div>
             <ul className="ansa-pricing-features">
-              {['Unlimited missed calls','Full AI conversation engine','Direct calendar booking','Advanced analytics','Priority support','Custom AI voice & training'].map(f => <li key={f}><Check size={16} color="#3b82f6"/>{f}</li>)}
+              {[
+                'Unlimited missed calls',
+                'Full AI conversation engine',
+                'Direct calendar booking',
+                'Advanced analytics dashboard',
+                'Priority support',
+                'Custom AI voice & training',
+                '30-day free trial included',
+              ].map(f => <li key={f}><Check size={16} color={PRIMARY}/>{f}</li>)}
             </ul>
             <a href="#/signup" className="ansa-pricing-cta ansa-pricing-cta-primary">Start Free Trial — 30 Days Free</a>
+            <div className="ansa-trust-line" style={{ marginTop:14 }}>No credit card required &nbsp;·&nbsp; Cancel anytime</div>
           </div>
         </div>
       </section>
 
       <div className="ansa-divider" />
 
+      {/* FAQ */}
       <section className="ansa-section" id="faq">
         <div className="ansa-reveal">
           <p className="ansa-section-label">FAQ</p>
           <h2 className="ansa-section-title">Frequently Asked Questions</h2>
-          <p className="ansa-section-sub">Everything you need to know about getting started with Ansa.</p>
+          <p className="ansa-section-sub">Everything you need to know before getting started.</p>
         </div>
         <div className="ansa-faq-list ansa-reveal">
           {FAQ_DATA.map((item,i) => <FaqItem key={i} q={item.q} a={item.a} />)}
         </div>
       </section>
 
+      {/* Final CTA */}
       <section className="ansa-final-cta">
         <div className="ansa-final-cta-inner ansa-reveal">
-          <h2>Stop Losing Jobs. Start Closing More.</h2>
-          <p>Join hundreds of home service pros who never miss another lead.</p>
+          <h2>Stop Losing Jobs to Voicemail.</h2>
+          <p>Every day without Ansa is another 3–5 calls going unanswered. Start your free trial in 5 minutes.</p>
           <a href="#/signup" className="ansa-btn ansa-btn-blue" style={{ background:'#fff',color:'#1e3a5f',fontWeight:700,boxShadow:'0 0 30px rgba(255,255,255,.2)' }}>
             Start Your Free Trial <ArrowRight size={16}/>
           </a>
+          <div className="ansa-trust-line" style={{ color:'rgba(255,255,255,.4)',marginTop:16 }}>No credit card required &nbsp;·&nbsp; Setup in 5 minutes &nbsp;·&nbsp; Cancel anytime</div>
         </div>
       </section>
 
+      {/* Footer */}
       <footer className="ansa-footer">
         <div style={{ display:'flex',alignItems:'center',gap:24 }}>
           <a href="#/" className="ansa-logo" style={{ fontSize:20 }}>ansa<span>.</span></a>
-          <span className="ansa-footer-copy">© 2026 Ansa. All rights reserved.</span>
+          <span className="ansa-footer-copy">© 2026 Ansa Co LLC. All rights reserved.</span>
         </div>
         <div className="ansa-footer-links">
-          <a href="mailto:tyler@ansaco.ai">Contact</a>
+          <a href="mailto:hello@ansaco.ai">Contact</a>
           <a href="#/terms">Terms</a>
           <a href="#/privacy">Privacy</a>
           <a href="#/login">Log In</a>
           <a href="#/signup">Sign Up</a>
         </div>
       </footer>
+
+      {/* Sticky mobile CTA */}
+      <div className="ansa-sticky-cta">
+        <a href="#/signup">Start Free Trial — 30 Days Free <ArrowRight size={15} /></a>
+      </div>
+
     </div>
   );
 }
