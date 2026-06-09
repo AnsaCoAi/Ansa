@@ -1237,7 +1237,6 @@ export default function LandingPage() {
         </div>
         <div className="ansa-pricing-grid ansa-reveal">
           <div className="ansa-pricing-card">
-            <div className="ansa-pricing-popular-badge">Most Popular</div>
             <div className="ansa-pricing-roi">
               Home service businesses recover an average of <strong>$2,400/month</strong> in missed revenue with Ansa. That's 8× your investment.
             </div>
