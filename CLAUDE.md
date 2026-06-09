@@ -156,12 +156,38 @@
 - Admin bypass: ADMIN_EMAILS env var on Railway skips Stripe, sets subscription_status=active directly ✅
 - Owner/demo account: tylerlofaro@yahoo.com, business "Johns Contracting" (General Contractor), Twilio +14246225851
 - Supabase Site URL fixed to https://www.ansaco.ai ✅
-- businesses table: tone (text) and faqs (jsonb) columns added ✅
+- businesses table: tone (text), faqs (jsonb), require_approval (boolean default false) columns added ✅
 - All dead buttons fixed: settings save, AI tab, conversation close/send, appointment cancel, billing errors ✅
 - Silent reloadBusiness (no loading spinner) after settings save ✅
 - Smooth page transitions: fade-in on nav, button press animation ✅
 - Settings has Account tab: edit name, view email, member since, password reset ✅
 - Contact support link in sidebar (hello@ansaco.ai) ✅
+
+## Landing Page — Full Overhaul (2026-06-08 session)
+- New accent color #4F6EF7 (blue-indigo, not Tailwind default)
+- Hero headline: "Every Missed Call Is a Job You Didn't Book"
+- Trust micro-copy under all CTAs: "No credit card required · Setup in 5 minutes · Cancel anytime"
+- Social proof marquee strip (10 trade types) + stats row below hero
+- Before/After comparison table section
+- Features in chess layout (alternating text/visual blocks) with live mock UIs
+- Animated stat counters on scroll (62%, 85%, $1,200)
+- Integrations row: Google Calendar, Phone, SMS, Claude AI
+- ROI anchor on pricing: avg $2,400/mo recovery = 8× ROI
+- Testimonials moved above features (right after Problem section)
+- Sticky mobile CTA bar at bottom of screen
+- Nav updated: How It Works | See the Dashboard | Pro Plan | FAQ
+- Dashboard showcase section: animated browser-chrome mockup, full sidebar + top bar + business card, 6 clickable views (Overview, Missed Calls, Conversations, Appointments, Analytics, Settings), SVG area chart, auto-cycles every 5s with progress bar
+- Final CTA copy: outcome-focused, removed "hundreds of pros" unverifiable claim
+- Footer email corrected to hello@ansaco.ai
+
+## Appointment Approval Feature (2026-06-08 session)
+- Settings > Business Info: toggle "Require approval before confirming"
+- When ON: AI books appointment as status=pending, customer gets "we'll confirm shortly" SMS
+- When OFF (default): AI confirms instantly as before
+- Appointments page: green Confirm button appears on pending appointments
+- Confirming sets status=confirmed; calendar booking happens on confirm
+- Supabase: require_approval boolean column added (migration run 2026-06-08) ✅
+- Files changed: src/routes/webhooks.js, src/routes/api.js, client/src/pages/SettingsPage.jsx, client/src/pages/AppointmentsPage.jsx
 
 ## Outstanding Before Launch
 1. SMS end-to-end test: real missed call → AI text-back. Demo number: +14246225851
@@ -169,13 +195,18 @@
 3. Set up Namecheap email forwarding: hello@ansaco.ai → Tyler's personal email (not Yahoo)
 4. Supabase free tier pauses after 7 days inactivity — unpause at supabase.com if down. Upgrade to Pro ($25/mo) at first client
 
+## Future Features (not yet built)
+- When approving a pending appointment: auto-send customer confirmation SMS + book Google Calendar event
+- Profile photo support in dashboard
+- Logo image in emails (currently text)
+- Google Business profile setup
+
 ## Reminders
 - Supabase pauses every 7 days on free tier — check before each session and unpause if needed
 - Upgrade Supabase to Pro when first client onboards ($25/mo)
 - CA Statement of Information due ~July 2026 ($20)
 - CA $800 franchise tax due April 2027
 - GitHub token expires April 9, 2027
-- Brand polish todos: profile photo in app, logo in emails, Google Business profile
 - hello@ansaco.ai is send-only (Resend) — no inbox until Namecheap forwarding is configured
 
 ## Credentials
