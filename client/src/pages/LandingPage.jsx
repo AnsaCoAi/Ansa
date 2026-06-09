@@ -42,7 +42,7 @@ const injectStyles = () => {
     .ansa-btn-outline:hover{border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.04);transform:translateY(-1px)}
 
     /* Trust line under CTAs */
-    .ansa-trust-line{font-size:12px;color:#52525b;margin-top:12px;text-align:center;letter-spacing:.2px}
+    .ansa-trust-line{font-size:12px;color:#888;margin-top:12px;text-align:center;letter-spacing:.2px}
 
     /* Hero */
     .ansa-hero{position:relative;padding:160px 24px 80px;text-align:center;overflow:hidden}
