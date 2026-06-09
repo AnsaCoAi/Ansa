@@ -23,7 +23,11 @@ const injectStyles = () => {
     .ansa-reveal.visible{opacity:1;transform:translateY(0)}
 
     /* Nav */
-    .ansa-nav{position:fixed;top:0;left:0;right:0;z-index:100;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);background:rgba(10,10,10,.7);border-bottom:1px solid rgba(255,255,255,.06);transition:background .3s}
+    .ansa-announce-bar{position:fixed;top:0;left:0;right:0;z-index:101;background:#4F6EF7;text-align:center;padding:9px 16px;font-size:13px;font-weight:500;color:#fff;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;text-decoration:none;transition:background .2s}
+    .ansa-announce-bar:hover{background:#3D55E8}
+    .ansa-announce-bar-dot{width:7px;height:7px;border-radius:50%;background:#fff;opacity:.6;flex-shrink:0}
+    .ansa-announce-bar-arrow{opacity:.7}
+    .ansa-nav{position:fixed;top:42px;left:0;right:0;z-index:100;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);background:rgba(10,10,10,.7);border-bottom:1px solid rgba(255,255,255,.06);transition:background .3s}
     .ansa-nav-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:16px 24px}
     .ansa-logo{font-weight:800;font-size:24px;letter-spacing:-.5px;color:#fff;text-decoration:none}
     .ansa-logo span{color:${PRIMARY}}
@@ -548,6 +552,22 @@ function ShowcaseOverview() {
           </div>
         ))}
       </div>
+      <div className="ansa-mini-chart" style={{ marginBottom:0,marginTop:8 }}>
+        <div className="ansa-mini-chart-title">Your Text Notifications</div>
+        {[
+          { emoji:'🔔', text:'Missed call from +1 (714) 555-0182. AI is handling it.', time:'2:14 PM' },
+          { emoji:'✅', text:'Appointment booked! Thu Jun 12 at 10:00 AM — Leaking faucet. Customer: +1 (714) 555-0182', time:'2:17 PM' },
+          { emoji:'⏳', text:'Pending approval needed. Fri Jun 13 at 3:00 PM — HVAC inspection. Confirm in dashboard.', time:'4:02 PM' },
+        ].map((n,i) => (
+          <div key={i} style={{ display:'flex',gap:8,padding:'6px 0',borderBottom:i<2?'1px solid #1a1a1a':'none',alignItems:'flex-start' }}>
+            <span style={{ fontSize:13,flexShrink:0 }}>{n.emoji}</span>
+            <div style={{ minWidth:0 }}>
+              <div style={{ fontSize:10,color:'#ccc',lineHeight:1.4 }}>{n.text}</div>
+              <div style={{ fontSize:9,color:'#555',marginTop:2 }}>Ansa · {n.time}</div>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -812,6 +832,13 @@ export default function LandingPage() {
   return (
     <div className="ansa-landing">
 
+      {/* Announcement bar */}
+      <a href="#product" onClick={scrollTo('product')} className="ansa-announce-bar">
+        <span className="ansa-announce-bar-dot" />
+        New: See the live dashboard in action
+        <ArrowRight size={13} className="ansa-announce-bar-arrow" />
+      </a>
+
       {/* Nav */}
       <nav className="ansa-nav">
         <div className="ansa-nav-inner">
@@ -842,10 +869,6 @@ export default function LandingPage() {
       <section className="ansa-hero">
         <div className="ansa-hero-glow" />
         <div className="ansa-hero-badge"><Zap size={14} /> Built for Home Service Pros</div>
-        <a href="#product" onClick={scrollTo('product')} className="ansa-hero-announce">
-          <span className="ansa-hero-announce-dot" />
-          See the live dashboard <ArrowRight size={13} />
-        </a>
         <h1>Every Missed Call Is a Job You Didn't Book</h1>
         <p className="ansa-hero-sub">
           Built for contractors, plumbers, roofers, and HVAC pros — Ansa texts back within 15 seconds of a missed call, answers their questions with AI, and books the appointment. While you're still on the job.
