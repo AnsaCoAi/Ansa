@@ -147,7 +147,7 @@ const injectStyles = () => {
     .ansa-integrations{display:flex;justify-content:center;align-items:center;gap:20px;flex-wrap:wrap}
     .ansa-integration-pill{display:flex;align-items:center;gap:10px;background:#141414;border:1px solid #222;border-radius:14px;padding:14px 22px;font-size:14px;font-weight:500;color:#d1d5db;transition:border-color .2s}
     .ansa-integration-pill:hover{border-color:#333}
-    .ansa-integration-icon{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}
+    .ansa-integration-icon{width:32px;height:32px;border-radius:8px;background:#1a1a1a;border:1px solid #2a2a2a;display:flex;align-items:center;justify-content:center;color:#a1a1aa;flex-shrink:0}
     .ansa-integration-plus{font-size:18px;color:#3f3f46;font-weight:300}
 
     /* Pricing */
@@ -1074,15 +1074,15 @@ export default function LandingPage() {
         </div>
         <div className="ansa-integrations ansa-reveal">
           {[
-            { emoji:'📅', label:'Google Calendar', sub:'Syncs your real availability' },
-            { emoji:'📱', label:'Your Phone Number', sub:'Texts from your existing number' },
-            { emoji:'💬', label:'SMS / Text', sub:'Native, carrier-grade messaging' },
-            { emoji:'🤖', label:'Claude AI', sub:'Powered by Anthropic AI' },
+            { icon:<CalendarCheck size={16}/>, label:'Google Calendar', sub:'Syncs your real availability' },
+            { icon:<Phone size={16}/>, label:'Your Phone Number', sub:'Texts from your existing number' },
+            { icon:<MessageCircle size={16}/>, label:'SMS / Text', sub:'Native, carrier-grade messaging' },
+            { icon:<Zap size={16}/>, label:'Claude AI', sub:'Powered by Anthropic AI' },
           ].map((int,i) => (
             <React.Fragment key={i}>
               {i > 0 && <div className="ansa-integration-plus">+</div>}
               <div className="ansa-integration-pill">
-                <div className="ansa-integration-icon">{int.emoji}</div>
+                <div className="ansa-integration-icon">{int.icon}</div>
                 <div>
                   <div style={{ fontWeight:600,fontSize:13 }}>{int.label}</div>
                   <div style={{ fontSize:11,color:'#71717a',marginTop:1 }}>{int.sub}</div>
