@@ -55,10 +55,12 @@ export default function ConversationsPage() {
 
   useEffect(() => {
     if (!business?.id) return;
-    api.getConversations(business.id)
+    const load = () => api.getConversations(business.id)
       .then(data => { cache.data = data || []; cache.bizId = business.id; setConversations(data || []); })
-      .catch(() => setConversations([]))
-      .finally(() => setLoading(false));
+      .catch(() => {});
+    load().finally(() => setLoading(false));
+    const poll = setInterval(load, 5000);
+    return () => clearInterval(poll);
   }, [business?.id]);
 
   const filtered = useMemo(
