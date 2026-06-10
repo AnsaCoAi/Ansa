@@ -65,12 +65,28 @@ export default function ConversationsPage() {
   }, [business?.id]);
 
   const hasCustomerReply = (c) => (c.messages || []).some(m => m.role === 'user');
+  const lastMsgIsFromCustomer = (c) => {
+    const msgs = (c.messages || []).filter(m => m.role !== 'system');
+    return msgs.length > 0 && msgs[msgs.length - 1].role === 'user';
+  };
+
+  const needsReply = (c) => isUnread(c) || (c.manual_mode && lastMsgIsFromCustomer(c));
+
+  const sortByUrgency = (list) => [...list].sort((a, b) => {
+    const aUrgent = needsReply(a) ? 1 : 0;
+    const bUrgent = needsReply(b) ? 1 : 0;
+    if (bUrgent !== aUrgent) return bUrgent - aUrgent;
+    return new Date(b.updated_at) - new Date(a.updated_at);
+  });
 
   const filtered = useMemo(
-    () => activeTab === 'all' ? conversations
-      : activeTab === 'active' ? conversations.filter(c => c.status === 'active' && hasCustomerReply(c))
-      : activeTab === 'takeover' ? conversations.filter(c => c.manual_mode && c.status === 'active')
-      : conversations.filter(c => c.status === activeTab),
+    () => {
+      const base = activeTab === 'all' ? conversations
+        : activeTab === 'active' ? conversations.filter(c => c.status === 'active' && hasCustomerReply(c))
+        : activeTab === 'takeover' ? conversations.filter(c => c.manual_mode && c.status === 'active')
+        : conversations.filter(c => c.status === activeTab);
+      return sortByUrgency(base);
+    },
     [activeTab, conversations]
   );
 
@@ -86,10 +102,6 @@ export default function ConversationsPage() {
 
   const getTimestamp = (conv) => conv.updated_at || conv.created_at;
 
-  const lastMsgIsFromCustomer = (c) => {
-    const msgs = (c.messages || []).filter(m => m.role !== 'system');
-    return msgs.length > 0 && msgs[msgs.length - 1].role === 'user';
-  };
   const takeover = conversations.filter(c => c.manual_mode && c.status === 'active');
   const needsAttention = conversations.filter(c => isUnread(c) || (c.manual_mode && lastMsgIsFromCustomer(c)));
 
