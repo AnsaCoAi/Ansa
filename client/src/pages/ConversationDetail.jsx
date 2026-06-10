@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ArrowLeft, Send, Bot, User, Phone, Calendar, Clock, Tag, XCircle, Zap } from 'lucide-react';
 import { api } from '../services/api';
+import supabase from '../services/supabase';
 
 function formatPhone(p) {
   const d = p.replace(/\D/g, '');
@@ -33,6 +34,17 @@ export default function ConversationDetail() {
       .then(data => setConv(data))
       .catch(() => setConv(null))
       .finally(() => setLoading(false));
+
+    const channel = supabase
+      .channel(`messages:${convId}`)
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `conversation_id=eq.${convId}` },
+        (payload) => {
+          setConv(c => c ? { ...c, messages: [...(c.messages || []), payload.new] } : c);
+        }
+      )
+      .subscribe();
+
+    return () => supabase.removeChannel(channel);
   }, [convId]);
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [conv?.messages]);
