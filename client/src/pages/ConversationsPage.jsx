@@ -87,6 +87,10 @@ export default function ConversationsPage() {
   const getTimestamp = (conv) => conv.updated_at || conv.created_at;
 
   const unread = conversations.filter(isUnread);
+  const lastMsgIsFromCustomer = (c) => {
+    const msgs = (c.messages || []).filter(m => m.role !== 'system');
+    return msgs.length > 0 && msgs[msgs.length - 1].role === 'user';
+  };
   const takeover = conversations.filter(c => c.manual_mode && c.status === 'active');
 
   return (
@@ -131,7 +135,7 @@ export default function ConversationsPage() {
           const sc = statusColors[conv.status] || statusColors.closed;
           return (
             <div key={conv.id}
-              className={`conv-row${conv.manual_mode ? ' conv-takeover' : isUnread(conv) ? ' conv-unread' : ''}`}
+              className={`conv-row${conv.manual_mode && lastMsgIsFromCustomer(conv) ? ' conv-takeover' : isUnread(conv) ? ' conv-unread' : ''}`}
               style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 24px', borderRadius: 12, cursor: 'pointer' }}
               onClick={() => { markViewed(conv.id); window.location.hash = `#/dashboard/conversations/${conv.id}`; }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 16, flex: 1, minWidth: 0 }}>
@@ -140,7 +144,7 @@ export default function ConversationsPage() {
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                    {(conv.manual_mode || isUnread(conv)) && <span style={{ width: 8, height: 8, borderRadius: '50%', background: conv.manual_mode ? '#f59e0b' : '#3b82f6', flexShrink: 0 }} />}
+                    {(conv.manual_mode && lastMsgIsFromCustomer(conv) || isUnread(conv)) && <span style={{ width: 8, height: 8, borderRadius: '50%', background: conv.manual_mode && lastMsgIsFromCustomer(conv) ? '#f59e0b' : '#3b82f6', flexShrink: 0 }} />}
                     <span style={{ fontSize: 15, fontWeight: 600, color: isUnread(conv) ? '#fff' : '#ccc' }}>{formatPhone(conv.customer_phone)}</span>
                   </div>
                   <div style={{ fontSize: 13, color: '#888', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 500 }}>{getLastMessage(conv)}</div>
