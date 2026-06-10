@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { MessageSquare, Clock, ChevronRight } from 'lucide-react';
+import { MessageSquare, Clock, ChevronRight, User } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
 
@@ -85,6 +85,7 @@ export default function ConversationsPage() {
   const getTimestamp = (conv) => conv.updated_at || conv.created_at;
 
   const unread = conversations.filter(isUnread);
+  const takeover = conversations.filter(c => c.manual_mode && c.status === 'active');
 
   return (
     <div style={{ padding: '32px', maxWidth: 1200, margin: '0 auto' }}>
@@ -93,8 +94,45 @@ export default function ConversationsPage() {
         .conv-row:hover { background: #1a1a1a !important; border-color: #2a2a2a !important; }
         .conv-row.conv-unread { border-color: #3b82f6 !important; }
         .conv-row.conv-unread:hover { border-color: #3b82f6 !important; }
+        .conv-row.conv-takeover { border-color: #f59e0b !important; }
+        .conv-row.conv-takeover:hover { border-color: #f59e0b !important; }
       `}</style>
       <h1 style={{ fontSize: 24, fontWeight: 700, color: '#fff', margin: 0, marginBottom: 24 }}>Conversations</h1>
+
+      {takeover.length > 0 && (
+        <div style={{ marginBottom: 24 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
+            <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#f59e0b', flexShrink: 0 }} />
+            <span style={{ fontSize: 13, fontWeight: 600, color: '#f59e0b' }}>Needs Your Reply</span>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {takeover.map(conv => (
+              <div key={conv.id}
+                className="conv-row conv-takeover"
+                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 24px', borderRadius: 12, cursor: 'pointer' }}
+                onClick={() => { markViewed(conv.id); window.location.hash = `#/dashboard/conversations/${conv.id}`; }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 16, flex: 1, minWidth: 0 }}>
+                  <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'rgba(245,158,11,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <User size={18} color="#f59e0b" />
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                      <span style={{ fontSize: 15, fontWeight: 600, color: '#fff' }}>{formatPhone(conv.customer_phone)}</span>
+                      {conv.customer_name && <span style={{ fontSize: 12, color: '#888' }}>{conv.customer_name}</span>}
+                    </div>
+                    <div style={{ fontSize: 13, color: '#888', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 500 }}>{(conv.messages || []).filter(m => m.role !== 'system').slice(-1)[0]?.content || 'No messages'}</div>
+                  </div>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexShrink: 0 }}>
+                  <span style={{ fontSize: 12, fontWeight: 600, padding: '4px 10px', borderRadius: 20, color: '#f59e0b', background: 'rgba(245,158,11,0.12)' }}>You took over</span>
+                  <span style={{ fontSize: 12, color: '#555' }}><Clock size={11} style={{ marginRight: 3, verticalAlign: 'middle' }} />{timeAgo(conv.updated_at || conv.created_at)}</span>
+                  <ChevronRight size={18} color="#444" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
         <div style={{ display: 'flex', gap: 4, background: '#141414', borderRadius: 10, padding: 4 }}>
@@ -126,7 +164,7 @@ export default function ConversationsPage() {
           const sc = statusColors[conv.status] || statusColors.closed;
           return (
             <div key={conv.id}
-              className={`conv-row${isUnread(conv) ? ' conv-unread' : ''}`}
+              className={`conv-row${conv.manual_mode ? ' conv-takeover' : isUnread(conv) ? ' conv-unread' : ''}`}
               style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 24px', borderRadius: 12, cursor: 'pointer' }}
               onClick={() => { markViewed(conv.id); window.location.hash = `#/dashboard/conversations/${conv.id}`; }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 16, flex: 1, minWidth: 0 }}>
@@ -135,7 +173,7 @@ export default function ConversationsPage() {
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                    {isUnread(conv) && <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#3b82f6', flexShrink: 0 }} />}
+                    {(conv.manual_mode || isUnread(conv)) && <span style={{ width: 8, height: 8, borderRadius: '50%', background: conv.manual_mode ? '#f59e0b' : '#3b82f6', flexShrink: 0 }} />}
                     <span style={{ fontSize: 15, fontWeight: 600, color: isUnread(conv) ? '#fff' : '#ccc' }}>{formatPhone(conv.customer_phone)}</span>
                   </div>
                   <div style={{ fontSize: 13, color: '#888', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 500 }}>{getLastMessage(conv)}</div>
