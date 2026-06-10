@@ -30,6 +30,7 @@ export default function ConversationDetail() {
   const bottomRef = useRef(null);
 
   useEffect(() => {
+    try { const v = JSON.parse(localStorage.getItem('ansa_viewed') || '{}'); v[convId] = Date.now(); localStorage.setItem('ansa_viewed', JSON.stringify(v)); } catch {}
     api.getConversation(convId)
       .then(data => setConv(data))
       .catch(() => setConv(null))

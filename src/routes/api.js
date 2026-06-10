@@ -51,7 +51,7 @@ router.get('/conversations', async (req, res) => {
   let query = supabase
     .from('conversations')
     .select('*, messages(id, role, content, created_at)')
-    .order('created_at', { ascending: false });
+    .order('updated_at', { ascending: false });
   if (businessId) query = query.eq('business_id', businessId);
   const { data, error } = await query;
   if (error) return res.status(500).json({ error: error.message });

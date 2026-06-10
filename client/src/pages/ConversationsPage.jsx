@@ -35,6 +35,19 @@ const statusColors = {
 
 const cache = { data: null, bizId: null };
 
+function getViewed() {
+  try { return JSON.parse(localStorage.getItem('ansa_viewed') || '{}'); } catch { return {}; }
+}
+function markViewed(id) {
+  const v = getViewed(); v[id] = Date.now(); localStorage.setItem('ansa_viewed', JSON.stringify(v));
+}
+function isUnread(conv) {
+  const lastMsg = (conv.messages || []).filter(m => m.role !== 'system').slice(-1)[0];
+  if (!lastMsg || lastMsg.role !== 'user') return false;
+  const viewed = getViewed();
+  return !viewed[conv.id] || new Date(lastMsg.created_at).getTime() > viewed[conv.id];
+}
+
 export default function ConversationsPage() {
   const { business } = useAuth();
   const [activeTab, setActiveTab] = useState('all');
@@ -92,8 +105,8 @@ export default function ConversationsPage() {
           const sc = statusColors[conv.status] || statusColors.closed;
           return (
             <div key={conv.id}
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 24px', background: '#141414', borderRadius: 12, border: '1px solid #1e1e1e', cursor: 'pointer' }}
-              onClick={() => window.location.hash = `#/dashboard/conversations/${conv.id}`}
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 24px', background: '#141414', borderRadius: 12, border: `1px solid ${isUnread(conv) ? '#3b82f6' : '#1e1e1e'}`, cursor: 'pointer' }}
+              onClick={() => { markViewed(conv.id); window.location.hash = `#/dashboard/conversations/${conv.id}`; }}
               onMouseEnter={e => { e.currentTarget.style.background = '#1a1a1a'; e.currentTarget.style.borderColor = '#2a2a2a'; }}
               onMouseLeave={e => { e.currentTarget.style.background = '#141414'; e.currentTarget.style.borderColor = '#1e1e1e'; }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 16, flex: 1, minWidth: 0 }}>
@@ -102,7 +115,8 @@ export default function ConversationsPage() {
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                    <span style={{ fontSize: 15, fontWeight: 600, color: '#fff' }}>{formatPhone(conv.customer_phone)}</span>
+                    {isUnread(conv) && <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#3b82f6', flexShrink: 0 }} />}
+                    <span style={{ fontSize: 15, fontWeight: 600, color: isUnread(conv) ? '#fff' : '#ccc' }}>{formatPhone(conv.customer_phone)}</span>
                   </div>
                   <div style={{ fontSize: 13, color: '#888', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 500 }}>{getLastMessage(conv)}</div>
                 </div>
