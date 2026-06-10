@@ -63,8 +63,12 @@ export default function ConversationsPage() {
     return () => clearInterval(poll);
   }, [business?.id]);
 
+  const hasCustomerReply = (c) => (c.messages || []).some(m => m.role === 'user');
+
   const filtered = useMemo(
-    () => activeTab === 'all' ? conversations : conversations.filter(c => c.status === activeTab),
+    () => activeTab === 'all' ? conversations
+      : activeTab === 'active' ? conversations.filter(c => c.status === 'active' && hasCustomerReply(c))
+      : conversations.filter(c => c.status === activeTab),
     [activeTab, conversations]
   );
 
@@ -100,7 +104,7 @@ export default function ConversationsPage() {
             {tab.dot && <span style={{ width: 8, height: 8, borderRadius: '50%', background: tab.dot }} />}
             {tab.label}
             <span style={{ color: '#555', fontSize: 12, marginLeft: 2 }}>
-              ({tab.key === 'all' ? conversations.length : conversations.filter(c => c.status === tab.key).length})
+              ({tab.key === 'all' ? conversations.length : tab.key === 'active' ? conversations.filter(c => c.status === 'active' && hasCustomerReply(c)).length : conversations.filter(c => c.status === tab.key).length})
             </span>
           </button>
         ))}
