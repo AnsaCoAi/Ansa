@@ -57,7 +57,12 @@ router.post("/missed-call", async (req, res) => {
     const conversation = await getOrCreateConversation(business.id, From);
     await saveMessage(conversation.id, "assistant", business.greeting);
     await sendSMS(From, calledNumber, business.greeting);
-    await notifyOwner(business, From, "Missed call — AI is following up via text.");
+
+    try {
+      await notifyOwner(business, From, "Missed call — AI is following up via text.");
+    } catch (notifyErr) {
+      console.error("[Missed Call] Owner notify failed (non-fatal):", notifyErr.message);
+    }
 
     res.status(200).send("<Response></Response>");
   } catch (error) {

@@ -16,7 +16,8 @@ async function notifyOwner(business, customerPhone, summary, type = "new_lead") 
 
   const message = messages[type] || messages.new_lead;
 
-  await sendSMS(ownerPhone, process.env.TWILIO_PHONE_NUMBER, message);
+  const fromNumber = business.twilio_number || process.env.TWILIO_PHONE_NUMBER;
+  await sendSMS(ownerPhone, fromNumber, message);
   console.log(`[Notify] Owner ${business.owner_name} notified (${type})`);
 }
 
