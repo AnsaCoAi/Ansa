@@ -46,10 +46,6 @@ router.post("/missed-call", async (req, res) => {
     const { CallStatus, From, To, Called } = req.body;
     const calledNumber = To || Called;
 
-    if (!["no-answer", "busy", "failed", "canceled"].includes(CallStatus)) {
-      return res.status(200).send("<Response></Response>");
-    }
-
     const business = await findBusinessByNumber(calledNumber);
     if (!business) {
       console.log(`[Missed Call] No business found for number: ${calledNumber}`);
