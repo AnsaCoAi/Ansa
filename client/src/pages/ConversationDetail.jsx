@@ -141,9 +141,10 @@ export default function ConversationDetail() {
         <div style={{ flex: 3, background: '#141414', borderRadius: 12, border: '1px solid #1e1e1e', padding: 24, overflowY: 'auto' }}>
           <div style={{ fontSize: 16, fontWeight: 600, color: '#fff', marginBottom: 20 }}>Caller Info</div>
           {[
+            conv.customer_name ? { icon: User, label: 'Name', value: conv.customer_name } : null,
             { icon: Phone, label: 'Phone', value: formatPhone(conv.customer_phone) },
             { icon: Clock, label: 'First Contact', value: `${formatDate(conv.created_at)} at ${formatTime(conv.created_at)}` },
-          ].map(({ icon: Icon, label, value }) => (
+          ].filter(Boolean).map(({ icon: Icon, label, value }) => (
             <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
               <Icon size={16} color="#888" />
               <div>

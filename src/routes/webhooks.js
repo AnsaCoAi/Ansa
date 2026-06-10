@@ -94,15 +94,21 @@ router.post("/sms", async (req, res) => {
     const slots = await getAvailableSlots(business.id, business);
     const aiReply = await getAIResponse(From, Body, business, slots);
 
-    await saveMessage(conversation.id, "assistant", aiReply);
+    const nameMatch = aiReply.match(/\[NAME:\s*([^\]]+)\]/);
+    const cleanAiReply = aiReply.replace(/\[NAME:[^\]]*\]/g, '').trim();
+    if (nameMatch) {
+      await supabase.from('conversations').update({ customer_name: nameMatch[1].trim() }).eq('id', conversation.id);
+    }
 
-    if (aiReply.includes("[URGENT]")) {
-      const cleanReply = aiReply.replace("[URGENT]", "").trim();
+    await saveMessage(conversation.id, "assistant", cleanAiReply);
+
+    if (cleanAiReply.includes("[URGENT]")) {
+      const cleanReply = cleanAiReply.replace("[URGENT]", "").trim();
       await notifyOwner(business, From, Body, "urgent");
       await sendSMS(From, To, cleanReply);
-    } else if (aiReply.includes("[BOOKED:")) {
-      const match = aiReply.match(/\[BOOKED:\s*(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2})\]/);
-      const cleanReply = aiReply.replace(/\[BOOKED:.*?\]/, "").trim();
+    } else if (cleanAiReply.includes("[BOOKED:")) {
+      const match = cleanAiReply.match(/\[BOOKED:\s*(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2})\]/);
+      const cleanReply = cleanAiReply.replace(/\[BOOKED:.*?\]/, "").trim();
 
       if (match) {
         const dateTimeISO = new Date(match[1]).toISOString();
@@ -159,7 +165,7 @@ router.post("/sms", async (req, res) => {
         await sendSMS(From, To, cleanReply);
       }
     } else {
-      await sendSMS(From, To, aiReply);
+      await sendSMS(From, To, cleanAiReply);
     }
 
     res.status(200).send("<Response></Response>");

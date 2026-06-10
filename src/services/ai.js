@@ -49,7 +49,8 @@ Rules:
 - Vary your language naturally — don't repeat the same phrasing across messages.
 
 When a booking is confirmed, end your message with the exact tag: [BOOKED: YYYY-MM-DD HH:MM]
-When the issue is urgent, include the tag: [URGENT]`;
+When the issue is urgent, include the tag: [URGENT]
+The first time the customer tells you their name, append the tag: [NAME: FirstName LastName]`;
 }
 
 async function getAIResponse(phoneNumber, customerMessage, business, availableSlots) {
