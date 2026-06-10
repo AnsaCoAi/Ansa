@@ -9,10 +9,10 @@ async function notifyOwner(business, customerPhone, summary, type = "new_lead") 
   }
 
   const messages = {
-    new_lead: `🔔 ANSA: Missed call from ${customerPhone}. AI is handling it.`,
-    urgent: `🚨 ANSA URGENT: ${customerPhone} needs immediate help. "${summary}" — Call them back ASAP.`,
-    booked: `✅ ANSA: Appointment booked!\n${summary}\nCustomer: ${customerPhone}`,
-    pending: `⏳ ANSA: Pending appointment needs your approval.\n${summary}\nCustomer: ${customerPhone}\nConfirm in your Appointments dashboard.`,
+    new_lead: `ANSA: Missed call from ${customerPhone}. AI is handling it.`,
+    urgent: `ANSA URGENT: ${customerPhone} needs immediate help. "${summary}" — Call them back ASAP.`,
+    booked: `ANSA: Appointment booked!\n${summary}\nCustomer: ${customerPhone}`,
+    pending: `ANSA: Pending appointment needs your approval.\n${summary}\nCustomer: ${customerPhone}\nConfirm in your Appointments dashboard.`,
   };
 
   const message = messages[type] || messages.new_lead;
