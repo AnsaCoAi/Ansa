@@ -85,6 +85,7 @@ router.post("/sms", async (req, res) => {
 
     const conversation = await getOrCreateConversation(business.id, From);
     await saveMessage(conversation.id, "user", Body);
+    await supabase.from("conversations").update({ updated_at: new Date().toISOString() }).eq("id", conversation.id);
 
     if (conversation.manual_mode) {
       console.log(`[SMS] Manual mode — skipping AI for conversation ${conversation.id}`);
