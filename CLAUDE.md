@@ -143,7 +143,7 @@
 - Command: curl -s -X POST https://ansa-production.up.railway.app/api/send-monthly-reports -H 'x-cron-secret: df2324158d2ab6c8f26f8c2c8474f9bc5952c2603d4944e2bd440e1f2ab633ca'
 - Queries all businesses with subscription_status = 'active', sends monthly stats email to each
 
-## Current Status (as of 2026-06-08) — READY TO LAUNCH
+## Current Status (as of 2026-06-09) — READY TO LAUNCH
 - Stripe: fully working ✅
 - Emails: welcome, cancellation, monthly report all built and deployed via Resend ✅
 - Supabase email confirmation: ON ✅
@@ -208,6 +208,35 @@
 - Shows 3 stacked notification cards: Missed Call, Appointment Booked, Callback Requested
 - Section header: "You'll Know the Second Anything Happens"
 
+## Session 2026-06-09 — Dashboard + SMS Fixes
+
+### SMS Flow — FULLY WORKING ✅
+- Root cause found: Twilio number +14246225851 was not in the A2P messaging service → carrier blocked (error 30034)
+- Fixed: number added to messaging service MGec409220e1be176d425d3b085853e13d manually
+- Fixed: provision-number route now auto-adds every new client number to messaging service on signup
+- Fixed: missed-call webhook was filtering CallStatus (only firing on no-answer) — removed filter, fires on every inbound call
+- Fixed: notifyOwner was using TWILIO_PHONE_NUMBER env var (not set on Railway) → now uses business.twilio_number
+- Fixed: owner_phone missing + prefix → E.164 normalization added in notifications.js
+- Railway env var added: TWILIO_MESSAGING_SERVICE_SID = MGec409220e1be176d425d3b085853e13d ✅
+
+### Dashboard Improvements
+- Real-time messages: Supabase subscription + 3s polling fallback in ConversationDetail ✅
+- Supabase Publications: messages table (public schema) added to supabase_realtime ✅
+- Conversations list: polls every 5s, sorts by updated_at desc ✅
+- Unread indicator: blue dot + blue border on conversations with new messages since last view ✅
+- "All caught up" greyed button / "X unread — open latest" blue button in tab bar ✅
+- conversations.updated_at now updated on every inbound SMS (webhook) ✅
+- manual_mode column added to conversations (already existed in Supabase) ✅
+- Take Over: sets manual_mode=true in DB, AI silenced until "Let AI Handle" clicked ✅
+- Manual send (/api/conversations/:id/send) also sets manual_mode=true as failsafe ✅
+- customer_name: AI tags with [NAME: X], webhook strips tag + saves to conversations.customer_name ✅
+- customer_name shown in Caller Info panel when detected ✅
+- Back to Conversations: instant (cached data, no loading flash) ✅
+- Page transitions: 0.15s fade+slide, button press animation ✅
+- Blue caret in message input when owner types ✅
+- AI prompt: no re-greeting mid-conversation, no emojis, vary language ✅
+- Owner notification SMS: emojis removed ✅
+
 ## Appointment Approval Feature (2026-06-08 session)
 - Settings > Business Info: toggle "Require approval before confirming"
 - When ON: AI books appointment as status=pending, customer gets "we'll confirm shortly" SMS
@@ -221,9 +250,9 @@
 - Files changed: src/routes/webhooks.js, src/routes/api.js, src/services/notifications.js, client/src/pages/SettingsPage.jsx, client/src/pages/AppointmentsPage.jsx
 
 ## Outstanding Before Launch
-1. SMS end-to-end test: real missed call → AI text-back. Demo number: +14246225851
-2. Full signup test with real card (separate account, not admin email)
-3. Set up Namecheap email forwarding: hello@ansaco.ai → Tyler's personal email (not Yahoo)
+1. SMS end-to-end test: DONE ✅ — text-back works, A2P unblocked
+2. Full signup test with real card (separate account, not admin email) — STILL PENDING
+3. Set up Namecheap email forwarding: hello@ansaco.ai → Tyler's personal email — STILL PENDING
 4. Supabase free tier pauses after 7 days inactivity — unpause at supabase.com if down. Upgrade to Pro ($25/mo) at first client
 
 ## Future Features (not yet built)
