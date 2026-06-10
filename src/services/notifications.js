@@ -1,7 +1,8 @@
 const { sendSMS } = require("./twilio");
 
 async function notifyOwner(business, customerPhone, summary, type = "new_lead") {
-  const ownerPhone = business.owner_phone;
+  let ownerPhone = business.owner_phone;
+  if (ownerPhone && !ownerPhone.startsWith('+')) ownerPhone = '+' + ownerPhone;
   if (!ownerPhone) {
     console.log(`[Notify] No owner_phone on business ${business.id} — skipping`);
     return;
