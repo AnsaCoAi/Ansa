@@ -258,6 +258,11 @@ router.post('/provision-number', async (req, res) => {
       smsMethod: 'POST',
     });
 
+    // Add number to A2P messaging service so carrier filtering is bypassed
+    await twilioClient.messaging.v1.services(process.env.TWILIO_MESSAGING_SERVICE_SID).phoneNumbers.create({
+      phoneNumberSid: purchased.sid,
+    });
+
     // Save to businesses table
     const { error } = await supabase
       .from('businesses')
