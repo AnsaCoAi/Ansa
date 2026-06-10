@@ -22,7 +22,7 @@ function timeAgo(ts) {
 
 const tabs = [
   { key: 'all', label: 'All', dot: null },
-  { key: 'active', label: 'Active', dot: '#3b82f6' },
+  { key: 'active', label: 'AI Active', dot: '#3b82f6' },
   { key: 'takeover', label: 'Needs Reply', dot: '#f59e0b' },
   { key: 'booked', label: 'Booked', dot: '#22c55e' },
   { key: 'closed', label: 'Closed', dot: '#6b7280' },
@@ -82,7 +82,7 @@ export default function ConversationsPage() {
   const filtered = useMemo(
     () => {
       const base = activeTab === 'all' ? conversations
-        : activeTab === 'active' ? conversations.filter(c => c.status === 'active' && hasCustomerReply(c))
+        : activeTab === 'active' ? conversations.filter(c => c.status === 'active' && hasCustomerReply(c) && !c.manual_mode)
         : activeTab === 'takeover' ? conversations.filter(c => c.manual_mode && c.status === 'active')
         : conversations.filter(c => c.status === activeTab);
       return sortByUrgency(base);
@@ -125,7 +125,7 @@ export default function ConversationsPage() {
             {tab.dot && <span style={{ width: 8, height: 8, borderRadius: '50%', background: tab.dot }} />}
             {tab.label}
             <span style={{ color: '#555', fontSize: 12, marginLeft: 2 }}>
-              ({tab.key === 'all' ? conversations.length : tab.key === 'active' ? conversations.filter(c => c.status === 'active' && hasCustomerReply(c)).length : tab.key === 'takeover' ? takeover.length : conversations.filter(c => c.status === tab.key).length})
+              ({tab.key === 'all' ? conversations.length : tab.key === 'active' ? conversations.filter(c => c.status === 'active' && hasCustomerReply(c) && !c.manual_mode).length : tab.key === 'takeover' ? takeover.length : conversations.filter(c => c.status === tab.key).length})
             </span>
           </button>
         ))}
