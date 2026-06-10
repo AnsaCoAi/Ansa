@@ -82,18 +82,10 @@ export default function ConversationsPage() {
 
   return (
     <div style={{ padding: '32px', maxWidth: 1200, margin: '0 auto' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
-        <h1 style={{ fontSize: 24, fontWeight: 700, color: '#fff', margin: 0 }}>Conversations</h1>
-        {unread.length > 0 && (
-          <button onClick={() => { markViewed(unread[0].id); window.location.hash = `#/dashboard/conversations/${unread[0].id}`; }}
-            style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px', background: '#3b82f6', border: 'none', borderRadius: 8, color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
-            <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#fff' }} />
-            {unread.length} unread — open latest
-          </button>
-        )}
-      </div>
+      <h1 style={{ fontSize: 24, fontWeight: 700, color: '#fff', margin: 0, marginBottom: 24 }}>Conversations</h1>
 
-      <div style={{ display: 'flex', gap: 4, marginBottom: 24, background: '#141414', borderRadius: 10, padding: 4, width: 'fit-content' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 24 }}>
+        <div style={{ display: 'flex', gap: 4, background: '#141414', borderRadius: 10, padding: 4 }}>
         {tabs.map(tab => (
           <button key={tab.key} onClick={() => setActiveTab(tab.key)}
             style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 16px', borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: 'pointer', background: activeTab === tab.key ? '#222' : 'transparent', color: activeTab === tab.key ? '#fff' : '#888', border: 'none' }}>
@@ -104,6 +96,14 @@ export default function ConversationsPage() {
             </span>
           </button>
         ))}
+        </div>
+        {unread.length > 0 && (
+          <button onClick={() => { markViewed(unread[0].id); window.location.hash = `#/dashboard/conversations/${unread[0].id}`; }}
+            style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px', background: '#3b82f6', border: 'none', borderRadius: 8, color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+            <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#fff' }} />
+            {unread.length} unread — open latest
+          </button>
+        )}
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
