@@ -118,7 +118,6 @@ export default function MissedCallsPage() {
               </div>
               <div>
                 <div style={{ fontSize: 14, fontWeight: 600, color: '#fff' }}>{formatPhone(conv.customer_phone)}</div>
-                <div style={{ fontSize: 12, color: '#666' }}>{conv.customer_phone}</div>
               </div>
             </div>
             <div style={{ fontSize: 13, color: '#aaa' }}>{timeAgo(conv.created_at)}</div>
