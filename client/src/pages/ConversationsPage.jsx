@@ -86,12 +86,12 @@ export default function ConversationsPage() {
 
   const getTimestamp = (conv) => conv.updated_at || conv.created_at;
 
-  const unread = conversations.filter(isUnread);
   const lastMsgIsFromCustomer = (c) => {
     const msgs = (c.messages || []).filter(m => m.role !== 'system');
     return msgs.length > 0 && msgs[msgs.length - 1].role === 'user';
   };
   const takeover = conversations.filter(c => c.manual_mode && c.status === 'active');
+  const needsAttention = conversations.filter(c => isUnread(c) || (c.manual_mode && lastMsgIsFromCustomer(c)));
 
   return (
     <div style={{ padding: '32px', maxWidth: 1200, margin: '0 auto' }}>
@@ -119,10 +119,10 @@ export default function ConversationsPage() {
         ))}
         </div>
         <button
-          onClick={unread.length > 0 ? () => { markViewed(unread[0].id); window.location.hash = `#/dashboard/conversations/${unread[0].id}`; } : undefined}
-          style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px', background: unread.length > 0 ? '#3b82f6' : '#1a1a1a', border: `1px solid ${unread.length > 0 ? '#3b82f6' : '#2a2a2a'}`, borderRadius: 8, color: unread.length > 0 ? '#fff' : '#555', fontSize: 13, fontWeight: 600, cursor: unread.length > 0 ? 'pointer' : 'default' }}>
-          <span style={{ width: 8, height: 8, borderRadius: '50%', background: unread.length > 0 ? '#fff' : '#444' }} />
-          {unread.length > 0 ? `${unread.length} unread — open latest` : 'All caught up'}
+          onClick={needsAttention.length > 0 ? () => { markViewed(needsAttention[0].id); window.location.hash = `#/dashboard/conversations/${needsAttention[0].id}`; } : undefined}
+          style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px', background: needsAttention.length > 0 ? '#3b82f6' : '#1a1a1a', border: `1px solid ${needsAttention.length > 0 ? '#3b82f6' : '#2a2a2a'}`, borderRadius: 8, color: needsAttention.length > 0 ? '#fff' : '#555', fontSize: 13, fontWeight: 600, cursor: needsAttention.length > 0 ? 'pointer' : 'default' }}>
+          <span style={{ width: 8, height: 8, borderRadius: '50%', background: needsAttention.length > 0 ? '#fff' : '#444' }} />
+          {needsAttention.length > 0 ? `${needsAttention.length} unread — open latest` : 'All caught up'}
         </button>
       </div>
 
