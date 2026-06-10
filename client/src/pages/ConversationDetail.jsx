@@ -32,7 +32,7 @@ export default function ConversationDetail() {
   useEffect(() => {
     try { const v = JSON.parse(localStorage.getItem('ansa_viewed') || '{}'); v[convId] = Date.now(); localStorage.setItem('ansa_viewed', JSON.stringify(v)); } catch {}
     api.getConversation(convId)
-      .then(data => setConv(data))
+      .then(data => { setConv(data); if (data?.manual_mode) setAiMode(false); })
       .catch(() => setConv(null))
       .finally(() => setLoading(false));
 
