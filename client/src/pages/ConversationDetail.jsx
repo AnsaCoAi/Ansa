@@ -44,7 +44,11 @@ export default function ConversationDetail() {
       )
       .subscribe();
 
-    return () => supabase.removeChannel(channel);
+    const poll = setInterval(() => {
+      api.getConversation(convId).then(data => setConv(data)).catch(() => {});
+    }, 3000);
+
+    return () => { supabase.removeChannel(channel); clearInterval(poll); };
   }, [convId]);
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [conv?.messages]);
