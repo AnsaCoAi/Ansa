@@ -86,6 +86,11 @@ router.post("/sms", async (req, res) => {
     const conversation = await getOrCreateConversation(business.id, From);
     await saveMessage(conversation.id, "user", Body);
 
+    if (conversation.manual_mode) {
+      console.log(`[SMS] Manual mode — skipping AI for conversation ${conversation.id}`);
+      return res.status(200).send("<Response></Response>");
+    }
+
     const slots = await getAvailableSlots(business.id, business);
     const aiReply = await getAIResponse(From, Body, business, slots);
 

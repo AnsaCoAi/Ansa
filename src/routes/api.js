@@ -112,12 +112,16 @@ router.get('/stats', async (req, res) => {
 
 // PATCH /api/conversations/:id
 router.patch('/conversations/:id', async (req, res) => {
-  const { status } = req.body;
-  const allowed = ['active', 'booked', 'closed'];
-  if (!allowed.includes(status)) return res.status(400).json({ error: 'Invalid status' });
+  const { status, manual_mode } = req.body;
+  const update = { updated_at: new Date().toISOString() };
+  if (status !== undefined) {
+    if (!['active', 'booked', 'closed'].includes(status)) return res.status(400).json({ error: 'Invalid status' });
+    update.status = status;
+  }
+  if (manual_mode !== undefined) update.manual_mode = manual_mode;
   const { data, error } = await supabase
     .from('conversations')
-    .update({ status, updated_at: new Date().toISOString() })
+    .update(update)
     .eq('id', req.params.id)
     .select()
     .single();

@@ -93,7 +93,11 @@ export default function ConversationDetail() {
             <span style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: aiMode ? '#3b82f6' : '#f59e0b', fontWeight: 500 }}>
               {aiMode ? <><Bot size={15} /> AI is handling this conversation</> : <><User size={15} /> You took over this conversation</>}
             </span>
-            <button onClick={() => setAiMode(!aiMode)}
+            <button onClick={async () => {
+              const next = !aiMode;
+              setAiMode(next);
+              try { await api.updateConversation(convId, { manual_mode: !next }); } catch (_) {}
+            }}
               style={{ padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', border: '1px solid', background: aiMode ? 'transparent' : '#f59e0b', borderColor: aiMode ? '#3b82f6' : '#f59e0b', color: aiMode ? '#3b82f6' : '#000' }}>
               {aiMode ? 'Take Over' : 'Let AI Handle'}
             </button>
