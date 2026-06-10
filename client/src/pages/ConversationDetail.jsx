@@ -27,7 +27,13 @@ export default function ConversationDetail() {
   const [inputVal, setInputVal] = useState('');
   const [sendError, setSendError] = useState('');
   const [closing, setClosing] = useState(false);
+  const [showLeaveWarning, setShowLeaveWarning] = useState(false);
   const bottomRef = useRef(null);
+
+  const handleBack = () => {
+    if (!aiMode) { setShowLeaveWarning(true); return; }
+    window.location.hash = '#/dashboard/conversations';
+  };
 
   useEffect(() => {
     try { const v = JSON.parse(localStorage.getItem('ansa_viewed') || '{}'); v[convId] = Date.now(); localStorage.setItem('ansa_viewed', JSON.stringify(v)); } catch {}
@@ -86,7 +92,7 @@ export default function ConversationDetail() {
   if (!conv) return (
     <div style={{ padding: '24px 32px' }}>
       <button style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', color: '#888', fontSize: 13, cursor: 'pointer', padding: 0, marginBottom: 16 }}
-        onClick={() => window.location.hash = '#/dashboard/conversations'}>
+        onClick={handleBack}>
         <ArrowLeft size={16} /> Back to Conversations
       </button>
       <div style={{ padding: 60, textAlign: 'center', color: '#666' }}>Conversation not found.</div>
@@ -98,8 +104,26 @@ export default function ConversationDetail() {
 
   return (
     <div style={{ padding: '24px 32px', maxWidth: 1300, margin: '0 auto', height: 'calc(100vh - 120px)', display: 'flex', flexDirection: 'column' }}>
+      {showLeaveWarning && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+          <div style={{ background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: 14, padding: 28, maxWidth: 420, width: '100%' }}>
+            <div style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 10 }}>Leave this conversation?</div>
+            <div style={{ fontSize: 14, color: '#aaa', lineHeight: 1.6, marginBottom: 24 }}>You took over this conversation — <span style={{ color: '#f59e0b', fontWeight: 600 }}>the AI will not respond</span> while you're in control. The customer won't get a reply unless you come back and send one.</div>
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button onClick={() => setShowLeaveWarning(false)}
+                style={{ flex: 1, padding: '10px', borderRadius: 8, border: '1px solid #333', background: 'transparent', color: '#aaa', fontSize: 14, cursor: 'pointer', fontWeight: 500 }}>
+                Stay
+              </button>
+              <button onClick={() => window.location.hash = '#/dashboard/conversations'}
+                style={{ flex: 1, padding: '10px', borderRadius: 8, border: 'none', background: '#f59e0b', color: '#000', fontSize: 14, cursor: 'pointer', fontWeight: 700 }}>
+                Leave Anyway
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       <button style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', color: '#888', fontSize: 13, cursor: 'pointer', padding: 0, marginBottom: 16, fontWeight: 500 }}
-        onClick={() => window.location.hash = '#/dashboard/conversations'}>
+        onClick={handleBack}>
         <ArrowLeft size={16} /> Back to Conversations
       </button>
 
