@@ -84,6 +84,12 @@ export default function ConversationsPage() {
 
   return (
     <div style={{ padding: '32px', maxWidth: 1200, margin: '0 auto' }}>
+      <style>{`
+        .conv-row { background: #141414; border: 1px solid #1e1e1e; transition: background 0.15s; }
+        .conv-row:hover { background: #1a1a1a !important; border-color: #2a2a2a !important; }
+        .conv-row.conv-unread { border-color: #3b82f6 !important; }
+        .conv-row.conv-unread:hover { border-color: #3b82f6 !important; }
+      `}</style>
       <h1 style={{ fontSize: 24, fontWeight: 700, color: '#fff', margin: 0, marginBottom: 24 }}>Conversations</h1>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 24 }}>
@@ -116,10 +122,9 @@ export default function ConversationsPage() {
           const sc = statusColors[conv.status] || statusColors.closed;
           return (
             <div key={conv.id}
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 24px', background: '#141414', borderRadius: 12, border: `1px solid ${isUnread(conv) ? '#3b82f6' : '#1e1e1e'}`, cursor: 'pointer' }}
-              onClick={() => { markViewed(conv.id); window.location.hash = `#/dashboard/conversations/${conv.id}`; }}
-              onMouseEnter={e => { e.currentTarget.style.background = '#1a1a1a'; e.currentTarget.style.borderColor = '#2a2a2a'; }}
-              onMouseLeave={e => { e.currentTarget.style.background = '#141414'; e.currentTarget.style.borderColor = '#1e1e1e'; }}>
+              className={`conv-row${isUnread(conv) ? ' conv-unread' : ''}`}
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 24px', borderRadius: 12, cursor: 'pointer' }}
+              onClick={() => { markViewed(conv.id); window.location.hash = `#/dashboard/conversations/${conv.id}`; }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 16, flex: 1, minWidth: 0 }}>
                 <div style={{ width: 44, height: 44, borderRadius: '50%', background: '#1e1e1e', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                   <MessageSquare size={18} color="#888" />
