@@ -42,10 +42,9 @@ function markViewed(id) {
   const v = getViewed(); v[id] = Date.now(); localStorage.setItem('ansa_viewed', JSON.stringify(v));
 }
 function isUnread(conv) {
-  const lastMsg = (conv.messages || []).filter(m => m.role !== 'system').slice(-1)[0];
-  if (!lastMsg || lastMsg.role !== 'user') return false;
   const viewed = getViewed();
-  return !viewed[conv.id] || new Date(lastMsg.created_at).getTime() > viewed[conv.id];
+  if (!viewed[conv.id]) return true;
+  return new Date(conv.updated_at).getTime() > viewed[conv.id];
 }
 
 export default function ConversationsPage() {
