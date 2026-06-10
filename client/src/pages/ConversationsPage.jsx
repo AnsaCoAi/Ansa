@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { MessageSquare, Clock, ChevronRight, User } from 'lucide-react';
+import { MessageSquare, Clock, ChevronRight } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
 
@@ -23,6 +23,7 @@ function timeAgo(ts) {
 const tabs = [
   { key: 'all', label: 'All', dot: null },
   { key: 'active', label: 'Active', dot: '#3b82f6' },
+  { key: 'takeover', label: 'Needs Reply', dot: '#f59e0b' },
   { key: 'booked', label: 'Booked', dot: '#22c55e' },
   { key: 'closed', label: 'Closed', dot: '#6b7280' },
 ];
@@ -68,6 +69,7 @@ export default function ConversationsPage() {
   const filtered = useMemo(
     () => activeTab === 'all' ? conversations
       : activeTab === 'active' ? conversations.filter(c => c.status === 'active' && hasCustomerReply(c))
+      : activeTab === 'takeover' ? conversations.filter(c => c.manual_mode && c.status === 'active')
       : conversations.filter(c => c.status === activeTab),
     [activeTab, conversations]
   );
@@ -99,41 +101,6 @@ export default function ConversationsPage() {
       `}</style>
       <h1 style={{ fontSize: 24, fontWeight: 700, color: '#fff', margin: 0, marginBottom: 24 }}>Conversations</h1>
 
-      {takeover.length > 0 && (
-        <div style={{ marginBottom: 24 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
-            <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#f59e0b', flexShrink: 0 }} />
-            <span style={{ fontSize: 13, fontWeight: 600, color: '#f59e0b' }}>Needs Your Reply</span>
-          </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-            {takeover.map(conv => (
-              <div key={conv.id}
-                className="conv-row conv-takeover"
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 24px', borderRadius: 12, cursor: 'pointer' }}
-                onClick={() => { markViewed(conv.id); window.location.hash = `#/dashboard/conversations/${conv.id}`; }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 16, flex: 1, minWidth: 0 }}>
-                  <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'rgba(245,158,11,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                    <User size={18} color="#f59e0b" />
-                  </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                      <span style={{ fontSize: 15, fontWeight: 600, color: '#fff' }}>{formatPhone(conv.customer_phone)}</span>
-                      {conv.customer_name && <span style={{ fontSize: 12, color: '#888' }}>{conv.customer_name}</span>}
-                    </div>
-                    <div style={{ fontSize: 13, color: '#888', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 500 }}>{(conv.messages || []).filter(m => m.role !== 'system').slice(-1)[0]?.content || 'No messages'}</div>
-                  </div>
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexShrink: 0 }}>
-                  <span style={{ fontSize: 12, fontWeight: 600, padding: '4px 10px', borderRadius: 20, color: '#f59e0b', background: 'rgba(245,158,11,0.12)' }}>You took over</span>
-                  <span style={{ fontSize: 12, color: '#555' }}><Clock size={11} style={{ marginRight: 3, verticalAlign: 'middle' }} />{timeAgo(conv.updated_at || conv.created_at)}</span>
-                  <ChevronRight size={18} color="#444" />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
         <div style={{ display: 'flex', gap: 4, background: '#141414', borderRadius: 10, padding: 4 }}>
         {tabs.map(tab => (
@@ -142,7 +109,7 @@ export default function ConversationsPage() {
             {tab.dot && <span style={{ width: 8, height: 8, borderRadius: '50%', background: tab.dot }} />}
             {tab.label}
             <span style={{ color: '#555', fontSize: 12, marginLeft: 2 }}>
-              ({tab.key === 'all' ? conversations.length : tab.key === 'active' ? conversations.filter(c => c.status === 'active' && hasCustomerReply(c)).length : conversations.filter(c => c.status === tab.key).length})
+              ({tab.key === 'all' ? conversations.length : tab.key === 'active' ? conversations.filter(c => c.status === 'active' && hasCustomerReply(c)).length : tab.key === 'takeover' ? takeover.length : conversations.filter(c => c.status === tab.key).length})
             </span>
           </button>
         ))}
