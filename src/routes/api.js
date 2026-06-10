@@ -210,11 +210,8 @@ router.post('/conversations/:id/send', async (req, res) => {
       from: biz.twilio_number,
       to: conv.customer_phone,
     });
-    await supabase.from('messages').insert({
-      conversation_id: req.params.id,
-      role: 'assistant',
-      content: message,
-    });
+    await supabase.from('messages').insert({ conversation_id: req.params.id, role: 'assistant', content: message });
+    await supabase.from('conversations').update({ manual_mode: true }).eq('id', req.params.id);
     res.json({ ok: true });
   } catch (err) {
     res.status(500).json({ error: err.message });

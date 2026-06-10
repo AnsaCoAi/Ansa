@@ -96,7 +96,7 @@ export default function ConversationDetail() {
             <button onClick={async () => {
               const next = !aiMode;
               setAiMode(next);
-              try { await api.updateConversation(convId, { manual_mode: !next }); } catch (_) {}
+              try { await api.updateConversation(convId, { manual_mode: !next }); } catch (e) { console.error('manual_mode update failed:', e); }
             }}
               style={{ padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', border: '1px solid', background: aiMode ? 'transparent' : '#f59e0b', borderColor: aiMode ? '#3b82f6' : '#f59e0b', color: aiMode ? '#3b82f6' : '#000' }}>
               {aiMode ? 'Take Over' : 'Let AI Handle'}
