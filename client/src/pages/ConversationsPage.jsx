@@ -33,16 +33,18 @@ const statusColors = {
   closed: { color: '#6b7280', bg: 'rgba(107,114,128,0.15)' },
 };
 
+const cache = { data: null, bizId: null };
+
 export default function ConversationsPage() {
   const { business } = useAuth();
   const [activeTab, setActiveTab] = useState('all');
-  const [conversations, setConversations] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [conversations, setConversations] = useState(cache.bizId === business?.id ? cache.data || [] : []);
+  const [loading, setLoading] = useState(cache.bizId !== business?.id);
 
   useEffect(() => {
     if (!business?.id) return;
     api.getConversations(business.id)
-      .then(data => setConversations(data || []))
+      .then(data => { cache.data = data || []; cache.bizId = business.id; setConversations(data || []); })
       .catch(() => setConversations([]))
       .finally(() => setLoading(false));
   }, [business?.id]);

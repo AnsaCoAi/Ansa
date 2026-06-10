@@ -112,7 +112,7 @@ export default function DashboardLayout({ children, currentHash }) {
           </div>
         )}
         <main style={styles.content}>
-          <div key={currentHash} className="ansa-page">{children}</div>
+          <div className="ansa-page">{children}</div>
         </main>
       </div>
       <style>{`
@@ -121,6 +121,15 @@ export default function DashboardLayout({ children, currentHash }) {
           [data-ansa-main] { margin-left: 260px !important; }
           [data-ansa-hamburger] { display: none !important; }
         }
+        .ansa-page {
+          animation: ansa-fade 0.15s ease;
+        }
+        @keyframes ansa-fade {
+          from { opacity: 0; transform: translateY(4px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        button, a { transition: opacity 0.15s, background 0.15s, color 0.15s, border-color 0.15s !important; }
+        button:active, a:active { opacity: 0.7 !important; }
       `}</style>
     </div>
   )
