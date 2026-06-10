@@ -136,7 +136,7 @@ export default function ConversationDetail() {
           {sendError && <div style={{ padding: '8px 20px', background: 'rgba(239,68,68,0.1)', color: '#ef4444', fontSize: 12 }}>{sendError}</div>}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '14px 20px', borderTop: '1px solid #1e1e1e', background: '#111' }}>
             <input
-              style={{ flex: 1, background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: 10, padding: '10px 16px', color: '#fff', fontSize: 14, outline: 'none' }}
+              style={{ flex: 1, background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: 10, padding: '10px 16px', color: '#fff', fontSize: 14, outline: 'none', caretColor: '#3b82f6' }}
               placeholder={aiMode ? 'Take over to send a message...' : 'Type a message...'}
               value={inputVal} onChange={e => setInputVal(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter') handleSend(); }}
