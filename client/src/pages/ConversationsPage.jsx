@@ -97,13 +97,12 @@ export default function ConversationsPage() {
           </button>
         ))}
         </div>
-        {unread.length > 0 && (
-          <button onClick={() => { markViewed(unread[0].id); window.location.hash = `#/dashboard/conversations/${unread[0].id}`; }}
-            style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px', background: '#3b82f6', border: 'none', borderRadius: 8, color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
-            <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#fff' }} />
-            {unread.length} unread — open latest
-          </button>
-        )}
+        <button
+          onClick={unread.length > 0 ? () => { markViewed(unread[0].id); window.location.hash = `#/dashboard/conversations/${unread[0].id}`; } : undefined}
+          style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px', background: unread.length > 0 ? '#3b82f6' : '#1a1a1a', border: `1px solid ${unread.length > 0 ? '#3b82f6' : '#2a2a2a'}`, borderRadius: 8, color: unread.length > 0 ? '#fff' : '#555', fontSize: 13, fontWeight: 600, cursor: unread.length > 0 ? 'pointer' : 'default' }}>
+          <span style={{ width: 8, height: 8, borderRadius: '50%', background: unread.length > 0 ? '#fff' : '#444' }} />
+          {unread.length > 0 ? `${unread.length} unread — open latest` : 'All caught up'}
+        </button>
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
