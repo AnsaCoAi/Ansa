@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { PhoneOff, MessageSquareOff, DollarSign, Phone, MessageCircle, CalendarCheck, Zap, Check, ChevronDown, Star, ArrowRight, Menu, X, CheckCircle, XCircle, LayoutDashboard, PhoneMissed, MessageSquare, BarChart3, Settings, LogOut, HeadphonesIcon } from 'lucide-react';
 
 const STYLE_ID = 'ansa-landing-styles';
@@ -45,8 +45,8 @@ const injectStyles = () => {
     .ansa-trust-line{font-size:12px;color:#888;margin-top:12px;text-align:center;letter-spacing:.2px}
 
     /* Hero */
-    .ansa-hero{position:relative;padding:160px 24px 80px;text-align:center;overflow:hidden}
-    .ansa-hero-glow{position:absolute;top:-120px;left:50%;transform:translateX(-50%);width:900px;height:900px;border-radius:50%;background:radial-gradient(ellipse at center,rgba(79,110,247,.18) 0%,transparent 70%);pointer-events:none;animation:ansa-pulse 6s ease-in-out infinite}
+    .ansa-hero{position:relative;padding:140px 24px 60px;text-align:center;overflow:hidden}
+    .ansa-hero-glow{position:absolute;top:-100px;left:50%;transform:translateX(-50%);width:900px;height:900px;border-radius:50%;background:radial-gradient(ellipse at center,rgba(79,110,247,.18) 0%,transparent 70%);pointer-events:none;animation:ansa-pulse 6s ease-in-out infinite}
     .ansa-hero-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 16px;border-radius:999px;font-size:13px;font-weight:600;background:rgba(79,110,247,.1);border:1px solid rgba(79,110,247,.25);color:${PRIMARY_LIGHT};margin-bottom:16px;animation:ansa-fadeUp .7s ease both}
     .ansa-hero-announce{display:inline-flex;align-items:center;gap:7px;padding:6px 14px 6px 10px;border-radius:999px;font-size:13px;font-weight:500;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#a1a1aa;text-decoration:none;margin-bottom:28px;animation:ansa-fadeUp .8s ease .1s both;transition:border-color .2s,color .2s}
     .ansa-hero-announce:hover{border-color:rgba(79,110,247,.5);color:#fff}
@@ -89,31 +89,49 @@ const injectStyles = () => {
     .ansa-phone-hint{text-align:center;font-size:11px;color:#aaa;margin-top:12px;letter-spacing:.2px}
 
     /* Social proof strip */
-    .ansa-proof-strip{border-top:1px solid #1a1a1a;border-bottom:1px solid #1a1a1a;padding:20px 0;overflow:hidden;position:relative}
+    .ansa-proof-strip{border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06);padding:16px 0;overflow:hidden;position:relative}
     .ansa-proof-strip::before,.ansa-proof-strip::after{content:'';position:absolute;top:0;bottom:0;width:80px;z-index:2;pointer-events:none}
     .ansa-proof-strip::before{left:0;background:linear-gradient(to right,#0a0a0a,transparent)}
     .ansa-proof-strip::after{right:0;background:linear-gradient(to left,#0a0a0a,transparent)}
     .ansa-proof-track{display:flex;animation:ansa-marquee 28s linear infinite;white-space:nowrap}
-    .ansa-proof-item{display:inline-flex;align-items:center;gap:8px;padding:0 32px;font-size:13px;color:#71717a;font-weight:500;flex-shrink:0}
-    .ansa-proof-dot{width:4px;height:4px;border-radius:50%;background:#3f3f46;flex-shrink:0}
+    .ansa-proof-item{display:inline-flex;align-items:center;gap:8px;padding:0 32px;font-size:12.5px;color:#52525b;font-weight:500;flex-shrink:0}
+    .ansa-proof-dot{width:3px;height:3px;border-radius:50%;background:#3f3f46;flex-shrink:0}
+
+    /* Big stats band */
+    .ansa-stats-band{max-width:960px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.06);border-radius:20px;overflow:hidden}
+    .ansa-stats-band-cell{background:#0f0f0f;padding:36px 24px;text-align:center}
+    .ansa-stats-band-num{font-size:clamp(36px,4vw,52px);font-weight:900;letter-spacing:-.04em;line-height:1;background:linear-gradient(135deg,#fff 30%,#818CF8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px}
+    .ansa-stats-band-label{font-size:13px;color:#52525b;font-weight:500;line-height:1.4}
+
+    /* legacy - keep for any leftover usages */
     .ansa-proof-stats{display:flex;justify-content:center;gap:48px;padding:28px 24px;max-width:800px;margin:0 auto}
     .ansa-proof-stat{text-align:center}
     .ansa-proof-stat-num{font-size:28px;font-weight:800;letter-spacing:-1px;background:linear-gradient(135deg,#fff 30%,#818CF8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
     .ansa-proof-stat-label{font-size:12px;color:#71717a;margin-top:2px}
 
     /* Sections */
-    .ansa-section{max-width:1200px;margin:0 auto;padding:100px 24px}
-    .ansa-section-label{font-size:13px;font-weight:600;color:${PRIMARY};text-transform:uppercase;letter-spacing:2px;margin-bottom:12px;text-align:center}
-    .ansa-section-title{font-size:clamp(28px,4vw,44px);font-weight:800;text-align:center;max-width:700px;margin:0 auto 16px;letter-spacing:-1px;line-height:1.15}
-    .ansa-section-sub{font-size:17px;color:#a1a1aa;text-align:center;max-width:560px;margin:0 auto 56px;line-height:1.6}
+    .ansa-section{max-width:1200px;margin:0 auto;padding:72px 24px}
+    .ansa-section-label{font-size:12px;font-weight:700;color:${PRIMARY};text-transform:uppercase;letter-spacing:2.5px;margin-bottom:12px;text-align:center}
+    .ansa-section-title{font-size:clamp(26px,3.8vw,42px);font-weight:800;text-align:center;max-width:700px;margin:0 auto 16px;letter-spacing:-.035em;line-height:1.1}
+    .ansa-section-sub{font-size:16px;color:#71717a;text-align:center;max-width:520px;margin:0 auto 48px;line-height:1.6}
+
+    /* Section wrappers with background treatments */
+    .ansa-section-wrap-tinted{position:relative;background:#0d0d0d}
+    .ansa-section-wrap-tinted::before{content:'';position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.035) 1px,transparent 1px);background-size:28px 28px;pointer-events:none;z-index:0}
+    .ansa-section-wrap-tinted .ansa-section{position:relative;z-index:1}
+    .ansa-section-wrap-blue{position:relative;background:linear-gradient(180deg,#0a0a0a 0%,#07101f 40%,#07101f 60%,#0a0a0a 100%)}
+    .ansa-section-wrap-blue::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 800px 400px at 50% 50%,rgba(79,110,247,.08) 0%,transparent 70%);pointer-events:none}
+    .ansa-section-wrap-blue .ansa-section{position:relative;z-index:1}
 
     /* Problem cards */
-    .ansa-problem-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
-    .ansa-problem-card{background:#141414;border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:36px 28px;text-align:center;transition:border-color .3s,transform .3s}
-    .ansa-problem-card:hover{border-color:rgba(79,110,247,.3);transform:translateY(-4px)}
-    .ansa-problem-icon{width:56px;height:56px;border-radius:16px;background:rgba(79,110,247,.1);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;color:${PRIMARY}}
-    .ansa-problem-stat{font-size:32px;font-weight:800;margin-bottom:8px;letter-spacing:-.5px;transition:all .3s;background:linear-gradient(135deg,#fff 30%,#818CF8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-    .ansa-problem-desc{font-size:15px;color:#a1a1aa;line-height:1.5}
+    .ansa-problem-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+    .ansa-problem-card{background:#141414;border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:32px 24px;text-align:center;transition:border-color .3s,transform .3s;position:relative;overflow:hidden}
+    .ansa-problem-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(79,110,247,.3),transparent);opacity:0;transition:opacity .3s}
+    .ansa-problem-card:hover{border-color:rgba(79,110,247,.3);transform:translateY(-3px)}
+    .ansa-problem-card:hover::after{opacity:1}
+    .ansa-problem-icon{width:48px;height:48px;border-radius:14px;background:rgba(79,110,247,.1);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;color:${PRIMARY}}
+    .ansa-problem-stat{font-size:clamp(28px,3.5vw,40px);font-weight:900;margin-bottom:8px;letter-spacing:-.04em;transition:all .3s;background:linear-gradient(135deg,#fff 20%,#818CF8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
+    .ansa-problem-desc{font-size:14px;color:#71717a;line-height:1.55}
 
     /* Testimonials */
     .ansa-testimonials{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
@@ -149,27 +167,52 @@ const injectStyles = () => {
     .ansa-compare-icon-bad{color:#ef4444;flex-shrink:0;margin-top:1px}
     .ansa-compare-icon-good{color:#10b981;flex-shrink:0;margin-top:1px}
 
-    /* Chess features layout */
+    /* Chess features layout (legacy, kept for fallback) */
     .ansa-chess{display:flex;flex-direction:column;gap:64px}
     .ansa-chess-row{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
     .ansa-chess-row.flip{direction:rtl}
     .ansa-chess-row.flip > *{direction:ltr}
-    .ansa-chess-text{}
     .ansa-chess-eyebrow{font-size:12px;font-weight:600;color:${PRIMARY};text-transform:uppercase;letter-spacing:2px;margin-bottom:12px}
     .ansa-chess-title{font-size:clamp(22px,3vw,30px);font-weight:800;letter-spacing:-.5px;line-height:1.2;margin-bottom:16px}
-    .ansa-chess-body{font-size:16px;color:#a1a1aa;line-height:1.7;margin-bottom:24px}
+    .ansa-chess-body{font-size:15px;color:#71717a;line-height:1.7;margin-bottom:24px}
     .ansa-chess-points{list-style:none;padding:0;display:flex;flex-direction:column;gap:10px}
     .ansa-chess-points li{display:flex;align-items:center;gap:10px;font-size:14px;color:#d1d5db}
     .ansa-chess-visual{background:#141414;border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:28px;min-height:240px;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden;transition:border-color .3s}
     .ansa-chess-visual:hover{border-color:rgba(79,110,247,.25)}
     .ansa-chess-visual::before{content:'';position:absolute;top:-60px;right:-60px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(79,110,247,.08) 0%,transparent 70%);pointer-events:none}
 
+    /* Bento grid layout */
+    .ansa-bento{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+    .ansa-bento-card{background:#141414;border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:28px;position:relative;overflow:hidden;transition:border-color .3s,transform .25s}
+    .ansa-bento-card:hover{border-color:rgba(79,110,247,.3);transform:translateY(-2px)}
+    .ansa-bento-card::before{content:'';position:absolute;top:-80px;right:-80px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(79,110,247,.06) 0%,transparent 70%);pointer-events:none}
+    .ansa-bento-wide{grid-column:span 2}
+    .ansa-bento-full{grid-column:span 3}
+    .ansa-bento-accent{background:linear-gradient(135deg,rgba(79,110,247,.1) 0%,#141414 100%);border-color:rgba(79,110,247,.2)}
+    .ansa-bento-accent:hover{border-color:rgba(79,110,247,.4)}
+    .ansa-bento-num{font-size:clamp(44px,5vw,64px);font-weight:900;letter-spacing:-.04em;line-height:1;background:linear-gradient(135deg,#fff 20%,#818CF8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px}
+    .ansa-bento-num-label{font-size:14px;color:#71717a;line-height:1.5}
+    .ansa-bento-eyebrow{font-size:11px;font-weight:700;color:${PRIMARY};text-transform:uppercase;letter-spacing:2px;margin-bottom:10px}
+    .ansa-bento-title{font-size:clamp(18px,2vw,22px);font-weight:800;letter-spacing:-.03em;line-height:1.25;margin-bottom:12px;color:#fff}
+    .ansa-bento-body{font-size:14px;color:#71717a;line-height:1.65;margin-bottom:16px}
+    .ansa-bento-points{list-style:none;padding:0;display:flex;flex-direction:column;gap:8px;margin-top:auto}
+    .ansa-bento-points li{display:flex;align-items:center;gap:8px;font-size:13px;color:#a1a1aa}
+    @media(max-width:900px){.ansa-bento{grid-template-columns:1fr 1fr}.ansa-bento-wide,.ansa-bento-full{grid-column:span 2}.ansa-bento-accent:not(.ansa-bento-wide){grid-column:span 1}}
+    @media(max-width:600px){.ansa-bento{grid-template-columns:1fr}.ansa-bento-wide,.ansa-bento-full,.ansa-bento-accent{grid-column:span 1}}
+
     /* Integrations */
-    .ansa-integrations{display:flex;justify-content:center;align-items:center;gap:20px;flex-wrap:wrap}
-    .ansa-integration-pill{display:flex;align-items:center;gap:10px;background:#141414;border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px 22px;font-size:14px;font-weight:500;color:#d1d5db;transition:border-color .2s}
-    .ansa-integration-pill:hover{border-color:rgba(79,110,247,.3)}
-    .ansa-integration-icon{width:32px;height:32px;border-radius:8px;background:#1a1a1a;border:1px solid #2a2a2a;display:flex;align-items:center;justify-content:center;color:#a1a1aa;flex-shrink:0}
-    .ansa-integration-plus{font-size:18px;color:#3f3f46;font-weight:300}
+    .ansa-integrations{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;max-width:520px;margin:0 auto}
+    .ansa-integration-pill{display:flex;align-items:center;gap:12px;background:#141414;border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px 20px;font-size:14px;font-weight:500;color:#d1d5db;transition:border-color .2s,transform .2s}
+    .ansa-integration-pill:hover{border-color:rgba(79,110,247,.3);transform:translateY(-2px)}
+    .ansa-integration-icon{width:36px;height:36px;border-radius:10px;background:rgba(79,110,247,.1);border:1px solid rgba(79,110,247,.15);display:flex;align-items:center;justify-content:center;color:${PRIMARY};flex-shrink:0}
+    .ansa-integration-plus{display:none}
+
+    /* Split section: integrations left + notifications right */
+    .ansa-split-section{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;max-width:1200px;margin:0 auto;padding:72px 24px}
+    .ansa-split-label{font-size:11px;font-weight:700;color:${PRIMARY};text-transform:uppercase;letter-spacing:2.5px;margin-bottom:10px}
+    .ansa-split-title{font-size:clamp(22px,2.8vw,32px);font-weight:800;letter-spacing:-.03em;line-height:1.15;margin-bottom:14px;color:#fff}
+    .ansa-split-body{font-size:15px;color:#71717a;line-height:1.65;margin-bottom:28px}
+    @media(max-width:768px){.ansa-split-section{grid-template-columns:1fr;gap:40px}}
 
     /* Pricing */
     .ansa-pricing-grid{display:grid;grid-template-columns:1fr;gap:24px;max-width:480px;margin:0 auto}
@@ -436,30 +479,6 @@ function VisualBooking() {
   );
 }
 
-const CHESS_FEATURES = [
-  {
-    eyebrow: 'Response Speed',
-    title: 'Texts back in under 15 seconds — before they call someone else',
-    body: 'The window between a missed call and a lost customer is about 30 seconds. Ansa fires a text the instant a call goes unanswered. Your competitors are still letting it ring.',
-    points: ['Texts back in 10–15 seconds', 'Personalised with your business name', 'Works 24/7, including after-hours'],
-    Visual: VisualTextBack,
-  },
-  {
-    eyebrow: 'AI Conversations',
-    title: 'Answers questions like you would — without you lifting a finger',
-    body: 'Your AI is trained on your exact services, pricing, service area, and FAQs. It handles the back-and-forth so customers are ready to book before you even know they called.',
-    points: ['Trained on your services & pricing', 'Natural, two-way texting', 'You can jump in anytime from your dashboard'],
-    Visual: VisualConversation,
-    flip: true,
-  },
-  {
-    eyebrow: 'Smart Booking',
-    title: 'Books the job into your calendar — automatically',
-    body: 'No phone tag. No back-and-forth. Ansa checks your real availability, confirms the appointment, and sends you a notification. The customer gets a confirmation text. Done.',
-    points: ['Syncs with Google Calendar', 'Real-time availability checking', 'Instant confirmation to customer & you'],
-    Visual: VisualBooking,
-  },
-];
 
 const PROOF_ITEMS = [
   'Plumbers', 'HVAC Techs', 'Roofers', 'Electricians', 'Landscapers',
@@ -985,19 +1004,19 @@ export default function LandingPage() {
           ))}
         </div>
       </div>
-      <div style={{ borderBottom:'1px solid #1a1a1a' }}>
-        <div className="ansa-proof-stats ansa-reveal">
-          <div className="ansa-proof-stat">
-            <div className="ansa-proof-stat-num">15s</div>
-            <div className="ansa-proof-stat-label">Average text-back time</div>
+      <div style={{ padding:'40px 24px' }}>
+        <div className="ansa-stats-band ansa-reveal">
+          <div className="ansa-stats-band-cell">
+            <div className="ansa-stats-band-num">15s</div>
+            <div className="ansa-stats-band-label">Average text-back time after a missed call</div>
           </div>
-          <div className="ansa-proof-stat">
-            <div className="ansa-proof-stat-num">30 days</div>
-            <div className="ansa-proof-stat-label">Free trial — no card needed</div>
+          <div className="ansa-stats-band-cell" style={{ borderLeft:'1px solid rgba(255,255,255,.06)', borderRight:'1px solid rgba(255,255,255,.06)' }}>
+            <div className="ansa-stats-band-num">30</div>
+            <div className="ansa-stats-band-label">Day free trial — no credit card required</div>
           </div>
-          <div className="ansa-proof-stat">
-            <div className="ansa-proof-stat-num">24/7</div>
-            <div className="ansa-proof-stat-label">Always on, even after hours</div>
+          <div className="ansa-stats-band-cell">
+            <div className="ansa-stats-band-num">24/7</div>
+            <div className="ansa-stats-band-label">Always on, nights, weekends, and holidays</div>
           </div>
         </div>
       </div>
@@ -1024,8 +1043,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Testimonials — moved up, right after problem */}
-      <div className="ansa-divider" />
+      {/* Testimonials */}
+      <div className="ansa-section-wrap-tinted">
       <section className="ansa-section" id="testimonials">
         <div className="ansa-reveal">
           <p className="ansa-section-label">Real Results</p>
@@ -1045,10 +1064,10 @@ export default function LandingPage() {
           ))}
         </div>
       </section>
-
-      <div className="ansa-divider" />
+      </div>
 
       {/* How It Works */}
+      <div className="ansa-section-wrap-tinted">
       <section className="ansa-section" id="how-it-works">
         <div className="ansa-reveal">
           <p className="ansa-section-label">How It Works</p>
@@ -1063,9 +1082,9 @@ export default function LandingPage() {
           <div className="ansa-step-card"><div className="ansa-step-num">3</div><div className="ansa-step-icon"><CalendarCheck size={24}/></div><div className="ansa-step-title">Job Booked</div><div className="ansa-step-desc">AI handles the conversation and locks in the appointment. You get a notification.</div></div>
         </div>
       </section>
+      </div>
 
       {/* Before / After */}
-      <div className="ansa-divider" />
       <section className="ansa-section">
         <div className="ansa-reveal">
           <p className="ansa-section-label">The Difference</p>
@@ -1114,35 +1133,74 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Features — chess layout */}
-      <div className="ansa-divider" />
-      <section className="ansa-section" id="features">
-        <div className="ansa-reveal">
-          <p className="ansa-section-label">Features</p>
-          <h2 className="ansa-section-title">Everything Built to Capture Every Lead</h2>
-          <p className="ansa-section-sub">Three things Ansa does better than any person with a phone.</p>
-        </div>
-        <div className="ansa-chess">
-          {CHESS_FEATURES.map((f, i) => (
-            <div key={i} className={`ansa-chess-row ansa-reveal${f.flip?' flip':''}`}>
-              <div className="ansa-chess-text">
-                <div className="ansa-chess-eyebrow">{f.eyebrow}</div>
-                <h3 className="ansa-chess-title">{f.title}</h3>
-                <p className="ansa-chess-body">{f.body}</p>
-                <ul className="ansa-chess-points">
-                  {f.points.map((p,j) => (
-                    <li key={j}><Check size={15} color={PRIMARY} />{p}</li>
+      {/* Features — bento grid */}
+      <div className="ansa-section-wrap-tinted">
+        <section className="ansa-section" id="features">
+          <div className="ansa-reveal">
+            <p className="ansa-section-label">Features</p>
+            <h2 className="ansa-section-title">Everything Built to Capture Every Lead</h2>
+            <p className="ansa-section-sub">Three things Ansa does better than any person with a phone.</p>
+          </div>
+          <div className="ansa-bento ansa-reveal">
+            {/* Row 1: Speed (wide) + stat card */}
+            <div className="ansa-bento-card ansa-bento-wide" style={{ display:'flex', flexDirection:'column', gap:20 }}>
+              <VisualTextBack />
+              <div>
+                <div className="ansa-bento-eyebrow">Response Speed</div>
+                <h3 className="ansa-bento-title">Texts back in under 15 seconds — before they call someone else</h3>
+                <p className="ansa-bento-body">The window between a missed call and a lost customer is about 30 seconds. Ansa fires a text the instant a call goes unanswered.</p>
+                <ul className="ansa-bento-points">
+                  {['Texts back in 10–15 seconds','Works 24/7, including after-hours','Personalised with your business name'].map((p,j) => (
+                    <li key={j}><Check size={14} color={PRIMARY}/>{p}</li>
                   ))}
                 </ul>
               </div>
-              <f.Visual />
             </div>
-          ))}
-        </div>
-      </section>
+            <div className="ansa-bento-card ansa-bento-accent" style={{ display:'flex', flexDirection:'column', justifyContent:'center', minHeight:200 }}>
+              <div className="ansa-bento-num">62%</div>
+              <div className="ansa-bento-num-label">of home service calls go unanswered during work hours</div>
+            </div>
+
+            {/* Row 2: stat card + AI (wide) */}
+            <div className="ansa-bento-card ansa-bento-accent" style={{ display:'flex', flexDirection:'column', justifyContent:'center', minHeight:200 }}>
+              <div className="ansa-bento-num">85%</div>
+              <div className="ansa-bento-num-label">of callers won't leave a voicemail — they call the next business</div>
+            </div>
+            <div className="ansa-bento-card ansa-bento-wide" style={{ display:'flex', flexDirection:'column', gap:20 }}>
+              <VisualConversation />
+              <div>
+                <div className="ansa-bento-eyebrow">AI Conversations</div>
+                <h3 className="ansa-bento-title">Answers questions like you would — without you lifting a finger</h3>
+                <p className="ansa-bento-body">Trained on your exact services, pricing, and FAQs. It handles the back-and-forth so customers are ready to book before you even know they called.</p>
+                <ul className="ansa-bento-points">
+                  {['Trained on your services & pricing','Natural, two-way texting','Jump in anytime from your dashboard'].map((p,j) => (
+                    <li key={j}><Check size={14} color={PRIMARY}/>{p}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            {/* Row 3: Booking — full width horizontal */}
+            <div className="ansa-bento-card ansa-bento-full">
+              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:40, alignItems:'center' }}>
+                <div>
+                  <div className="ansa-bento-eyebrow">Smart Booking</div>
+                  <h3 className="ansa-bento-title">Books the job into your calendar — automatically</h3>
+                  <p className="ansa-bento-body">No phone tag. No back-and-forth. Ansa checks your real availability, confirms the appointment, and sends you a notification. Done.</p>
+                  <ul className="ansa-bento-points">
+                    {['Syncs with Google Calendar','Real-time availability checking','Instant confirmation to customer & you'].map((p,j) => (
+                      <li key={j}><Check size={14} color={PRIMARY}/>{p}</li>
+                    ))}
+                  </ul>
+                </div>
+                <VisualBooking />
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
 
       {/* Dashboard Showcase */}
-      <div className="ansa-divider" />
       <section className="ansa-section" id="product">
         <div className="ansa-reveal">
           <p className="ansa-section-label">The Product</p>
@@ -1154,86 +1212,64 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Integrations */}
-      <div className="ansa-divider" />
-      <section className="ansa-section">
-        <div className="ansa-reveal">
-          <p className="ansa-section-label">Integrations</p>
-          <h2 className="ansa-section-title">Works With the Tools You Already Use</h2>
-          <p className="ansa-section-sub">No new software to learn. Ansa plugs into your existing workflow in minutes.</p>
-        </div>
-        <div className="ansa-integrations ansa-reveal">
-          {[
-            { icon:<CalendarCheck size={16}/>, label:'Google Calendar', sub:'Syncs your real availability' },
-            { icon:<Phone size={16}/>, label:'Your Phone Number', sub:'Texts from your existing number' },
-            { icon:<MessageCircle size={16}/>, label:'SMS / Text', sub:'Native, carrier-grade messaging' },
-            { icon:<Zap size={16}/>, label:'Claude AI', sub:'Powered by Anthropic AI' },
-          ].map((int,i) => (
-            <React.Fragment key={i}>
-              {i > 0 && <div className="ansa-integration-plus">+</div>}
-              <div className="ansa-integration-pill">
-                <div className="ansa-integration-icon">{int.icon}</div>
-                <div>
-                  <div style={{ fontWeight:600,fontSize:13 }}>{int.label}</div>
-                  <div style={{ fontSize:11,color:'#71717a',marginTop:1 }}>{int.sub}</div>
+      {/* Integrations + Notifications — combined split section */}
+      <div className="ansa-section-wrap-tinted">
+        <div className="ansa-split-section ansa-reveal">
+          {/* Left: integrations */}
+          <div>
+            <div className="ansa-split-label">Works With Your World</div>
+            <h2 className="ansa-split-title">Plugs into the tools you already use</h2>
+            <p className="ansa-split-body">No new software, no complicated setup. Ansa connects to your calendar, texts from your existing number, and uses the same AI that powers the biggest companies in the world.</p>
+            <div className="ansa-integrations">
+              {[
+                { icon:<CalendarCheck size={17}/>, label:'Google Calendar', sub:'Your real availability, synced' },
+                { icon:<Phone size={17}/>, label:'Your Phone Number', sub:'Texts go out from your number' },
+                { icon:<MessageCircle size={17}/>, label:'SMS / Text', sub:'Native carrier-grade messaging' },
+                { icon:<Zap size={17}/>, label:'Claude AI', sub:'Powered by Anthropic' },
+              ].map((int,i) => (
+                <div key={i} className="ansa-integration-pill">
+                  <div className="ansa-integration-icon">{int.icon}</div>
+                  <div>
+                    <div style={{ fontWeight:600,fontSize:13,color:'#e5e5e5' }}>{int.label}</div>
+                    <div style={{ fontSize:11,color:'#555',marginTop:1 }}>{int.sub}</div>
+                  </div>
                 </div>
-              </div>
-            </React.Fragment>
-          ))}
-        </div>
-      </section>
-
-      <div className="ansa-divider" />
-
-      {/* Owner Notifications */}
-      <section className="ansa-section">
-        <div className="ansa-reveal">
-          <p className="ansa-section-label">You Stay In The Loop</p>
-          <h2 className="ansa-section-title">You'll Know the Second Anything Happens</h2>
-          <p className="ansa-section-sub">Ansa texts you instantly — whether it's a missed call, a booked job, or a customer who needs a callback.</p>
-        </div>
-        <div className="ansa-reveal" style={{ display:'flex',justifyContent:'center',marginTop:40 }}>
-          <div style={{ background:'#141414',border:'1px solid #2a2a2a',borderRadius:36,padding:'28px 20px',width:340,boxShadow:'0 24px 80px rgba(0,0,0,.5),0 0 60px rgba(79,110,247,.08)' }}>
-            {/* Lock screen header */}
-            <div style={{ width:80,height:5,background:'#2a2a2a',borderRadius:99,margin:'0 auto 24px' }} />
-            <div style={{ textAlign:'center',marginBottom:28 }}>
-              <div style={{ fontSize:13,color:'#555',marginBottom:4 }}>Monday, June 9</div>
-              <div style={{ fontSize:42,fontWeight:700,color:'#fff',letterSpacing:-1,lineHeight:1 }}>2:14 PM</div>
+              ))}
             </div>
-            {/* Notifications */}
-            {[
-              {
-                title:'🔔 Missed Call',
-                body:'(714) 555-0182 just called. AI is handling it — response sent in 12 seconds.',
-                time:'2:14 PM',
-              },
-              {
-                title:'✅ Appointment Booked',
-                body:'Marcus T. booked a leaking faucet repair for Thu Jun 12 at 10:00 AM. Est. $280.',
-                time:'2:17 PM',
-              },
-              {
-                title:'📲 Callback Requested',
-                body:'(949) 555-0391 says: "I\'d rather just talk to someone — can you call me back?" Tap to view.',
-                time:'3:44 PM',
-              },
-            ].map((n,i) => (
-              <div key={i} style={{ background:'rgba(255,255,255,.04)',border:'1px solid rgba(255,255,255,.07)',borderRadius:16,padding:'12px 14px',marginBottom:i<2?10:0 }}>
-                <div style={{ display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:5 }}>
-                  <span style={{ fontSize:12,fontWeight:700,color:'#fff' }}>{n.title}</span>
-                  <span style={{ fontSize:10,color:'#555' }}>{n.time}</span>
-                </div>
-                <div style={{ fontSize:11.5,color:'#a1a1aa',lineHeight:1.5 }}>{n.body}</div>
+          </div>
+          {/* Right: phone notifications */}
+          <div style={{ display:'flex',justifyContent:'center' }}>
+            <div style={{ background:'#141414',border:'1px solid rgba(255,255,255,.08)',borderRadius:32,padding:'24px 18px',width:320,boxShadow:'0 24px 80px rgba(0,0,0,.5),0 0 60px rgba(79,110,247,.08)' }}>
+              <div style={{ width:70,height:4,background:'#2a2a2a',borderRadius:99,margin:'0 auto 20px' }} />
+              <div style={{ textAlign:'center',marginBottom:22 }}>
+                <div style={{ fontSize:12,color:'#444',marginBottom:3 }}>Monday, June 9</div>
+                <div style={{ fontSize:38,fontWeight:700,color:'#fff',letterSpacing:-1,lineHeight:1 }}>2:14 PM</div>
               </div>
-            ))}
-            <div style={{ width:120,height:4,background:'#2a2a2a',borderRadius:99,margin:'24px auto 0' }} />
+              <div style={{ fontSize:11,fontWeight:600,color:'#555',textTransform:'uppercase',letterSpacing:'1px',marginBottom:10,paddingLeft:2 }}>Notifications</div>
+              {[
+                { title:'Missed Call', body:'(714) 555-0182 just called. AI response sent in 12 seconds.', time:'2:14 PM', color:'#3b82f6' },
+                { title:'Appointment Booked', body:'Marcus T. booked a leaking faucet repair · Thu Jun 12, 10:00 AM', time:'2:17 PM', color:'#22c55e' },
+                { title:'Callback Requested', body:'(949) 555-0391: "I\'d rather just talk — can you call me back?"', time:'3:44 PM', color:'#f59e0b' },
+              ].map((n,i) => (
+                <div key={i} style={{ background:'rgba(255,255,255,.03)',border:'1px solid rgba(255,255,255,.07)',borderRadius:14,padding:'11px 13px',marginBottom:i<2?8:0 }}>
+                  <div style={{ display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:4 }}>
+                    <div style={{ display:'flex',alignItems:'center',gap:6 }}>
+                      <span style={{ width:7,height:7,borderRadius:'50%',background:n.color,display:'inline-block',flexShrink:0 }}/>
+                      <span style={{ fontSize:11.5,fontWeight:700,color:'#e5e5e5' }}>{n.title}</span>
+                    </div>
+                    <span style={{ fontSize:10,color:'#444' }}>{n.time}</span>
+                  </div>
+                  <div style={{ fontSize:11,color:'#71717a',lineHeight:1.5 }}>{n.body}</div>
+                </div>
+              ))}
+              <div style={{ width:100,height:3,background:'#222',borderRadius:99,margin:'20px auto 0' }} />
+            </div>
           </div>
         </div>
-      </section>
-
-      <div className="ansa-divider" />
+      </div>
 
       {/* Pricing */}
+      <div className="ansa-section-wrap-blue">
       <section className="ansa-section" id="pricing">
         <div className="ansa-reveal">
           <p className="ansa-section-label">Pricing</p>
@@ -1264,8 +1300,7 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-
-      <div className="ansa-divider" />
+      </div>
 
       {/* FAQ */}
       <section className="ansa-section" id="faq">
