@@ -36,22 +36,22 @@ const injectStyles = () => {
 
     /* Buttons */
     .ansa-btn{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;transition:all .25s;text-decoration:none;border:none;font-family:inherit}
-    .ansa-btn-blue{background:${PRIMARY};color:#fff!important;box-shadow:0 0 20px rgba(79,110,247,.3)}
-    .ansa-btn-blue:hover{background:${PRIMARY_HOVER};box-shadow:0 0 32px rgba(79,110,247,.45);transform:translateY(-1px)}
-    .ansa-btn-outline{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.15)}
-    .ansa-btn-outline:hover{border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.04);transform:translateY(-1px)}
+    .ansa-btn-blue{background:${PRIMARY};color:#fff!important;box-shadow:0 0 0 1px rgba(79,110,247,.3),0 4px 16px rgba(79,110,247,.4)}
+    .ansa-btn-blue:hover{background:${PRIMARY_HOVER};box-shadow:0 0 0 1px rgba(79,110,247,.4),0 8px 24px rgba(79,110,247,.55);transform:translateY(-1px)}
+    .ansa-btn-outline{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.12)}
+    .ansa-btn-outline:hover{border-color:rgba(255,255,255,.25);background:rgba(255,255,255,.04);transform:translateY(-1px)}
 
     /* Trust line under CTAs */
     .ansa-trust-line{font-size:12px;color:#888;margin-top:12px;text-align:center;letter-spacing:.2px}
 
     /* Hero */
     .ansa-hero{position:relative;padding:160px 24px 80px;text-align:center;overflow:hidden}
-    .ansa-hero-glow{position:absolute;top:-120px;left:50%;transform:translateX(-50%);width:720px;height:720px;border-radius:50%;background:radial-gradient(circle,rgba(79,110,247,.15) 0%,transparent 70%);pointer-events:none;animation:ansa-pulse 6s ease-in-out infinite}
+    .ansa-hero-glow{position:absolute;top:-120px;left:50%;transform:translateX(-50%);width:900px;height:900px;border-radius:50%;background:radial-gradient(ellipse at center,rgba(79,110,247,.18) 0%,transparent 70%);pointer-events:none;animation:ansa-pulse 6s ease-in-out infinite}
     .ansa-hero-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 16px;border-radius:999px;font-size:13px;font-weight:600;background:rgba(79,110,247,.1);border:1px solid rgba(79,110,247,.25);color:${PRIMARY_LIGHT};margin-bottom:16px;animation:ansa-fadeUp .7s ease both}
     .ansa-hero-announce{display:inline-flex;align-items:center;gap:7px;padding:6px 14px 6px 10px;border-radius:999px;font-size:13px;font-weight:500;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#a1a1aa;text-decoration:none;margin-bottom:28px;animation:ansa-fadeUp .8s ease .1s both;transition:border-color .2s,color .2s}
     .ansa-hero-announce:hover{border-color:rgba(79,110,247,.5);color:#fff}
     .ansa-hero-announce-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;flex-shrink:0;box-shadow:0 0 6px #22c55e}
-    .ansa-hero h1{font-size:clamp(36px,5.5vw,64px);font-weight:900;line-height:1.08;max-width:820px;margin:0 auto 24px;letter-spacing:-1.5px;animation:ansa-fadeUp .7s ease .1s both}
+    .ansa-hero h1{font-size:clamp(36px,5.5vw,64px);font-weight:900;line-height:1.05;max-width:820px;margin:0 auto 24px;letter-spacing:-.035em;animation:ansa-fadeUp .7s ease .1s both}
     .ansa-hero-sub{font-size:clamp(16px,2vw,19px);color:#a1a1aa;max-width:620px;margin:0 auto 40px;line-height:1.65;animation:ansa-fadeUp .7s ease .2s both}
     .ansa-hero-ctas{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;animation:ansa-fadeUp .7s ease .3s both}
     .ansa-phone-wrap{margin:64px auto 0;max-width:380px;animation:ansa-fadeUp .8s ease .5s both}
@@ -98,7 +98,7 @@ const injectStyles = () => {
     .ansa-proof-dot{width:4px;height:4px;border-radius:50%;background:#3f3f46;flex-shrink:0}
     .ansa-proof-stats{display:flex;justify-content:center;gap:48px;padding:28px 24px;max-width:800px;margin:0 auto}
     .ansa-proof-stat{text-align:center}
-    .ansa-proof-stat-num{font-size:28px;font-weight:800;letter-spacing:-1px;color:#fff}
+    .ansa-proof-stat-num{font-size:28px;font-weight:800;letter-spacing:-1px;background:linear-gradient(135deg,#fff 30%,#818CF8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
     .ansa-proof-stat-label{font-size:12px;color:#71717a;margin-top:2px}
 
     /* Sections */
@@ -109,16 +109,17 @@ const injectStyles = () => {
 
     /* Problem cards */
     .ansa-problem-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
-    .ansa-problem-card{background:#141414;border:1px solid #222;border-radius:20px;padding:36px 28px;text-align:center;transition:border-color .3s,transform .3s}
-    .ansa-problem-card:hover{border-color:#333;transform:translateY(-4px)}
+    .ansa-problem-card{background:#141414;border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:36px 28px;text-align:center;transition:border-color .3s,transform .3s}
+    .ansa-problem-card:hover{border-color:rgba(79,110,247,.3);transform:translateY(-4px)}
     .ansa-problem-icon{width:56px;height:56px;border-radius:16px;background:rgba(79,110,247,.1);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;color:${PRIMARY}}
-    .ansa-problem-stat{font-size:32px;font-weight:800;margin-bottom:8px;letter-spacing:-.5px;transition:all .3s}
+    .ansa-problem-stat{font-size:32px;font-weight:800;margin-bottom:8px;letter-spacing:-.5px;transition:all .3s;background:linear-gradient(135deg,#fff 30%,#818CF8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
     .ansa-problem-desc{font-size:15px;color:#a1a1aa;line-height:1.5}
 
     /* Testimonials */
     .ansa-testimonials{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
-    .ansa-testimonial-card{background:#141414;border:1px solid #1e1e1e;border-radius:20px;padding:32px 28px;transition:border-color .3s}
-    .ansa-testimonial-card:hover{border-color:#333}
+    .ansa-testimonial-card{background:#141414;border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:32px 28px;transition:border-color .3s;position:relative;overflow:hidden}
+    .ansa-testimonial-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(79,110,247,.4),transparent)}
+    .ansa-testimonial-card:hover{border-color:rgba(79,110,247,.25)}
     .ansa-testimonial-stars{display:flex;gap:3px;margin-bottom:16px;color:#facc15}
     .ansa-testimonial-text{font-size:15px;color:#d1d5db;line-height:1.65;margin-bottom:20px}
     .ansa-testimonial-author{display:flex;align-items:center;gap:12px}
@@ -129,7 +130,7 @@ const injectStyles = () => {
 
     /* Steps */
     .ansa-steps{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:0;align-items:flex-start}
-    .ansa-step-card{background:#141414;border:1px solid #222;border-radius:20px;padding:36px 24px;text-align:center;position:relative;transition:border-color .3s,transform .3s}
+    .ansa-step-card{background:#141414;border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:36px 24px;text-align:center;position:relative;transition:border-color .3s,transform .3s}
     .ansa-step-card:hover{border-color:${PRIMARY};transform:translateY(-4px)}
     .ansa-step-num{position:absolute;top:-14px;left:50%;transform:translateX(-50%);width:28px;height:28px;border-radius:50%;background:${PRIMARY};color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center}
     .ansa-step-icon{width:52px;height:52px;border-radius:14px;background:rgba(79,110,247,.1);display:flex;align-items:center;justify-content:center;margin:8px auto 18px;color:${PRIMARY}}
@@ -159,20 +160,21 @@ const injectStyles = () => {
     .ansa-chess-body{font-size:16px;color:#a1a1aa;line-height:1.7;margin-bottom:24px}
     .ansa-chess-points{list-style:none;padding:0;display:flex;flex-direction:column;gap:10px}
     .ansa-chess-points li{display:flex;align-items:center;gap:10px;font-size:14px;color:#d1d5db}
-    .ansa-chess-visual{background:#141414;border:1px solid #222;border-radius:20px;padding:28px;min-height:240px;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden}
+    .ansa-chess-visual{background:#141414;border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:28px;min-height:240px;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden;transition:border-color .3s}
+    .ansa-chess-visual:hover{border-color:rgba(79,110,247,.25)}
     .ansa-chess-visual::before{content:'';position:absolute;top:-60px;right:-60px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(79,110,247,.08) 0%,transparent 70%);pointer-events:none}
 
     /* Integrations */
     .ansa-integrations{display:flex;justify-content:center;align-items:center;gap:20px;flex-wrap:wrap}
-    .ansa-integration-pill{display:flex;align-items:center;gap:10px;background:#141414;border:1px solid #222;border-radius:14px;padding:14px 22px;font-size:14px;font-weight:500;color:#d1d5db;transition:border-color .2s}
-    .ansa-integration-pill:hover{border-color:#333}
+    .ansa-integration-pill{display:flex;align-items:center;gap:10px;background:#141414;border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:14px 22px;font-size:14px;font-weight:500;color:#d1d5db;transition:border-color .2s}
+    .ansa-integration-pill:hover{border-color:rgba(79,110,247,.3)}
     .ansa-integration-icon{width:32px;height:32px;border-radius:8px;background:#1a1a1a;border:1px solid #2a2a2a;display:flex;align-items:center;justify-content:center;color:#a1a1aa;flex-shrink:0}
     .ansa-integration-plus{font-size:18px;color:#3f3f46;font-weight:300}
 
     /* Pricing */
     .ansa-pricing-grid{display:grid;grid-template-columns:1fr;gap:24px;max-width:480px;margin:0 auto}
-    .ansa-pricing-card{background:#141414;border:1px solid ${PRIMARY};border-radius:22px;padding:40px 32px;position:relative;transition:border-color .3s,transform .3s}
-    .ansa-pricing-card:hover{transform:translateY(-4px)}
+    .ansa-pricing-card{background:#141414;border:1px solid ${PRIMARY};border-radius:22px;padding:40px 32px;position:relative;transition:border-color .3s,transform .3s;box-shadow:0 0 0 1px rgba(79,110,247,.15),0 20px 60px rgba(79,110,247,.15)}
+    .ansa-pricing-card:hover{transform:translateY(-4px);box-shadow:0 0 0 1px rgba(79,110,247,.3),0 24px 80px rgba(79,110,247,.25)}
     .ansa-pricing-roi{font-size:13px;color:#a1a1aa;text-align:center;margin-bottom:20px;padding:10px 14px;background:rgba(79,110,247,.06);border-radius:10px;border:1px solid rgba(79,110,247,.15)}
     .ansa-pricing-roi strong{color:${PRIMARY_LIGHT}}
     .ansa-pricing-popular-badge{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:${PRIMARY};color:#fff;font-size:12px;font-weight:700;padding:4px 16px;border-radius:999px;text-transform:uppercase;letter-spacing:.5px}
@@ -183,13 +185,13 @@ const injectStyles = () => {
     .ansa-pricing-features{list-style:none;padding:0;margin-bottom:32px}
     .ansa-pricing-features li{display:flex;align-items:center;gap:10px;font-size:14px;color:#d1d5db;padding:8px 0}
     .ansa-pricing-cta{display:block;width:100%;text-align:center;padding:14px;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;text-decoration:none;font-family:inherit;transition:all .25s}
-    .ansa-pricing-cta-primary{background:${PRIMARY};color:#fff;border:none;box-shadow:0 0 20px rgba(79,110,247,.25)}
+    .ansa-pricing-cta-primary{background:${PRIMARY};color:#fff;border:none;box-shadow:0 0 0 1px rgba(79,110,247,.3),0 4px 16px rgba(79,110,247,.4)}
     .ansa-pricing-cta-primary:hover{background:${PRIMARY_HOVER}}
 
     /* FAQ */
     .ansa-faq-list{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
-    .ansa-faq-item{background:#141414;border:1px solid #1e1e1e;border-radius:16px;overflow:hidden;transition:border-color .3s}
-    .ansa-faq-item:hover{border-color:#333}
+    .ansa-faq-item{background:#141414;border:1px solid rgba(255,255,255,.08);border-radius:16px;overflow:hidden;transition:border-color .3s}
+    .ansa-faq-item:hover{border-color:rgba(79,110,247,.25)}
     .ansa-faq-q{width:100%;background:none;border:none;color:#fff;display:flex;align-items:center;justify-content:space-between;padding:20px 24px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;text-align:left}
     .ansa-faq-q svg{flex-shrink:0;transition:transform .3s;color:#71717a}
     .ansa-faq-q.open svg{transform:rotate(180deg)}
