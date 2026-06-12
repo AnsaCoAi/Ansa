@@ -482,6 +482,7 @@ const MOCK_CONVS = [
   { phone:'(562) 555-0901', last:'Thanks, we got it sorted.', status:'closed', time:'2h ago' },
   { phone:'(310) 555-0264', last:'What areas do you service?', status:'active', time:'3h ago' },
   { phone:'(949) 555-0773', last:'Appointment confirmed for tomorrow!', status:'booked', time:'5h ago' },
+  { phone:'(818) 555-0412', last:'Ok sounds good, what time works?', status:'active', manual_mode:true, time:'8m ago' },
 ];
 
 const MOCK_CALLS = [
@@ -631,31 +632,46 @@ function ShowcaseMissedCalls() {
   );
 }
 
+const SC_TABS = [
+  { key:'all',        label:'All',         dot:null },
+  { key:'ai-active',  label:'AI Active',   dot:'#3b82f6' },
+  { key:'needs-reply',label:'Needs Reply', dot:'#f59e0b' },
+  { key:'booked',     label:'Booked',      dot:'#22c55e' },
+  { key:'closed',     label:'Closed',      dot:'#6b7280' },
+];
+
 function ShowcaseConversations() {
   const [tab, setTab] = useState('all');
-  const filtered = tab === 'all' ? MOCK_CONVS : MOCK_CONVS.filter(c => c.status === tab);
+  const filtered = tab === 'all' ? MOCK_CONVS
+    : tab === 'ai-active' ? MOCK_CONVS.filter(c => c.status === 'active' && !c.manual_mode)
+    : tab === 'needs-reply' ? MOCK_CONVS.filter(c => c.manual_mode)
+    : MOCK_CONVS.filter(c => c.status === tab);
   return (
     <div>
       <div style={{ fontSize:18,fontWeight:700,color:'#fff',marginBottom:10 }}>Conversations</div>
       <div style={{ display:'flex',gap:2,marginBottom:12,background:'#141414',borderRadius:10,padding:4,width:'fit-content',border:'1px solid #1e1e1e' }}>
-        {['all','active','booked','closed'].map(t => (
-          <button key={t} onClick={() => setTab(t)}
-            style={{ padding:'6px 12px',borderRadius:7,fontSize:11,fontWeight:500,cursor:'pointer',
-              background:tab===t?'#222':'transparent',color:tab===t?'#fff':'#888',border:'none',
-              fontFamily:'inherit',textTransform:'capitalize',transition:'all .15s' }}>
-            {t}
+        {SC_TABS.map(t => (
+          <button key={t.key} onClick={() => setTab(t.key)}
+            style={{ display:'flex',alignItems:'center',gap:4,padding:'6px 10px',borderRadius:7,fontSize:10,fontWeight:500,cursor:'pointer',
+              background:tab===t.key?'#222':'transparent',color:tab===t.key?'#fff':'#888',border:'none',
+              fontFamily:'inherit',transition:'all .15s' }}>
+            {t.dot && <span style={{ width:6,height:6,borderRadius:'50%',background:t.dot,flexShrink:0 }}/>}
+            {t.label}
           </button>
         ))}
       </div>
       {filtered.map((c,i) => (
-        <div key={i} className="ansa-sc-row">
+        <div key={i} className="ansa-sc-row" style={{ border:`1px solid ${c.manual_mode ? '#f59e0b33' : '#1e1e1e'}`, borderRadius:8, marginBottom:4 }}>
           <div className="ansa-sc-avatar"><MessageSquare size={15}/></div>
           <div style={{ flex:1,minWidth:0 }}>
-            <div className="ansa-mini-conv-phone">{c.phone}</div>
+            <div style={{ display:'flex',alignItems:'center',gap:5 }}>
+              {c.manual_mode && <span style={{ width:6,height:6,borderRadius:'50%',background:'#f59e0b',flexShrink:0 }}/>}
+              <div className="ansa-mini-conv-phone">{c.phone}</div>
+            </div>
             <div className="ansa-mini-conv-last">{c.last}</div>
           </div>
           <div style={{ display:'flex',flexDirection:'column',alignItems:'flex-end',gap:4,flexShrink:0,marginLeft:8 }}>
-            <span className="ansa-sc-badge" style={{ color:SC_REAL[c.status].color,background:SC_REAL[c.status].bg }}>{c.status}</span>
+            <span className="ansa-sc-badge" style={{ color: c.manual_mode ? '#f59e0b' : SC_REAL[c.status].color, background: c.manual_mode ? 'rgba(245,158,11,0.12)' : SC_REAL[c.status].bg }}>{c.manual_mode ? 'Needs Reply' : c.status}</span>
             <span style={{ fontSize:10,color:'#666' }}>{c.time}</span>
           </div>
         </div>
