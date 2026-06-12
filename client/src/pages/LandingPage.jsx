@@ -218,7 +218,7 @@ const injectStyles = () => {
     .ansa-sticky-cta a{display:flex;align-items:center;justify-content:center;gap:8px;background:${PRIMARY};color:#fff;font-size:15px;font-weight:700;padding:14px;border-radius:12px;text-decoration:none;box-shadow:0 0 24px rgba(79,110,247,.4)}
 
     /* Dashboard Showcase */
-    .ansa-showcase-wrap{border-radius:16px;overflow:hidden;border:1px solid #1e1e1e;background:#111111;box-shadow:0 0 0 1px rgba(59,130,246,.12),0 40px 100px rgba(0,0,0,.8),0 0 80px rgba(59,130,246,.08)}
+    .ansa-showcase-wrap{border-radius:16px;overflow:hidden;border:1px solid #3b82f6;background:#111111;box-shadow:0 0 0 4px rgba(59,130,246,.15),0 40px 100px rgba(0,0,0,.8),0 0 80px rgba(59,130,246,.2)}
     .ansa-showcase-chrome{background:#111111;border-bottom:1px solid #1e1e1e;padding:11px 16px;display:flex;align-items:center;gap:12px}
     .ansa-showcase-dots{display:flex;gap:6px}
     .ansa-showcase-dots span{width:11px;height:11px;border-radius:50%}
