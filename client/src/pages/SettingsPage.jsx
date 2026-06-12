@@ -13,6 +13,88 @@ const tabConfig = [
 ];
 
 const toneOptions = ['friendly', 'professional', 'casual', 'formal'];
+
+const PRICING_TYPES = [
+  { value: 'flat_rate',      label: 'Flat Rate' },
+  { value: 'per_sq_ft',     label: 'Per Sq Ft' },
+  { value: 'per_linear_ft', label: 'Per Linear Ft' },
+  { value: 'per_unit',      label: 'Per Unit' },
+  { value: 'hourly',        label: 'Per Hour' },
+  { value: 'starting_at',   label: 'Starting At' },
+  { value: 'free_estimate', label: 'Free Estimate' },
+];
+
+function newService() {
+  return { id: Date.now().toString() + Math.random(), name: '', pricing_type: 'flat_rate', unit: '', price_low: '', price_high: '', min_charge: '', notes: '' };
+}
+
+function loadServices(raw) {
+  if (!raw || !Array.isArray(raw)) return [];
+  return raw.map(s => typeof s === 'string'
+    ? { id: Date.now().toString() + Math.random(), name: s, pricing_type: 'free_estimate', unit: '', price_low: '', price_high: '', min_charge: '', notes: '' }
+    : { id: s.id || Date.now().toString() + Math.random(), name: s.name || '', pricing_type: s.pricing_type || 'flat_rate', unit: s.unit || '', price_low: s.price_low ?? '', price_high: s.price_high ?? '', min_charge: s.min_charge ?? '', notes: s.notes || '' }
+  );
+}
+
+function ServiceCard({ svc, onChange, onRemove }) {
+  const showPrice = svc.pricing_type !== 'free_estimate';
+  const showHighPrice = !['starting_at'].includes(svc.pricing_type);
+  const showUnit = svc.pricing_type === 'per_unit';
+  const showMin = ['per_sq_ft', 'per_linear_ft', 'per_unit', 'hourly'].includes(svc.pricing_type);
+  const unitSuffix = { per_sq_ft: '/ sq ft', per_linear_ft: '/ linear ft', hourly: '/ hour', per_unit: svc.unit ? `/ ${svc.unit}` : '/ unit' }[svc.pricing_type] || '';
+
+  const inp = { padding: '8px 12px', background: '#141414', border: '1px solid #2a2a2a', borderRadius: 8, color: '#fff', fontSize: 13, outline: 'none', boxSizing: 'border-box' };
+  const sel = { ...inp, cursor: 'pointer', background: '#141414' };
+
+  return (
+    <div style={{ background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: 10, padding: 16 }}>
+      <div style={{ display: 'flex', gap: 8, marginBottom: showPrice || svc.notes !== undefined ? 10 : 0, alignItems: 'center' }}>
+        <input style={{ ...inp, flex: 1 }} placeholder="Service name (e.g. Tile Installation, Drain Cleaning)" value={svc.name} onChange={e => onChange({ ...svc, name: e.target.value })} />
+        <select style={{ ...sel, width: 150, flexShrink: 0 }} value={svc.pricing_type} onChange={e => onChange({ ...svc, pricing_type: e.target.value })}>
+          {PRICING_TYPES.map(pt => <option key={pt.value} value={pt.value}>{pt.label}</option>)}
+        </select>
+        <button onClick={onRemove} style={{ background: 'none', border: 'none', color: '#555', cursor: 'pointer', padding: 4, flexShrink: 0, display: 'flex', alignItems: 'center' }} title="Remove">
+          <Trash2 size={15} />
+        </button>
+      </div>
+
+      {showPrice && (
+        <div style={{ display: 'flex', gap: 8, marginBottom: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            <span style={{ fontSize: 12, color: '#555' }}>$</span>
+            <input style={{ ...inp, width: 80 }} type="number" placeholder={svc.pricing_type === 'starting_at' ? 'Amount' : 'Low'} value={svc.price_low} onChange={e => onChange({ ...svc, price_low: e.target.value })} />
+          </div>
+          {showHighPrice && (
+            <>
+              <span style={{ color: '#444', fontSize: 13 }}>—</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                <span style={{ fontSize: 12, color: '#555' }}>$</span>
+                <input style={{ ...inp, width: 80 }} type="number" placeholder="High" value={svc.price_high} onChange={e => onChange({ ...svc, price_high: e.target.value })} />
+              </div>
+            </>
+          )}
+          {unitSuffix && <span style={{ fontSize: 12, color: '#555' }}>{unitSuffix}</span>}
+          {showUnit && (
+            <input style={{ ...inp, width: 110 }} placeholder="unit name (e.g. window)" value={svc.unit} onChange={e => onChange({ ...svc, unit: e.target.value })} />
+          )}
+          {showMin && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginLeft: 8 }}>
+              <span style={{ fontSize: 12, color: '#555' }}>min $</span>
+              <input style={{ ...inp, width: 70 }} type="number" placeholder="0" value={svc.min_charge} onChange={e => onChange({ ...svc, min_charge: e.target.value })} />
+            </div>
+          )}
+        </div>
+      )}
+
+      <textarea
+        style={{ width: '100%', padding: '8px 12px', background: '#141414', border: '1px solid #2a2a2a', borderRadius: 8, color: '#ccc', fontSize: 12, outline: 'none', resize: 'vertical', minHeight: 52, fontFamily: 'inherit', boxSizing: 'border-box', lineHeight: 1.5 }}
+        placeholder="AI context — what's included, what to ask before quoting, conditions (e.g. 'labor only, materials extra — ask sq footage before quoting')"
+        value={svc.notes}
+        onChange={e => onChange({ ...svc, notes: e.target.value })}
+      />
+    </div>
+  );
+}
 const daysOfWeek = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
 const dayLabels = { mon: 'Monday', tue: 'Tuesday', wed: 'Wednesday', thu: 'Thursday', fri: 'Friday', sat: 'Saturday', sun: 'Sunday' };
 
@@ -78,7 +160,8 @@ export default function SettingsPage() {
   const [accountName, setAccountName] = useState('');
   const [pwResetSent, setPwResetSent] = useState(false);
 
-  const [bizForm, setBizForm] = useState({ name: '', owner_phone: '', services: '' });
+  const [bizForm, setBizForm] = useState({ name: '', owner_phone: '' });
+  const [services, setServices] = useState([]);
   const [requireApproval, setRequireApproval] = useState(false);
   const [hours, setHours] = useState(defaultHours);
   const [greeting, setGreeting] = useState('');
@@ -94,8 +177,8 @@ export default function SettingsPage() {
     setBizForm({
       name: authBusiness.name || '',
       owner_phone: authBusiness.owner_phone || '',
-      services: Array.isArray(authBusiness.services) ? authBusiness.services.join(', ') : (authBusiness.services || ''),
     });
+    setServices(loadServices(authBusiness.services));
     setHours(authBusiness.business_hours || defaultHours);
     setGreeting(authBusiness.greeting || '');
     setTone(authBusiness.tone || 'friendly');
@@ -115,7 +198,7 @@ export default function SettingsPage() {
       await api.updateBusiness(authBusiness.id, {
         name: bizForm.name,
         owner_phone: bizForm.owner_phone,
-        services: bizForm.services.split(',').map(s => s.trim()).filter(Boolean),
+        services,
         business_hours: hours,
         require_approval: requireApproval,
       });
@@ -227,10 +310,20 @@ export default function SettingsPage() {
             <input style={s.input} value={bizForm.owner_phone} onChange={e => setBizForm({ ...bizForm, owner_phone: e.target.value })} />
           </div>
         </div>
-        <div style={s.formGroup}>
-          <label style={s.label}>Services (comma-separated)</label>
-          <input style={s.input} value={bizForm.services} onChange={e => setBizForm({ ...bizForm, services: e.target.value })} />
+        <div style={{ ...s.sectionTitle, marginTop: 28 }}>Services & Pricing</div>
+        <div style={{ fontSize: 13, color: '#666', marginBottom: 14, lineHeight: 1.5 }}>
+          Add your services with pricing so the AI can answer cost questions and give real estimates mid-conversation.
         </div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {services.map((svc, idx) => (
+            <ServiceCard key={svc.id} svc={svc}
+              onChange={updated => setServices(services.map((sv, i) => i === idx ? updated : sv))}
+              onRemove={() => setServices(services.filter((_, i) => i !== idx))} />
+          ))}
+        </div>
+        <button style={s.addFaqBtn} onClick={() => setServices([...services, newService()])}>
+          <Plus size={15} /> Add Service
+        </button>
 
         <div style={{ ...s.sectionTitle, marginTop: 28 }}>Business Hours</div>
         {daysOfWeek.map(day => (
@@ -281,7 +374,15 @@ export default function SettingsPage() {
   }
 
   function renderAiTab() {
-    const systemPrompt = `You are an AI assistant for ${bizForm.name}.\nTone: ${tone}\nGreeting: ${greeting}\n\nServices: ${bizForm.services}\n\nGoal: Respond to missed call texts, answer questions, and book appointments.`;
+    const servicesPreview = services.length === 0 ? 'No services configured yet.'
+      : services.map(svc => {
+          if (svc.pricing_type === 'free_estimate') return `• ${svc.name}: Free estimate`;
+          const low = svc.price_low; const high = svc.price_high;
+          const unit = { per_sq_ft: '/sq ft', per_linear_ft: '/linear ft', hourly: '/hr', per_unit: svc.unit ? `/${svc.unit}` : '/unit', flat_rate: '', starting_at: '' }[svc.pricing_type] || '';
+          const price = svc.pricing_type === 'starting_at' ? `from $${low}` : (high ? `$${low}–$${high}${unit}` : `$${low}${unit}`);
+          return `• ${svc.name}: ${price}${svc.notes ? ` — ${svc.notes}` : ''}`;
+        }).join('\n');
+    const systemPrompt = `Tone: ${tone}\nGreeting: "${greeting}"\n\nServices & Pricing:\n${servicesPreview}\n\nThe AI uses the pricing above to answer customer cost questions and do math mid-conversation.`;
     return (
       <div style={s.section}>
         <div style={s.sectionTitle}>Greeting Message</div>
