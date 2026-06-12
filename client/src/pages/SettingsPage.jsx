@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Building2, Bot, Plug, CreditCard, Save, Plus, Trash2, Phone, Clock, Wifi, WifiOff, Check, User } from 'lucide-react';
+import { Building2, Bot, Plug, CreditCard, Save, Plus, Trash2, Phone, Clock, Wifi, WifiOff, Check, User, MapPin } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
 import supabase from '../services/supabase';
@@ -163,6 +163,7 @@ export default function SettingsPage() {
   const [bizForm, setBizForm] = useState({ name: '', owner_phone: '' });
   const [services, setServices] = useState([]);
   const [requireApproval, setRequireApproval] = useState(false);
+  const [serviceArea, setServiceArea] = useState({ base_address: '', radius_miles: 25, outside_radius_behavior: 'reject' });
   const [hours, setHours] = useState(defaultHours);
   const [greeting, setGreeting] = useState('');
   const [tone, setTone] = useState('friendly');
@@ -184,6 +185,11 @@ export default function SettingsPage() {
     setTone(authBusiness.tone || 'friendly');
     setFaqs(authBusiness.faqs || []);
     setRequireApproval(!!authBusiness.require_approval);
+    setServiceArea({
+      base_address: authBusiness.service_base_address || '',
+      radius_miles: authBusiness.service_radius_miles ?? 25,
+      outside_radius_behavior: authBusiness.outside_radius_behavior || 'reject',
+    });
   }, [authBusiness]);
 
   function flash() {
@@ -201,6 +207,9 @@ export default function SettingsPage() {
         services,
         business_hours: hours,
         require_approval: requireApproval,
+        service_base_address: serviceArea.base_address || null,
+        service_radius_miles: serviceArea.radius_miles ? parseInt(serviceArea.radius_miles) : 25,
+        outside_radius_behavior: serviceArea.outside_radius_behavior,
       });
       await reloadBusiness();
       flash();
@@ -344,6 +353,66 @@ export default function SettingsPage() {
             )}
           </div>
         ))}
+
+        <div style={{ ...s.sectionTitle, marginTop: 28 }}>Service Area</div>
+        <div style={{ fontSize: 13, color: '#666', marginBottom: 14, lineHeight: 1.5 }}>
+          Set your base location and radius. The AI will ask for the job address before booking, and the system will check if it falls within range.
+        </div>
+
+        <div style={{ display: 'flex', gap: 12, marginBottom: 12, alignItems: 'flex-end' }}>
+          <div style={{ flex: 1 }}>
+            <label style={s.label}><MapPin size={13} style={{ display:'inline', marginRight:4, verticalAlign:'middle' }} />Base Address</label>
+            <input
+              style={s.input}
+              placeholder="e.g. 2158 Loggia, Newport Beach CA 92660"
+              value={serviceArea.base_address}
+              onChange={e => setServiceArea(a => ({ ...a, base_address: e.target.value }))}
+            />
+          </div>
+          <div style={{ width: 120 }}>
+            <label style={s.label}>Radius (miles)</label>
+            <input
+              style={s.input}
+              type="number"
+              min="1"
+              max="500"
+              value={serviceArea.radius_miles}
+              onChange={e => setServiceArea(a => ({ ...a, radius_miles: e.target.value }))}
+            />
+          </div>
+        </div>
+
+        <div style={{ marginBottom: 20 }}>
+          <label style={{ ...s.label, marginBottom: 10 }}>When a customer is outside the radius</label>
+          <div style={{ display: 'flex', gap: 10 }}>
+            {[
+              { value: 'pending', label: 'Hold as Pending', sub: 'AI texts "pending address confirmation" — you review and approve', color: '#f59e0b' },
+              { value: 'reject',  label: 'Decline Request',  sub: 'AI texts a polite sorry message — no appointment created', color: '#ef4444' },
+            ].map(opt => {
+              const active = serviceArea.outside_radius_behavior === opt.value;
+              return (
+                <div
+                  key={opt.value}
+                  onClick={() => setServiceArea(a => ({ ...a, outside_radius_behavior: opt.value }))}
+                  style={{ flex: 1, background: active ? `${opt.color}12` : '#1a1a1a', border: `1px solid ${active ? opt.color : '#2a2a2a'}`, borderRadius: 10, padding: '14px 16px', cursor: 'pointer', transition: 'all .15s' }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                    <div style={{ width: 14, height: 14, borderRadius: '50%', border: `2px solid ${active ? opt.color : '#444'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      {active && <div style={{ width: 6, height: 6, borderRadius: '50%', background: opt.color }} />}
+                    </div>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: active ? '#fff' : '#aaa' }}>{opt.label}</span>
+                  </div>
+                  <div style={{ fontSize: 12, color: '#555', lineHeight: 1.5, paddingLeft: 22 }}>{opt.sub}</div>
+                </div>
+              );
+            })}
+          </div>
+          {!serviceArea.base_address && (
+            <div style={{ marginTop: 8, fontSize: 12, color: '#555' }}>
+              Leave base address blank to disable service area checking — AI won't ask for address and all bookings are accepted.
+            </div>
+          )}
+        </div>
 
         <div style={{ ...s.sectionTitle, marginTop: 28 }}>Appointment Settings</div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: 10, padding: '16px 18px', marginBottom: 20 }}>

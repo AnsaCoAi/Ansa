@@ -3,6 +3,7 @@ const { sendSMS } = require("../services/twilio");
 const { getAIResponse } = require("../services/ai");
 const { getAvailableSlots, bookAppointment } = require("../services/calendar");
 const { notifyOwner } = require("../services/notifications");
+const { getDistanceMiles } = require("../services/geocoding");
 const supabase = require("../services/supabase");
 
 const router = express.Router();
@@ -43,7 +44,7 @@ async function saveMessage(conversationId, role, content) {
 
 router.post("/missed-call", async (req, res) => {
   try {
-    const { CallStatus, From, To, Called } = req.body;
+    const { From, To, Called } = req.body;
     const calledNumber = To || Called;
 
     const business = await findBusinessByNumber(calledNumber);
@@ -52,7 +53,7 @@ router.post("/missed-call", async (req, res) => {
       return res.status(200).send("<Response></Response>");
     }
 
-    console.log(`[Missed Call] ${From} → ${business.name} (${CallStatus})`);
+    console.log(`[Missed Call] ${From} → ${business.name}`);
 
     const conversation = await getOrCreateConversation(business.id, From);
     await saveMessage(conversation.id, "assistant", business.greeting);
@@ -95,81 +96,118 @@ router.post("/sms", async (req, res) => {
     const slots = await getAvailableSlots(business.id, business);
     const aiReply = await getAIResponse(From, Body, business, slots);
 
-    const nameMatch = aiReply.match(/\[NAME:\s*([^\]]+)\]/);
-    const cleanAiReply = aiReply.replace(/\[NAME:[^\]]*\]/g, '').trim();
+    // Strip all control tags and extract their values
+    const nameMatch  = aiReply.match(/\[NAME:\s*([^\]]+)\]/i);
+    const addrMatch  = aiReply.match(/\[ADDRESS:\s*([^\]]+)\]/i);
+    const bookedMatch = aiReply.match(/\[BOOKED:\s*(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2})\]/i);
+
+    const cleanAiReply = aiReply
+      .replace(/\[NAME:[^\]]*\]/gi, '')
+      .replace(/\[ADDRESS:[^\]]*\]/gi, '')
+      .trim();
+
+    // Persist extracted metadata
     if (nameMatch) {
       await supabase.from('conversations').update({ customer_name: nameMatch[1].trim() }).eq('id', conversation.id);
     }
 
-    await saveMessage(conversation.id, "assistant", cleanAiReply);
-
-    if (cleanAiReply.includes("[URGENT]")) {
-      const cleanReply = cleanAiReply.replace("[URGENT]", "").trim();
-      await notifyOwner(business, From, Body, "urgent");
-      await sendSMS(From, To, cleanReply);
-    } else if (cleanAiReply.includes("[BOOKED:")) {
-      const match = cleanAiReply.match(/\[BOOKED:\s*(\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2})\]/);
-      const cleanReply = cleanAiReply.replace(/\[BOOKED:.*?\]/, "").trim();
-
-      if (match) {
-        const dateTimeISO = new Date(match[1]).toISOString();
-        const requireApproval = !!business.require_approval;
-
-        if (requireApproval) {
-          // Hold as pending — don't book calendar yet
-          await supabase.from("appointments").insert({
-            business_id: business.id,
-            conversation_id: conversation.id,
-            customer_phone: From,
-            service_description: Body,
-            scheduled_at: dateTimeISO,
-            google_event_id: null,
-            status: "pending",
-          });
-
-          await supabase
-            .from("conversations")
-            .update({ status: "active" })
-            .eq("id", conversation.id);
-
-          await notifyOwner(business, From, `Pending approval: ${match[1]} — ${Body}`, "pending");
-
-          // Override the AI reply to tell customer we'll confirm shortly
-          const pendingReply = cleanReply.replace(
-            /you('re| are) (all set|confirmed|booked)[^.!]*/i,
-            "we'll confirm your appointment shortly"
-          );
-          await sendSMS(From, To, pendingReply.includes("confirm") ? pendingReply : `Got it! We'll review and confirm your appointment for ${match[1]}. You'll hear from us shortly.`);
-        } else {
-          // Standard flow — book immediately
-          const booking = await bookAppointment(business.id, business, dateTimeISO, From, Body);
-
-          await supabase.from("appointments").insert({
-            business_id: business.id,
-            conversation_id: conversation.id,
-            customer_phone: From,
-            service_description: Body,
-            scheduled_at: dateTimeISO,
-            google_event_id: booking.eventId || null,
-            status: "booked",
-          });
-
-          await supabase
-            .from("conversations")
-            .update({ status: "booked" })
-            .eq("id", conversation.id);
-
-          await notifyOwner(business, From, `${match[1]} — ${Body}`, "booked");
-          await sendSMS(From, To, cleanReply);
-        }
-      } else {
-        await sendSMS(From, To, cleanReply);
-      }
-    } else {
-      await sendSMS(From, To, cleanAiReply);
+    // Save address to conversation so it's available across turns
+    const customerAddress = addrMatch?.[1]?.trim() || conversation.customer_address || null;
+    if (addrMatch) {
+      await supabase.from('conversations').update({ customer_address: customerAddress }).eq('id', conversation.id);
     }
 
+    await saveMessage(conversation.id, "assistant", cleanAiReply);
+
+    // ── URGENT ─────────────────────────────────────────────────────────────
+    if (cleanAiReply.includes("[URGENT]")) {
+      const urgentReply = cleanAiReply.replace("[URGENT]", "").trim();
+      await notifyOwner(business, From, Body, "urgent");
+      await sendSMS(From, To, urgentReply);
+      return res.status(200).send("<Response></Response>");
+    }
+
+    // ── BOOKING ────────────────────────────────────────────────────────────
+    if (bookedMatch) {
+      const dateTimeISO = new Date(bookedMatch[1]).toISOString();
+      const cleanReply = cleanAiReply.replace(/\[BOOKED:[^\]]*\]/gi, "").trim();
+
+      // ── Radius check ───────────────────────────────────────────────────
+      if (customerAddress && business.service_base_address && business.service_radius_miles) {
+        let distanceMiles = null;
+        try {
+          distanceMiles = await getDistanceMiles(business.service_base_address, customerAddress);
+        } catch (geoErr) {
+          console.error('[SMS] Geocoding error (non-fatal):', geoErr.message);
+        }
+
+        if (distanceMiles !== null && distanceMiles > business.service_radius_miles) {
+          console.log(`[SMS] Address outside service area: ${Math.round(distanceMiles)} mi — behavior: ${business.outside_radius_behavior}`);
+
+          if (business.outside_radius_behavior === 'pending') {
+            // Create pending appointment — owner reviews
+            await supabase.from("appointments").insert({
+              business_id: business.id,
+              conversation_id: conversation.id,
+              customer_phone: From,
+              customer_address: customerAddress,
+              service_description: Body,
+              scheduled_at: dateTimeISO,
+              status: "pending",
+            });
+            await supabase.from("conversations").update({ status: "active" }).eq("id", conversation.id);
+            await notifyOwner(business, From, `Outside service area (${Math.round(distanceMiles)} mi away): ${customerAddress} — pending your review`, "pending");
+            await sendSMS(From, To, `Your appointment request for ${bookedMatch[1]} is pending — your address is just outside our usual service area. We'll confirm within 24 hours if we can make it work.`);
+          } else {
+            // Decline — don't create appointment
+            await notifyOwner(business, From, `Outside service area (${Math.round(distanceMiles)} mi): ${customerAddress} — declined`, "pending");
+            await sendSMS(From, To, `Thanks for reaching out! Unfortunately ${customerAddress} is outside our current service area (we cover within ${business.service_radius_miles} miles of ${business.service_base_address}). We hope to expand soon!`);
+          }
+
+          return res.status(200).send("<Response></Response>");
+        }
+      }
+
+      // ── Normal booking (in range or no geo config) ──────────────────────
+      const requireApproval = !!business.require_approval;
+
+      if (requireApproval) {
+        await supabase.from("appointments").insert({
+          business_id: business.id,
+          conversation_id: conversation.id,
+          customer_phone: From,
+          customer_address: customerAddress,
+          service_description: Body,
+          scheduled_at: dateTimeISO,
+          status: "pending",
+        });
+        await supabase.from("conversations").update({ status: "active" }).eq("id", conversation.id);
+        await notifyOwner(business, From, `Pending approval: ${bookedMatch[1]} — ${Body}`, "pending");
+        await sendSMS(From, To, `Got it! We'll review and confirm your appointment for ${bookedMatch[1]}. You'll hear from us shortly.`);
+      } else {
+        const booking = await bookAppointment(business.id, business, dateTimeISO, From, Body);
+        await supabase.from("appointments").insert({
+          business_id: business.id,
+          conversation_id: conversation.id,
+          customer_phone: From,
+          customer_address: customerAddress,
+          service_description: Body,
+          scheduled_at: dateTimeISO,
+          google_event_id: booking.eventId || null,
+          status: "booked",
+        });
+        await supabase.from("conversations").update({ status: "booked" }).eq("id", conversation.id);
+        await notifyOwner(business, From, `${bookedMatch[1]} — ${Body}`, "booked");
+        await sendSMS(From, To, cleanReply);
+      }
+
+      return res.status(200).send("<Response></Response>");
+    }
+
+    // ── Normal reply ───────────────────────────────────────────────────────
+    await sendSMS(From, To, cleanAiReply);
     res.status(200).send("<Response></Response>");
+
   } catch (error) {
     console.error("[SMS Error]", error);
     res.status(500).send("<Response></Response>");

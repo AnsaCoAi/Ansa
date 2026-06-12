@@ -5,6 +5,7 @@ const webhookRoutes = require("./routes/webhooks");
 const authRoutes = require("./routes/auth");
 const apiRoutes = require("./routes/api");
 const stripeRoutes = require("./routes/stripe");
+const { runMigrations } = require("./services/migrations");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -33,6 +34,8 @@ app.use("/api", apiRoutes);
 
 // Stripe billing (webhook uses raw body — must be registered after urlencoded/json)
 app.use("/api/stripe", stripeRoutes);
+
+runMigrations().catch(err => console.error('[Migrations] Failed:', err.message));
 
 app.listen(PORT, () => {
   console.log(`

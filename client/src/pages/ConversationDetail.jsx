@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ArrowLeft, Send, Bot, User, Phone, Calendar, Clock, Tag, XCircle, Zap } from 'lucide-react';
+import { ArrowLeft, Send, Bot, User, Phone, Calendar, Clock, Tag, XCircle, Zap, MapPin } from 'lucide-react';
 import { api } from '../services/api';
 import supabase from '../services/supabase';
 
@@ -184,6 +184,7 @@ export default function ConversationDetail() {
           {[
             conv.customer_name ? { icon: User, label: 'Name', value: conv.customer_name } : null,
             { icon: Phone, label: 'Phone', value: formatPhone(conv.customer_phone) },
+            conv.customer_address ? { icon: MapPin, label: 'Job Address', value: conv.customer_address } : null,
             { icon: Clock, label: 'First Contact', value: `${formatDate(conv.created_at)} at ${formatTime(conv.created_at)}` },
           ].filter(Boolean).map(({ icon: Icon, label, value }) => (
             <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
