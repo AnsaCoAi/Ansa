@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { MapPin, FileText, Plus, Trash2, Calendar, CreditCard, CheckCircle2, ChevronLeft, ChevronRight, Rocket, PhoneCall } from 'lucide-react';
+import { MapPin, FileText, Plus, Trash2, Calendar, CreditCard, CheckCircle2, ChevronLeft, ChevronRight, Rocket, PhoneCall, Clock, MessageSquare, Zap, Phone, Star } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 const US_CITIES = [
@@ -38,16 +38,16 @@ function CityAutocomplete({ value, onChange }) {
         type="text" value={query} placeholder="Los Angeles, CA"
         onChange={e => { setQuery(e.target.value); onChange(''); setOpen(true); }}
         onFocus={e => { e.target.style.borderColor='#3b82f6'; setOpen(true); }}
-        onBlur={e => e.target.style.borderColor='#333'}
-        style={{ width:'100%',padding:'12px 12px 12px 40px',backgroundColor:'#141414',border:'1px solid #333',borderRadius:'10px',color:'#ffffff',fontSize:'14px',outline:'none',boxSizing:'border-box' }}
+        onBlur={e => e.target.style.borderColor='#2a2a2a'}
+        style={{ width:'100%',padding:'13px 13px 13px 40px',backgroundColor:'#0f0f0f',border:'1px solid #2a2a2a',borderRadius:'10px',color:'#fff',fontSize:'15px',outline:'none',boxSizing:'border-box',transition:'border-color .15s' }}
         autoComplete="off"
       />
       {open && matches.length > 0 && (
-        <div style={{ position:'absolute',top:'calc(100% + 4px)',left:0,right:0,backgroundColor:'#1a1a1a',border:'1px solid #333',borderRadius:'10px',zIndex:100,overflow:'hidden' }}>
+        <div style={{ position:'absolute',top:'calc(100% + 4px)',left:0,right:0,backgroundColor:'#1a1a1a',border:'1px solid #2a2a2a',borderRadius:'10px',zIndex:100,overflow:'hidden' }}>
           {matches.map(city => (
             <div key={city} onMouseDown={() => select(city)}
-              style={{ padding:'10px 14px',color:'#fff',fontSize:'14px',cursor:'pointer' }}
-              onMouseEnter={e => e.currentTarget.style.backgroundColor='#2a2a2a'}
+              style={{ padding:'11px 14px',color:'#fff',fontSize:'14px',cursor:'pointer',transition:'background .1s' }}
+              onMouseEnter={e => e.currentTarget.style.backgroundColor='#242424'}
               onMouseLeave={e => e.currentTarget.style.backgroundColor='transparent'}>
               {city}
             </div>
@@ -70,19 +70,37 @@ for (let h = 0; h < 24; h++) {
 
 const DEFAULT_FAQS = {
   Plumbing: [
-    { q:'Do you handle emergency plumbing?', a:'Yes, we offer 24/7 emergency plumbing services.' },
-    { q:'What areas do you serve?', a:'We serve the greater metro area within a 30-mile radius.' },
-    { q:'Do you provide free estimates?', a:'Yes! We offer free estimates for all plumbing jobs.' },
+    { q:'Do you handle emergency calls?', a:'Yes, we respond to emergencies 24/7.' },
+    { q:'Do you offer free estimates?', a:'Yes! We offer free estimates for all jobs.' },
   ],
   default: [
-    { q:'What are your hours?', a:'We are available Monday through Friday, 8 AM to 6 PM.' },
-    { q:'Do you provide free estimates?', a:'Yes! We offer free estimates for all jobs.' },
-    { q:'What areas do you serve?', a:'We serve the greater metro area within a 30-mile radius.' },
+    { q:'Do you offer free estimates?', a:'Yes! We offer free estimates for all jobs.' },
+    { q:'What areas do you serve?', a:'We serve the local area — just provide your address when booking.' },
   ],
 };
 
-const inp = { width:'100%',padding:'12px 12px 12px 40px',backgroundColor:'#141414',border:'1px solid #333',borderRadius:'10px',color:'#ffffff',fontSize:'14px',outline:'none',boxSizing:'border-box' };
-const inpNP = { ...inp, paddingLeft:'12px' };
+const TONES = [
+  {
+    value: 'Professional',
+    emoji: '👔',
+    label: 'Professional',
+    desc: 'Formal and polished',
+  },
+  {
+    value: 'Friendly',
+    emoji: '😊',
+    label: 'Friendly',
+    desc: 'Warm and approachable',
+  },
+  {
+    value: 'Casual',
+    emoji: '🤙',
+    label: 'Casual',
+    desc: 'Relaxed and real',
+  },
+];
+
+const inp = { width:'100%',padding:'13px',backgroundColor:'#0f0f0f',border:'1px solid #2a2a2a',borderRadius:'10px',color:'#fff',fontSize:'14px',outline:'none',boxSizing:'border-box',transition:'border-color .15s' };
 
 function timeStringToHHMM(str) {
   const match = str.match(/(\d+):(\d+)\s*(AM|PM)/i);
@@ -95,11 +113,40 @@ function timeStringToHHMM(str) {
   return `${String(h).padStart(2,'0')}:${m}`;
 }
 
+const STEP_META = [
+  { label: 'Service Area', icon: MapPin },
+  { label: 'Your Hours',   icon: Clock },
+  { label: 'AI Voice',     icon: MessageSquare },
+  { label: 'Launch',       icon: Rocket },
+];
+
+function SmsPreview({ businessName, greeting }) {
+  const preview = greeting?.slice(0, 120) + (greeting?.length > 120 ? '…' : '');
+  return (
+    <div style={{ background: '#0a0a0a', border: '1px solid #222', borderRadius: 16, padding: '16px', marginTop: 20 }}>
+      <div style={{ fontSize: 11, color: '#555', fontWeight: 600, letterSpacing: '.5px', marginBottom: 12, textTransform: 'uppercase' }}>Customer sees this SMS</div>
+      <div style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+        <div style={{ width: 32, height: 32, borderRadius: '50%', background: '#1e1e1e', border: '1px solid #2a2a2a', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: 13, fontWeight: 700, color: '#fff' }}>
+          {(businessName || 'B').charAt(0).toUpperCase()}
+        </div>
+        <div>
+          <div style={{ fontSize: 12, color: '#555', marginBottom: 5, fontWeight: 600 }}>{businessName || 'Your Business'}</div>
+          <div style={{ background: '#1e1e1e', borderRadius: '16px 16px 16px 4px', padding: '10px 14px', fontSize: 13, color: '#d1d5db', lineHeight: 1.55, maxWidth: 280 }}>
+            {preview || 'Your greeting will appear here...'}
+          </div>
+          <div style={{ fontSize: 11, color: '#444', marginTop: 5 }}>Delivered · Just now</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function OnboardingPage() {
   const { signUp, user } = useAuth();
   const [step, setStep] = useState(1);
   const [saving, setSaving] = useState(false);
   const [launchError, setLaunchError] = useState('');
+  const [animating, setAnimating] = useState(false);
 
   const stored = JSON.parse(localStorage.getItem('ansa_signup') || '{}');
 
@@ -112,13 +159,10 @@ export default function OnboardingPage() {
   const [faqs, setFaqs] = useState(DEFAULT_FAQS.default);
   const [tone, setTone] = useState('Friendly');
 
-  const hf = e => e.target.style.borderColor='#3b82f6';
-  const hb = e => e.target.style.borderColor='#333';
-
   const TONE_GREETINGS = {
-    Professional: `Hello, you've reached ${businessName || '[Business Name]'}. We're currently unavailable but will respond shortly. Please let us know how we can assist you.`,
-    Friendly: `Hey, this is ${businessName || '[Business Name]'}! Sorry we missed your call — we're currently on a job. How can we help you?`,
-    Casual: `Hey! You've reached ${businessName || '[Business Name]'} — we're out in the field right now. What can we do for you?`,
+    Professional: `Hello, you've reached ${businessName || 'us'}. We missed your call but we're on it — how can we help you today?`,
+    Friendly: `Hey! Sorry we missed your call — we're on a job right now. How can we help you? We'll get back to you fast!`,
+    Casual: `Hey! Missed your call but we got you. What can we help you with?`,
   };
 
   const getGreeting = (t = tone) => TONE_GREETINGS[t] || TONE_GREETINGS.Friendly;
@@ -133,6 +177,14 @@ export default function OnboardingPage() {
     if (step === 2) return schedule.some(s => s.enabled);
     return true;
   };
+
+  function goToStep(next) {
+    setAnimating(true);
+    setTimeout(() => {
+      setStep(next);
+      setAnimating(false);
+    }, 150);
+  }
 
   async function handleLaunch() {
     const creds = JSON.parse(localStorage.getItem('ansa_signup') || '{}');
@@ -192,167 +244,317 @@ export default function OnboardingPage() {
       setGreeting(getGreeting());
       setFaqs(DEFAULT_FAQS[businessType] || DEFAULT_FAQS.default);
     }
-    setStep(step + 1);
+    goToStep(step + 1);
   };
 
   return (
-    <div style={{ minHeight:'100vh',backgroundColor:'#0a0a0a',display:'flex',alignItems:'flex-start',justifyContent:'center',padding:'40px 20px' }}>
-      <div style={{ width:'100%',maxWidth:'560px' }}>
-        <div style={{ textAlign:'center',marginBottom:'24px',fontSize:'28px',fontWeight:'700',color:'#fff' }}>ansa<span style={{ color:'#3b82f6' }}>.</span></div>
+    <div style={{ minHeight:'100vh', backgroundColor:'#0a0a0a', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'flex-start', padding:'40px 20px', fontFamily:'-apple-system,BlinkMacSystemFont,"Inter",sans-serif' }}>
+      <div style={{ width:'100%', maxWidth:'540px' }}>
 
-        <div style={{ marginBottom:'32px' }}>
-          <div style={{ display:'flex',justifyContent:'space-between',marginBottom:'8px' }}>
-            <span style={{ fontSize:'13px',color:'#999' }}>Step {step} of 4</span>
-            <span style={{ fontSize:'13px',color:'#999' }}>{Math.round((step/4)*100)}%</span>
-          </div>
-          <div style={{ width:'100%',height:'4px',backgroundColor:'#222',borderRadius:'2px',overflow:'hidden' }}>
-            <div style={{ width:`${(step/4)*100}%`,height:'100%',backgroundColor:'#3b82f6',borderRadius:'2px',transition:'width 0.3s ease' }} />
-          </div>
+        {/* Logo */}
+        <div style={{ textAlign:'center', marginBottom:'32px', fontSize:'26px', fontWeight:'800', color:'#fff', letterSpacing:'-.5px' }}>
+          ansa<span style={{ color:'#3b82f6' }}>.</span>
         </div>
 
-        <div style={{ backgroundColor:'#111111',borderRadius:'16px',border:'1px solid #222',boxShadow:'0 25px 50px rgba(0,0,0,0.5)',padding:'32px',marginBottom:'24px' }}>
+        {/* Step indicators */}
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:0, marginBottom:'32px' }}>
+          {STEP_META.map((meta, i) => {
+            const num = i + 1;
+            const done = step > num;
+            const active = step === num;
+            const Icon = meta.icon;
+            return (
+              <div key={num} style={{ display:'flex', alignItems:'center' }}>
+                <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:6 }}>
+                  <div style={{
+                    width: 36, height: 36, borderRadius:'50%', display:'flex', alignItems:'center', justifyContent:'center',
+                    background: done ? '#22c55e' : active ? '#3b82f6' : '#1a1a1a',
+                    border: `2px solid ${done ? '#22c55e' : active ? '#3b82f6' : '#2a2a2a'}`,
+                    transition: 'all .3s',
+                  }}>
+                    {done
+                      ? <CheckCircle2 size={16} color="#fff" />
+                      : <Icon size={15} color={active ? '#fff' : '#444'} />
+                    }
+                  </div>
+                  <span style={{ fontSize:11, color: active ? '#fff' : done ? '#22c55e' : '#444', fontWeight: active ? 600 : 400, whiteSpace:'nowrap' }}>{meta.label}</span>
+                </div>
+                {i < STEP_META.length - 1 && (
+                  <div style={{ width: 48, height: 2, background: step > num ? '#22c55e' : '#1e1e1e', margin:'0 4px', marginBottom:20, transition:'background .3s', flexShrink:0 }} />
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Card */}
+        <div style={{ opacity: animating ? 0 : 1, transform: animating ? 'translateY(8px)' : 'translateY(0)', transition:'opacity .15s, transform .15s', backgroundColor:'#111', borderRadius:'18px', border:'1px solid #1e1e1e', boxShadow:'0 24px 60px rgba(0,0,0,0.5)', padding:'32px', marginBottom:'20px' }}>
+
+          {/* ── STEP 1: Service Area ── */}
           {step === 1 && (
             <div>
-              <h2 style={{ fontSize:'22px',fontWeight:'600',color:'#fff',margin:'0 0 8px 0' }}>Almost there!</h2>
-              <p style={{ fontSize:'14px',color:'#888',margin:'0 0 24px 0' }}>Just a couple more details to set up your account.</p>
-              <div style={{ marginBottom:'16px' }}>
-                <label style={{ display:'block',fontSize:'14px',color:'#999',marginBottom:'6px' }}>Service area *</label>
+              <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:6 }}>
+                <div style={{ width:38, height:38, borderRadius:10, background:'rgba(59,130,246,0.12)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                  <MapPin size={18} color="#3b82f6" />
+                </div>
+                <h2 style={{ fontSize:'20px', fontWeight:'700', color:'#fff', margin:0 }}>Where do you work?</h2>
+              </div>
+              <p style={{ fontSize:'14px', color:'#666', margin:'0 0 24px 0', lineHeight:1.6 }}>
+                Ansa will ask customers for their job address before booking — and automatically decline requests that are too far out.
+              </p>
+
+              <div style={{ marginBottom:20 }}>
+                <label style={{ display:'block', fontSize:'13px', color:'#888', marginBottom:8, fontWeight:500 }}>Your city / service area <span style={{ color:'#ef4444' }}>*</span></label>
                 <CityAutocomplete value={serviceArea} onChange={setServiceArea} />
               </div>
+
               <div>
-                <label style={{ display:'block',fontSize:'14px',color:'#999',marginBottom:'6px' }}>Business description</label>
+                <label style={{ display:'block', fontSize:'13px', color:'#888', marginBottom:8, fontWeight:500 }}>What type of work do you do? <span style={{ color:'#555', fontWeight:400 }}>(optional)</span></label>
                 <div style={{ position:'relative' }}>
-                  <FileText size={18} color="#666" style={{ position:'absolute',left:'12px',top:'14px' }} />
-                  <textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="Tell us about your services..." rows={3} style={{ ...inp,resize:'vertical' }} onFocus={hf} onBlur={hb} />
+                  <FileText size={16} color="#555" style={{ position:'absolute', left:'13px', top:'14px', pointerEvents:'none' }} />
+                  <textarea value={description} onChange={e => setDescription(e.target.value)}
+                    placeholder="e.g. HVAC repair and installation, residential and commercial..."
+                    rows={3}
+                    style={{ ...inp, paddingLeft:'40px', resize:'vertical' }}
+                    onFocus={e => e.target.style.borderColor='#3b82f6'}
+                    onBlur={e => e.target.style.borderColor='#2a2a2a'}
+                  />
                 </div>
+                <p style={{ fontSize:12, color:'#444', marginTop:8, lineHeight:1.5 }}>
+                  The more you tell us, the better your AI can answer customer questions.
+                </p>
+              </div>
+
+              <div style={{ display:'flex', gap:10, marginTop:24, padding:'14px 16px', background:'rgba(59,130,246,0.06)', borderRadius:10, border:'1px solid rgba(59,130,246,0.15)' }}>
+                <Zap size={15} color="#3b82f6" style={{ flexShrink:0, marginTop:1 }} />
+                <span style={{ fontSize:13, color:'#888', lineHeight:1.55 }}>
+                  Ansa texts back missed calls in <strong style={{ color:'#fff' }}>under 15 seconds</strong> — while you're still on the job.
+                </span>
               </div>
             </div>
           )}
 
+          {/* ── STEP 2: Business Hours ── */}
           {step === 2 && (
             <div>
-              <h2 style={{ fontSize:'22px',fontWeight:'600',color:'#fff',margin:'0 0 8px 0' }}>Set your availability</h2>
-              <p style={{ fontSize:'14px',color:'#888',margin:'0 0 24px 0' }}>When should Ansa handle your missed calls?</p>
-              <div style={{ display:'flex',flexDirection:'column',gap:'10px' }}>
+              <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:6 }}>
+                <div style={{ width:38, height:38, borderRadius:10, background:'rgba(59,130,246,0.12)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                  <Clock size={18} color="#3b82f6" />
+                </div>
+                <h2 style={{ fontSize:'20px', fontWeight:'700', color:'#fff', margin:0 }}>When are you open?</h2>
+              </div>
+              <p style={{ fontSize:'14px', color:'#666', margin:'0 0 24px 0', lineHeight:1.6 }}>
+                Ansa responds to customers 24/7, but will only <strong style={{ color:'#aaa' }}>book appointments</strong> during your open hours. Toggle the days you work.
+              </p>
+
+              <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
                 {schedule.map((s,i) => (
-                  <div key={s.day} style={{ backgroundColor:'#111111',borderRadius:'12px',border:'1px solid #222',padding:'14px 16px',display:'flex',alignItems:'center',gap:'12px',opacity:s.enabled?1:0.5 }}>
-                    <button onClick={() => setSchedule(prev => prev.map((x,j) => j===i?{...x,enabled:!x.enabled}:x))}
-                      style={{ width:'40px',height:'22px',borderRadius:'11px',border:'none',backgroundColor:s.enabled?'#3b82f6':'#333',cursor:'pointer',position:'relative',flexShrink:0 }}>
-                      <div style={{ width:'18px',height:'18px',borderRadius:'50%',backgroundColor:'#fff',position:'absolute',top:'2px',left:s.enabled?'20px':'2px',transition:'left 0.2s' }} />
+                  <div key={s.day} style={{ backgroundColor:'#0f0f0f', borderRadius:10, border:`1px solid ${s.enabled ? '#2a2a2a' : '#1a1a1a'}`, padding:'12px 16px', display:'flex', alignItems:'center', gap:12, opacity:s.enabled?1:0.45, transition:'opacity .2s' }}>
+                    <button
+                      onClick={() => setSchedule(prev => prev.map((x,j) => j===i?{...x,enabled:!x.enabled}:x))}
+                      style={{ width:40, height:22, borderRadius:11, border:'none', backgroundColor:s.enabled?'#3b82f6':'#2a2a2a', cursor:'pointer', position:'relative', flexShrink:0, transition:'background .2s' }}>
+                      <div style={{ width:18, height:18, borderRadius:'50%', backgroundColor:'#fff', position:'absolute', top:'2px', left:s.enabled?'20px':'2px', transition:'left 0.2s', boxShadow:'0 1px 3px rgba(0,0,0,.3)' }} />
                     </button>
-                    <span style={{ fontSize:'14px',color:'#fff',width:'36px',fontWeight:'500' }}>{s.day}</span>
-                    {s.enabled && (
-                      <div style={{ display:'flex',alignItems:'center',gap:'8px',marginLeft:'auto' }}>
+                    <span style={{ fontSize:13, color:s.enabled?'#fff':'#555', width:32, fontWeight:600 }}>{s.day}</span>
+                    {s.enabled ? (
+                      <div style={{ display:'flex', alignItems:'center', gap:8, marginLeft:'auto' }}>
                         <select value={s.start} onChange={e => setSchedule(prev => prev.map((x,j) => j===i?{...x,start:e.target.value}:x))}
-                          style={{ padding:'6px 8px',backgroundColor:'#141414',border:'1px solid #333',borderRadius:'6px',color:'#fff',fontSize:'13px',outline:'none' }}>
+                          style={{ padding:'6px 8px', backgroundColor:'#1a1a1a', border:'1px solid #2a2a2a', borderRadius:6, color:'#fff', fontSize:12, outline:'none' }}>
                           {HOURS.map(h => <option key={h} value={h}>{h}</option>)}
                         </select>
-                        <span style={{ color:'#666',fontSize:'13px' }}>to</span>
+                        <span style={{ color:'#444', fontSize:12 }}>to</span>
                         <select value={s.end} onChange={e => setSchedule(prev => prev.map((x,j) => j===i?{...x,end:e.target.value}:x))}
-                          style={{ padding:'6px 8px',backgroundColor:'#141414',border:'1px solid #333',borderRadius:'6px',color:'#fff',fontSize:'13px',outline:'none' }}>
+                          style={{ padding:'6px 8px', backgroundColor:'#1a1a1a', border:'1px solid #2a2a2a', borderRadius:6, color:'#fff', fontSize:12, outline:'none' }}>
                           {HOURS.map(h => <option key={h} value={h}>{h}</option>)}
                         </select>
                       </div>
+                    ) : (
+                      <span style={{ marginLeft:'auto', fontSize:12, color:'#333' }}>Closed</span>
                     )}
                   </div>
                 ))}
               </div>
+
+              <div style={{ marginTop:16, padding:'12px 16px', background:'#0f0f0f', borderRadius:10, border:'1px solid #1e1e1e', fontSize:13, color:'#555', lineHeight:1.55 }}>
+                💡 You can update your hours anytime in <strong style={{ color:'#666' }}>Settings → Business Info</strong>.
+              </div>
             </div>
           )}
 
+          {/* ── STEP 3: AI Voice ── */}
           {step === 3 && (
             <div>
-              <h2 style={{ fontSize:'22px',fontWeight:'600',color:'#fff',margin:'0 0 8px 0' }}>Customize your AI assistant</h2>
-              <p style={{ fontSize:'14px',color:'#888',margin:'0 0 12px 0' }}>Configure how Ansa responds to your missed calls</p>
-              <p style={{ fontSize:'13px',color:'#555',margin:'0 0 24px 0' }}>You can change any of this later in Settings → AI Assistant.</p>
-              <div style={{ marginBottom:'24px' }}>
-                <label style={{ display:'block',fontSize:'14px',color:'#999',marginBottom:'6px' }}>AI greeting message</label>
-                <textarea value={greeting || getGreeting()} onChange={e => setGreeting(e.target.value)} rows={3} style={{ ...inpNP,resize:'vertical' }} onFocus={hf} onBlur={hb} />
-              </div>
-              <div style={{ marginBottom:'24px' }}>
-                <label style={{ display:'block',fontSize:'14px',color:'#999',marginBottom:'10px' }}>AI tone</label>
-                <div style={{ display:'flex',gap:'10px' }}>
-                  {['Professional','Friendly','Casual'].map(t => (
-                    <label key={t} style={{ flex:1,padding:'12px',backgroundColor:tone===t?'rgba(59,130,246,0.15)':'#141414',border:`1px solid ${tone===t?'#3b82f6':'#333'}`,borderRadius:'10px',cursor:'pointer',textAlign:'center' }}>
-                      <input type="radio" name="tone" value={t} checked={tone===t} onChange={() => handleToneChange(t)} style={{ display:'none' }} />
-                      <span style={{ fontSize:'14px',color:tone===t?'#3b82f6':'#ccc',fontWeight:'500' }}>{t}</span>
-                    </label>
-                  ))}
+              <div style={{ display:'flex', alignItems:'center', gap:10, marginBottom:6 }}>
+                <div style={{ width:38, height:38, borderRadius:10, background:'rgba(59,130,246,0.12)', display:'flex', alignItems:'center', justifyContent:'center' }}>
+                  <MessageSquare size={18} color="#3b82f6" />
                 </div>
+                <h2 style={{ fontSize:'20px', fontWeight:'700', color:'#fff', margin:0 }}>How should Ansa sound?</h2>
               </div>
-              <div>
-                <label style={{ display:'block',fontSize:'14px',color:'#999',marginBottom:'10px' }}>Frequently Asked Questions</label>
-                <div style={{ display:'flex',flexDirection:'column',gap:'12px' }}>
-                  {faqs.map((faq,i) => (
-                    <div key={i} style={{ backgroundColor:'#111111',borderRadius:'12px',border:'1px solid #222',padding:'16px',position:'relative' }}>
+              <p style={{ fontSize:'14px', color:'#666', margin:'0 0 20px 0', lineHeight:1.6 }}>
+                Pick a tone for your AI. The first message your customer gets sets the whole vibe — choose what fits your business.
+              </p>
+
+              <div style={{ display:'flex', gap:10, marginBottom:20 }}>
+                {TONES.map(t => (
+                  <button key={t.value}
+                    onClick={() => handleToneChange(t.value)}
+                    style={{ flex:1, padding:'14px 10px', background:tone===t.value?'rgba(59,130,246,0.12)':'#0f0f0f', border:`1px solid ${tone===t.value?'#3b82f6':'#2a2a2a'}`, borderRadius:12, cursor:'pointer', textAlign:'center', transition:'all .15s' }}>
+                    <div style={{ fontSize:22, marginBottom:6 }}>{t.emoji}</div>
+                    <div style={{ fontSize:13, fontWeight:700, color:tone===t.value?'#fff':'#aaa', marginBottom:2 }}>{t.label}</div>
+                    <div style={{ fontSize:11, color:'#555' }}>{t.desc}</div>
+                  </button>
+                ))}
+              </div>
+
+              <SmsPreview businessName={businessName} greeting={greeting || getGreeting()} />
+
+              <div style={{ marginTop:20 }}>
+                <label style={{ display:'block', fontSize:13, color:'#888', marginBottom:8, fontWeight:500 }}>
+                  Edit your greeting <span style={{ color:'#555', fontWeight:400 }}>(optional)</span>
+                </label>
+                <textarea
+                  value={greeting || getGreeting()}
+                  onChange={e => setGreeting(e.target.value)}
+                  rows={3}
+                  style={{ ...inp, resize:'vertical' }}
+                  onFocus={e => e.target.style.borderColor='#3b82f6'}
+                  onBlur={e => e.target.style.borderColor='#2a2a2a'}
+                />
+                <p style={{ fontSize:12, color:'#444', marginTop:6, lineHeight:1.5 }}>
+                  This is the first text your customer receives. Keep it short and human.
+                </p>
+              </div>
+
+              <div style={{ marginTop:20 }}>
+                <label style={{ display:'block', fontSize:13, color:'#888', marginBottom:10, fontWeight:500 }}>Common questions your AI will know how to answer</label>
+                <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
+                  {faqs.map((faq, i) => (
+                    <div key={i} style={{ background:'#0f0f0f', borderRadius:10, border:'1px solid #2a2a2a', padding:'14px', position:'relative' }}>
                       <button onClick={() => setFaqs(faqs.filter((_,j) => j!==i))}
-                        style={{ position:'absolute',top:'10px',right:'10px',background:'none',border:'none',cursor:'pointer',padding:'4px' }}>
-                        <Trash2 size={15} color="#666" />
+                        style={{ position:'absolute', top:10, right:10, background:'none', border:'none', cursor:'pointer', padding:4, opacity:.6 }}
+                        onMouseEnter={e=>e.currentTarget.style.opacity=1} onMouseLeave={e=>e.currentTarget.style.opacity=.6}>
+                        <Trash2 size={14} color="#666" />
                       </button>
-                      <input type="text" value={faq.q} onChange={e => setFaqs(faqs.map((f,j) => j===i?{...f,q:e.target.value}:f))} placeholder="Question" style={{ ...inpNP,marginBottom:'8px',fontWeight:'500' }} onFocus={hf} onBlur={hb} />
-                      <textarea value={faq.a} onChange={e => setFaqs(faqs.map((f,j) => j===i?{...f,a:e.target.value}:f))} placeholder="Answer" rows={2} style={{ ...inpNP,resize:'vertical' }} onFocus={hf} onBlur={hb} />
+                      <input type="text" value={faq.q}
+                        onChange={e => setFaqs(faqs.map((f,j) => j===i?{...f,q:e.target.value}:f))}
+                        placeholder="Question"
+                        style={{ ...inp, marginBottom:8, fontWeight:500 }}
+                        onFocus={e => e.target.style.borderColor='#3b82f6'}
+                        onBlur={e => e.target.style.borderColor='#2a2a2a'}
+                      />
+                      <textarea value={faq.a}
+                        onChange={e => setFaqs(faqs.map((f,j) => j===i?{...f,a:e.target.value}:f))}
+                        placeholder="Answer" rows={2}
+                        style={{ ...inp, resize:'vertical' }}
+                        onFocus={e => e.target.style.borderColor='#3b82f6'}
+                        onBlur={e => e.target.style.borderColor='#2a2a2a'}
+                      />
                     </div>
                   ))}
                 </div>
-                <button onClick={() => setFaqs([...faqs,{q:'',a:''}])}
-                  style={{ display:'flex',alignItems:'center',gap:'6px',marginTop:'12px',background:'none',border:'1px dashed #333',borderRadius:'10px',padding:'10px 16px',color:'#3b82f6',fontSize:'14px',cursor:'pointer',width:'100%',justifyContent:'center' }}>
-                  <Plus size={16} /> Add FAQ
+                <button onClick={() => setFaqs([...faqs, { q:'', a:'' }])}
+                  style={{ display:'flex', alignItems:'center', gap:6, marginTop:10, background:'none', border:'1px dashed #2a2a2a', borderRadius:10, padding:'10px 16px', color:'#3b82f6', fontSize:13, cursor:'pointer', width:'100%', justifyContent:'center' }}>
+                  <Plus size={15} /> Add a question
                 </button>
               </div>
             </div>
           )}
 
+          {/* ── STEP 4: Launch ── */}
           {step === 4 && (
             <div>
-              <h2 style={{ fontSize:'22px',fontWeight:'600',color:'#fff',margin:'0 0 8px 0' }}>Connect your tools</h2>
-              <p style={{ fontSize:'14px',color:'#888',margin:'0 0 24px 0' }}>These can all be configured later in Settings</p>
-              <div style={{ display:'flex',flexDirection:'column',gap:'12px' }}>
+              <div style={{ textAlign:'center', marginBottom:28 }}>
+                <div style={{ width:64, height:64, borderRadius:'50%', background:'rgba(59,130,246,0.12)', border:'1px solid rgba(59,130,246,0.25)', display:'flex', alignItems:'center', justifyContent:'center', margin:'0 auto 16px' }}>
+                  <Rocket size={28} color="#3b82f6" />
+                </div>
+                <h2 style={{ fontSize:'22px', fontWeight:'800', color:'#fff', margin:'0 0 8px 0' }}>You're ready to launch</h2>
+                <p style={{ fontSize:'14px', color:'#666', margin:0, lineHeight:1.6 }}>
+                  Here's exactly what happens when you click the button below.
+                </p>
+              </div>
+
+              <div style={{ display:'flex', flexDirection:'column', gap:10, marginBottom:24 }}>
                 {[
-                  { Icon:Calendar, title:'Google Calendar', desc:'Sync your availability — connect after launch in Settings', href: null },
-                  { Icon:PhoneCall, title:'Phone Number', desc:'Auto-provisioned when you launch', done: false },
-                  { Icon:CreditCard, title:'Billing (Stripe)', desc:'Coming soon — add a payment method for your subscription', href: null },
-                ].map(({ Icon, title, desc, href, done }) => (
-                  <div key={title} style={{ backgroundColor:'#111111',borderRadius:'12px',border:'1px solid #222',padding:'20px',display:'flex',alignItems:'center',gap:'16px' }}>
-                    <div style={{ width:'44px',height:'44px',borderRadius:'10px',backgroundColor: done ? 'rgba(34,197,94,0.15)' : 'rgba(59,130,246,0.1)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0 }}>
-                      {done ? <CheckCircle2 size={22} color="#22c55e" /> : <Icon size={22} color="#3b82f6" />}
+                  { icon: Phone, color: '#3b82f6', title: 'Your Ansa number is provisioned', desc: 'A dedicated phone number is created for your business. Forward your calls to it and Ansa handles the rest.' },
+                  { icon: MessageSquare, color: '#8b5cf6', title: 'Your AI goes live immediately', desc: 'Ansa starts responding to missed calls within seconds — using the tone and hours you just set.' },
+                  { icon: Calendar, color: '#22c55e', title: 'You get a 30-day free trial', desc: 'No charge today. Your card is billed after 30 days. Cancel anytime before then and you won\'t be charged.' },
+                  { icon: CreditCard, color: '#f59e0b', title: 'Stripe checkout opens next', desc: 'We\'ll open a secure payment page. Add your card to activate the trial — nothing is charged now.' },
+                ].map(({ icon: Icon, color, title, desc }) => (
+                  <div key={title} style={{ display:'flex', gap:14, padding:'14px 16px', background:'#0f0f0f', borderRadius:12, border:'1px solid #1e1e1e', alignItems:'flex-start' }}>
+                    <div style={{ width:36, height:36, borderRadius:10, background:`${color}18`, display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0, marginTop:1 }}>
+                      <Icon size={18} color={color} />
                     </div>
-                    <div style={{ flex:1 }}>
-                      <div style={{ fontSize:'15px',fontWeight:'500',color:'#fff',marginBottom:'2px' }}>{title}</div>
-                      <div style={{ fontSize:'13px',color:'#888' }}>{desc}</div>
+                    <div>
+                      <div style={{ fontSize:14, fontWeight:600, color:'#fff', marginBottom:3 }}>{title}</div>
+                      <div style={{ fontSize:13, color:'#555', lineHeight:1.55 }}>{desc}</div>
                     </div>
-                    {href && (
-                      <a href={href} style={{ padding:'8px 16px',backgroundColor:'#3b82f6',color:'#fff',border:'none',borderRadius:'8px',fontSize:'13px',fontWeight:'500',cursor:'pointer',whiteSpace:'nowrap',textDecoration:'none' }}>
-                        Connect
-                      </a>
-                    )}
-                    {done && <CheckCircle2 size={20} color="#22c55e" />}
                   </div>
                 ))}
+              </div>
+
+              <div style={{ display:'flex', alignItems:'center', gap:8, padding:'12px 16px', background:'rgba(34,197,94,0.06)', border:'1px solid rgba(34,197,94,0.15)', borderRadius:10 }}>
+                <CheckCircle2 size={16} color="#22c55e" style={{ flexShrink:0 }} />
+                <span style={{ fontSize:13, color:'#888', lineHeight:1.5 }}>
+                  Your settings are saved. You can change everything later in <strong style={{ color:'#aaa' }}>Settings</strong>.
+                </span>
               </div>
             </div>
           )}
         </div>
 
-        {launchError && <div style={{ background:'rgba(239,68,68,0.1)',border:'1px solid rgba(239,68,68,0.3)',borderRadius:'8px',padding:'10px 14px',color:'#ef4444',fontSize:'13px',marginBottom:'16px' }}>{launchError}</div>}
-        <div style={{ display:'flex',justifyContent:'space-between',gap:'12px' }}>
+        {/* Error */}
+        {launchError && (
+          <div style={{ background:'rgba(239,68,68,0.08)', border:'1px solid rgba(239,68,68,0.25)', borderRadius:10, padding:'12px 16px', color:'#ef4444', fontSize:13, marginBottom:16, lineHeight:1.5 }}>
+            {launchError}
+          </div>
+        )}
+
+        {/* Navigation */}
+        <div style={{ display:'flex', justifyContent:'space-between', gap:12 }}>
           {step > 1 ? (
-            <button onClick={() => setStep(step-1)}
-              style={{ padding:'12px 24px',backgroundColor:'transparent',color:'#999',border:'1px solid #333',borderRadius:'10px',fontSize:'14px',fontWeight:'500',cursor:'pointer',display:'flex',alignItems:'center',gap:'6px' }}
-              onMouseEnter={e => e.currentTarget.style.borderColor='#555'} onMouseLeave={e => e.currentTarget.style.borderColor='#333'}>
+            <button onClick={() => goToStep(step - 1)}
+              style={{ padding:'13px 24px', backgroundColor:'transparent', color:'#888', border:'1px solid #2a2a2a', borderRadius:10, fontSize:14, fontWeight:500, cursor:'pointer', display:'flex', alignItems:'center', gap:6, transition:'border-color .15s, color .15s' }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor='#444'; e.currentTarget.style.color='#fff'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor='#2a2a2a'; e.currentTarget.style.color='#888'; }}>
               <ChevronLeft size={16} /> Back
             </button>
           ) : (
             <button onClick={() => { localStorage.removeItem('ansa_signup'); window.location.hash = user ? '#/dashboard' : '#/'; }}
-              style={{ padding:'12px 24px',backgroundColor:'transparent',color:'#999',border:'1px solid #333',borderRadius:'10px',fontSize:'14px',fontWeight:'500',cursor:'pointer',display:'flex',alignItems:'center',gap:'6px' }}
-              onMouseEnter={e => e.currentTarget.style.borderColor='#555'} onMouseLeave={e => e.currentTarget.style.borderColor='#333'}>
+              style={{ padding:'13px 24px', backgroundColor:'transparent', color:'#888', border:'1px solid #2a2a2a', borderRadius:10, fontSize:14, fontWeight:500, cursor:'pointer', display:'flex', alignItems:'center', gap:6, transition:'border-color .15s, color .15s' }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor='#444'; e.currentTarget.style.color='#fff'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor='#2a2a2a'; e.currentTarget.style.color='#888'; }}>
               <ChevronLeft size={16} /> Back to home
             </button>
           )}
-          <button onClick={handleContinue} disabled={!canContinue() || saving}
-            style={{ padding:step===4?'14px 32px':'12px 24px',backgroundColor:canContinue()?'#3b82f6':'#1e3a5f',color:canContinue()?'#fff':'#666',border:'none',borderRadius:'10px',fontSize:step===4?'16px':'14px',fontWeight:'600',cursor:canContinue()?'pointer':'not-allowed',display:'flex',alignItems:'center',gap:'8px' }}>
-            {step === 4 ? (saving ? 'Saving...' : <><Rocket size={18} /> Launch Ansa</>) : <>Continue <ChevronRight size={16} /></>}
+
+          <button
+            onClick={handleContinue}
+            disabled={!canContinue() || saving}
+            style={{
+              flex: step === 4 ? 1 : 0,
+              padding: step === 4 ? '15px 32px' : '13px 28px',
+              backgroundColor: !canContinue() ? '#1a2a40' : step === 4 ? '#3b82f6' : '#3b82f6',
+              color: !canContinue() ? '#3a5a7a' : '#fff',
+              border: 'none', borderRadius: 10,
+              fontSize: step === 4 ? '16px' : '14px',
+              fontWeight: 700, cursor: canContinue() && !saving ? 'pointer' : 'not-allowed',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+              boxShadow: canContinue() && step === 4 ? '0 4px 20px rgba(59,130,246,0.4)' : 'none',
+              transition: 'all .2s',
+            }}
+            onMouseEnter={e => { if (canContinue()) e.currentTarget.style.transform='translateY(-1px)'; }}
+            onMouseLeave={e => e.currentTarget.style.transform='translateY(0)'}
+          >
+            {step === 4
+              ? saving
+                ? <><div style={{ width:16, height:16, border:'2px solid rgba(255,255,255,.3)', borderTopColor:'#fff', borderRadius:'50%', animation:'spin 0.8s linear infinite' }} /> Setting up your account...</>
+                : <><Rocket size={18} /> Launch Ansa — Start Free Trial</>
+              : <>Continue <ChevronRight size={16} /></>
+            }
           </button>
         </div>
+
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     </div>
   );
