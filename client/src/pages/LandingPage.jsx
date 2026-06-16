@@ -502,11 +502,11 @@ const MOCK_WEEKLY = [
 ];
 
 const MOCK_CONVS = [
-  { phone:'(949) 555-0182', last:'Yes, 2:00 PM works perfectly!', status:'booked', time:'12m ago' },
-  { phone:'(714) 555-0347', last:'Do you do tankless water heaters?', status:'active', time:'34m ago' },
+  { name:'Marcus T.', phone:'(949) 555-0182', last:'Yes, 2:00 PM works perfectly!', status:'booked', time:'12m ago' },
+  { name:'Sarah K.', phone:'(714) 555-0347', last:'Do you do tankless water heaters?', status:'active', time:'34m ago' },
   { phone:'(562) 555-0901', last:'Thanks, we got it sorted.', status:'closed', time:'2h ago' },
   { phone:'(310) 555-0264', last:'What areas do you service?', status:'active', time:'3h ago' },
-  { phone:'(949) 555-0773', last:'Appointment confirmed for tomorrow!', status:'booked', time:'5h ago' },
+  { name:'David R.', phone:'(949) 555-0773', last:'Appointment confirmed for tomorrow!', status:'booked', time:'5h ago' },
   { phone:'(818) 555-0412', last:'Ok sounds good, what time works?', status:'active', manual_mode:true, time:'8m ago' },
 ];
 
@@ -599,11 +599,11 @@ function ShowcaseOverview() {
           { icon:<PhoneMissed size={16}/>, color:'#3b82f6', val:'3',    label:'Missed Calls Today' },
           { icon:<MessageSquare size={16}/>, color:'#8b5cf6', val:'100%', label:'Response Rate' },
           { icon:<CalendarCheck size={16}/>, color:'#22c55e', val:'67%',  label:'Booking Rate' },
-          { icon:<DollarSign size={16}/>, color:'#f59e0b', val:'8',    label:'Jobs Booked' },
+          { icon:<DollarSign size={16}/>, color:'#f59e0b', val:'$3,200', label:'Revenue Recovered', sub:'8 jobs booked' },
         ].map((s,i) => (
           <div key={i} className="ansa-sc-stat">
             <div className="ansa-sc-stat-icon" style={{ background:`${s.color}18` }}><span style={{ color:s.color }}>{s.icon}</span></div>
-            <div><div className="ansa-sc-stat-val">{s.val}</div><div className="ansa-sc-stat-label">{s.label}</div></div>
+            <div><div className="ansa-sc-stat-val">{s.val}</div><div className="ansa-sc-stat-label">{s.label}</div>{s.sub && <div style={{ fontSize:9,color:'#555',marginTop:1 }}>{s.sub}</div>}</div>
           </div>
         ))}
       </div>
@@ -627,7 +627,8 @@ function ShowcaseOverview() {
         {MOCK_CONVS.slice(0,3).map((c,i) => (
           <div key={i} style={{ display:'flex',justifyContent:'space-between',alignItems:'center',padding:'8px 0',borderBottom:i<2?'1px solid #1e1e1e':'none' }}>
             <div>
-              <div style={{ fontSize:13,fontWeight:600,color:'#fff' }}>{c.phone}</div>
+              <div style={{ fontSize:13,fontWeight:600,color:'#fff' }}>{c.name || c.phone}</div>
+              {c.name && <div style={{ fontSize:10,color:'#555' }}>{c.phone}</div>}
               <div style={{ fontSize:11,color:'#666' }}>{c.time}</div>
             </div>
             <span className="ansa-sc-badge" style={{ color:SC_REAL[c.status].color,background:SC_REAL[c.status].bg }}>{c.status}</span>
@@ -691,8 +692,9 @@ function ShowcaseConversations() {
           <div style={{ flex:1,minWidth:0 }}>
             <div style={{ display:'flex',alignItems:'center',gap:5 }}>
               {c.manual_mode && <span style={{ width:6,height:6,borderRadius:'50%',background:'#f59e0b',flexShrink:0 }}/>}
-              <div className="ansa-mini-conv-phone">{c.phone}</div>
+              <div className="ansa-mini-conv-phone">{c.name || c.phone}</div>
             </div>
+            {c.name && <div style={{ fontSize:10,color:'#555',marginBottom:1 }}>{c.phone}</div>}
             <div className="ansa-mini-conv-last">{c.last}</div>
           </div>
           <div style={{ display:'flex',flexDirection:'column',alignItems:'flex-end',gap:4,flexShrink:0,marginLeft:8 }}>
@@ -733,7 +735,7 @@ function ShowcaseAnalytics() {
           { icon:<PhoneMissed size={16}/>, color:'#3b82f6', val:'31',   label:'Total Calls' },
           { icon:<MessageSquare size={16}/>, color:'#8b5cf6', val:'100%', label:'Response Rate' },
           { icon:<CalendarCheck size={16}/>, color:'#22c55e', val:'45%',  label:'Booking Rate' },
-          { icon:<DollarSign size={16}/>, color:'#f59e0b', val:'14',   label:'Jobs Booked' },
+          { icon:<DollarSign size={16}/>, color:'#f59e0b', val:'$5,600', label:'Revenue Recovered' },
         ].map((s,i) => (
           <div key={i} className="ansa-sc-stat">
             <div className="ansa-sc-stat-icon" style={{ background:`${s.color}18` }}><span style={{ color:s.color }}>{s.icon}</span></div>
@@ -808,85 +810,88 @@ const SIDEBAR_NAV = [
 ];
 const PAGE_TITLES = ['Overview','Missed Calls','Conversations','Appointments','Analytics','Settings'];
 const SHOWCASE_VIEWS = [ShowcaseOverview, ShowcaseMissedCalls, ShowcaseConversations, ShowcaseAppointments, ShowcaseAnalytics, ShowcaseSettings];
-const SHOWCASE_DURATION = 5000;
-
 function DashboardShowcase() {
   const [view, setView] = useState(0);
-  const [progress, setProgress] = useState(0);
 
-  useEffect(() => {
-    let start = null;
-    let raf;
-    const animate = ts => {
-      if (!start) start = ts;
-      const elapsed = ts - start;
-      const pct = Math.min((elapsed / SHOWCASE_DURATION) * 100, 100);
-      setProgress(pct);
-      if (elapsed < SHOWCASE_DURATION) {
-        raf = requestAnimationFrame(animate);
-      } else {
-        setView(v => (v + 1) % SHOWCASE_VIEWS.length);
-      }
-    };
-    raf = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(raf);
-  }, [view]);
-
-  const handleNav = i => { setView(i); setProgress(0); };
+  const prev = () => setView(v => (v - 1 + SHOWCASE_VIEWS.length) % SHOWCASE_VIEWS.length);
+  const next = () => setView(v => (v + 1) % SHOWCASE_VIEWS.length);
   const ActiveView = SHOWCASE_VIEWS[view];
 
+  const ArrowBtn = ({ onClick, children }) => (
+    <button onClick={onClick} style={{
+      width:40, height:40, borderRadius:'50%', border:'1px solid #1e1e1e',
+      background:'#111', color:'#888', display:'flex', alignItems:'center',
+      justifyContent:'center', cursor:'pointer', flexShrink:0,
+      transition:'all .15s', fontFamily:'inherit',
+    }}
+    onMouseEnter={e => { e.currentTarget.style.background='#1e1e1e'; e.currentTarget.style.color='#fff'; }}
+    onMouseLeave={e => { e.currentTarget.style.background='#111'; e.currentTarget.style.color='#888'; }}
+    >{children}</button>
+  );
+
   return (
-    <div>
-      <div className="ansa-showcase-wrap">
-        {/* Browser chrome */}
-        <div className="ansa-showcase-chrome">
-          <div className="ansa-showcase-dots"><span/><span/><span/></div>
-          <div className="ansa-showcase-url">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-            <span>ansaco.ai</span>
-          </div>
-        </div>
-        <div className="ansa-showcase-app">
-          {/* Sidebar */}
-          <div className="ansa-showcase-sidebar">
-            <div className="ansa-showcase-logo">ansa<span>.</span></div>
-            <div className="ansa-showcase-nav-section">
-              {SIDEBAR_NAV.map(item => (
-                <div key={item.idx} onClick={() => handleNav(item.idx)}
-                  className={`ansa-showcase-nav-item${view===item.idx?' active':''}`}>
-                  {item.icon}
-                  <span>{item.label}</span>
-                </div>
-              ))}
+    <div style={{ display:'flex', alignItems:'center', gap:16 }}>
+      <ArrowBtn onClick={prev}>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </ArrowBtn>
+      <div style={{ flex:1, minWidth:0 }}>
+        <div className="ansa-showcase-wrap">
+          <div className="ansa-showcase-chrome">
+            <div className="ansa-showcase-dots"><span/><span/><span/></div>
+            <div className="ansa-showcase-url">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <span>ansaco.ai</span>
             </div>
-            <div className="ansa-showcase-sidebar-footer">
-              <div style={{ display:'flex',alignItems:'center',gap:10,marginBottom:12 }}>
-                <div style={{ width:34,height:34,borderRadius:8,background:'#3b82f6',display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontWeight:700,fontSize:13,flexShrink:0 }}>J</div>
-                <div style={{ overflow:'hidden' }}>
-                  <div style={{ fontSize:12,fontWeight:600,color:'#e5e5e5',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis' }}>Johns Contracting</div>
-                  <div style={{ fontSize:10.5,color:'#666' }}>Pro Plan</div>
-                </div>
+          </div>
+          <div className="ansa-showcase-app">
+            <div className="ansa-showcase-sidebar">
+              <div className="ansa-showcase-logo">ansa<span>.</span></div>
+              <div className="ansa-showcase-nav-section">
+                {SIDEBAR_NAV.map(item => (
+                  <div key={item.idx} onClick={() => setView(item.idx)}
+                    className={`ansa-showcase-nav-item${view===item.idx?' active':''}`}>
+                    {item.icon}
+                    <span>{item.label}</span>
+                  </div>
+                ))}
               </div>
-              <div style={{ display:'flex',alignItems:'center',gap:8,fontSize:12,color:'#666',padding:'5px 0',cursor:'pointer' }}><HeadphonesIcon size={13}/> Contact support</div>
-              <div style={{ display:'flex',alignItems:'center',gap:8,fontSize:12,color:'#666',padding:'5px 0',cursor:'pointer' }}><LogOut size={13}/> Log out</div>
+              <div className="ansa-showcase-sidebar-footer">
+                <div style={{ display:'flex',alignItems:'center',gap:10,marginBottom:12 }}>
+                  <div style={{ width:34,height:34,borderRadius:8,background:'#3b82f6',display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontWeight:700,fontSize:13,flexShrink:0 }}>J</div>
+                  <div style={{ overflow:'hidden' }}>
+                    <div style={{ fontSize:12,fontWeight:600,color:'#e5e5e5',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis' }}>Johns Contracting</div>
+                    <div style={{ fontSize:10.5,color:'#666' }}>Pro Plan</div>
+                  </div>
+                </div>
+                <div style={{ display:'flex',alignItems:'center',gap:8,fontSize:12,color:'#666',padding:'5px 0',cursor:'pointer' }}><HeadphonesIcon size={13}/> Contact support</div>
+                <div style={{ display:'flex',alignItems:'center',gap:8,fontSize:12,color:'#666',padding:'5px 0',cursor:'pointer' }}><LogOut size={13}/> Log out</div>
+              </div>
             </div>
-          </div>
-          {/* Main area */}
-          <div className="ansa-showcase-main">
-            <div className="ansa-showcase-topbar">
-              <div style={{ fontSize:16,fontWeight:600,color:'#fff' }}>{PAGE_TITLES[view]}</div>
-              <div style={{ width:34,height:34,borderRadius:'50%',background:'#1e1e1e',display:'flex',alignItems:'center',justifyContent:'center',fontSize:12,fontWeight:600,color:'#999',border:'2px solid #333' }}>JL</div>
-            </div>
-            <div className="ansa-showcase-content">
-              <ActiveView key={view}/>
+            <div className="ansa-showcase-main">
+              <div className="ansa-showcase-topbar">
+                <div style={{ fontSize:16,fontWeight:600,color:'#fff' }}>{PAGE_TITLES[view]}</div>
+                <div style={{ width:34,height:34,borderRadius:'50%',background:'#1e1e1e',display:'flex',alignItems:'center',justifyContent:'center',fontSize:12,fontWeight:600,color:'#999',border:'2px solid #333' }}>JL</div>
+              </div>
+              <div className="ansa-showcase-content">
+                <ActiveView key={view}/>
+              </div>
             </div>
           </div>
         </div>
+        <div style={{ display:'flex',justifyContent:'center',gap:6,marginTop:10 }}>
+          {SHOWCASE_VIEWS.map((_,i) => (
+            <button key={i} onClick={() => setView(i)} style={{
+              width: i===view ? 20 : 6, height:6, borderRadius:3, border:'none',
+              background: i===view ? '#3b82f6' : '#1e1e1e',
+              cursor:'pointer', padding:0, transition:'all .2s',
+            }}/>
+          ))}
+        </div>
+        <div style={{ textAlign:'center',marginTop:6,fontSize:12,color:'#666' }}>Click any section in the sidebar to explore</div>
       </div>
-      <div className="ansa-showcase-progress">
-        <div className="ansa-showcase-progress-bar" style={{ width:`${progress}%`,transition:progress===0?'none':'width .1s linear' }}/>
-      </div>
-      <div style={{ textAlign:'center',marginTop:8,fontSize:12,color:'#666' }}>Click any section in the sidebar to explore ↑</div>
+      <ArrowBtn onClick={next}>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </ArrowBtn>
     </div>
   );
 }
