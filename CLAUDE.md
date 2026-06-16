@@ -15,7 +15,7 @@
 - Domain: ansaco.ai — registered on Namecheap, DNS managed on Namecheap
 
 ## Supabase Schema
-- businesses: id(text PK), name, owner_name, owner_phone, owner_auth_id(uuid), trade, twilio_number, google_calendar_id, google_tokens, services, business_hours, timezone, appointment_duration, greeting, created_at, stripe_customer_id, stripe_subscription_id, subscription_status
+- businesses: id(text PK), name, owner_name, owner_phone, owner_auth_id(uuid), trade, twilio_number, google_calendar_id, google_tokens, services, business_hours, timezone, appointment_duration, greeting, created_at, stripe_customer_id, stripe_subscription_id, subscription_status, service_base_address, service_radius_miles, outside_radius_behavior, avg_job_value(integer default 400)
 - conversations: id, business_id, customer_phone, status(active/booked/closed), created_at, updated_at
 - messages: id, conversation_id, role(user/assistant/system), content, created_at
 - appointments: id, business_id, conversation_id, customer_phone, customer_name, service_description, scheduled_at, google_event_id, status(confirmed/pending/completed/cancelled), created_at
@@ -90,12 +90,15 @@
 - client/src/App.jsx — #/onboarding is before the auth gate
 - client/src/pages/BillingPage.jsx — reads businessId from URL query param ?b=
 
-## Onboarding UX Details
-- Step 1: Service area (city autocomplete) + business description. "← Back to home" button clears localStorage and goes to #/
-- Step 2: Business hours schedule
-- Step 3: AI greeting + tone (Professional/Friendly/Casual — each changes the greeting text live) + FAQs. Note says "You can change any of this later in Settings → AI Assistant."
-- Step 4: Connect tools (Google Calendar, Phone Number, Billing — all informational, no links since account doesn't exist yet)
-- Steps 2-4 have "← Back" to go to previous step
+## Onboarding UX Details (redesigned 2026-06-15)
+- Named step indicators with icons at top: Service Area → Your Hours → AI Voice → Launch
+- Step 1: "Where do you work?" — city autocomplete + business description + blue context callout
+- Step 2: "When are you open?" — explains Ansa responds 24/7 but only books during open hours
+- Step 3: "How should Ansa sound?" — tone picker (Professional/Friendly/Casual), live SMS preview showing exact customer text, editable greeting below, FAQs
+- Step 4: "You're ready to launch" — 4 cards explaining exactly what happens (number provisioned, AI goes live, 30-day trial, Stripe opens next). CTA: "Launch Ansa — Start Free Trial" with loading spinner
+- Smooth opacity/slide animation between steps
+- NO emojis anywhere in wizard
+- Steps 2-4 have "← Back", step 1 has "← Back to home" (clears localStorage)
 
 ## Stripe Billing
 - Checkout: POST /api/stripe/checkout → opens Stripe hosted checkout at $297/mo with 30-day trial
@@ -143,7 +146,7 @@
 - Command: curl -s -X POST https://ansa-production.up.railway.app/api/send-monthly-reports -H 'x-cron-secret: df2324158d2ab6c8f26f8c2c8474f9bc5952c2603d4944e2bd440e1f2ab633ca'
 - Queries all businesses with subscription_status = 'active', sends monthly stats email to each
 
-## Current Status (as of 2026-06-09) — READY TO LAUNCH
+## Current Status (as of 2026-06-15) — READY TO LAUNCH
 - Stripe: fully working ✅
 - Emails: welcome, cancellation, monthly report all built and deployed via Resend ✅
 - Supabase email confirmation: ON ✅
@@ -248,6 +251,40 @@
 - Bug fixed: "pending" type was missing from notifications.js messages object ✅
 - Supabase: require_approval boolean column added (migration run 2026-06-08) ✅
 - Files changed: src/routes/webhooks.js, src/routes/api.js, src/services/notifications.js, client/src/pages/SettingsPage.jsx, client/src/pages/AppointmentsPage.jsx
+
+## Session 2026-06-15 — Dashboard + Landing Page + Onboarding Overhaul
+
+### Service Area Feature — FULLY LIVE ✅
+- Migration was blocked by Supabase password with special chars → reset to ManyOfMillions67105190
+- Updated Railway DATABASE_URL to use session pooler with new password
+- Migration ran on deploy → [Migrations] Service area + address columns ready confirmed in Railway logs
+- service_base_address, service_radius_miles, outside_radius_behavior, customer_address columns all added
+
+### Dashboard Overhaul
+- DashboardHome: onboarding checklist (shown to new users — tracks Ansa number, services, hours, first call)
+- DashboardHome: orange alert banner when active conversations waiting 2+ hours, clickable to conversations
+- DashboardHome: Revenue Recovered stat card (bookedCount × avg_job_value) instead of raw job count
+- DashboardHome: customer_name shown in Recent Activity when AI has collected it
+- DashboardHome: empty state shows Ansa number + test instructions
+- DashboardHome: Response Rate / Booking Rate show "—" until there's data
+- ConversationsPage: customer name shown as primary label, phone number below when name known
+- Settings: "Revenue Tracking" section with avg_job_value field (default $400), saves to DB
+
+### Landing Page Polish
+- Removed star rating line — "Built for Home Service Pros" badge is centered again
+- Hero subtext sharpened: "No receptionist. No voicemail. No lost jobs."
+- Before/After copy: realistic job value range ($400–$2,000)
+- Pricing headline: "One Recovered Job Pays for the Year"
+- Stats band (15s/30/24/7): borders restored, clean white 56px font-weight:700, no gradient clip
+- 62% and 85% bento stat cards: centered horizontally + vertically
+- All gradient text removed from number stats — plain white throughout
+- Chat bubble gaps fixed: 10px gap between messages in conversation visuals and hero phones
+- NO emojis anywhere on the site or in SMS texts (enforced in ai.js prompt + all UI)
+
+### Supabase DB Password
+- Old: ManyOfMillions#5190*6710 (special chars broke URL auth)
+- New: ManyOfMillions67105190
+- Railway DATABASE_URL: postgresql://postgres.jerckjzivlsuabaokopw:ManyOfMillions67105190@aws-1-us-west-1.pooler.supabase.com:5432/postgres
 
 ## Outstanding Before Launch
 1. SMS end-to-end test: DONE ✅ — text-back works, A2P unblocked
