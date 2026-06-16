@@ -157,7 +157,8 @@ export default function ConversationsPage() {
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                     {(conv.manual_mode && lastMsgIsFromCustomer(conv) || isUnread(conv)) && <span style={{ width: 8, height: 8, borderRadius: '50%', background: conv.manual_mode && lastMsgIsFromCustomer(conv) ? '#f59e0b' : '#3b82f6', flexShrink: 0 }} />}
-                    <span style={{ fontSize: 15, fontWeight: 600, color: isUnread(conv) ? '#fff' : '#ccc' }}>{formatPhone(conv.customer_phone)}</span>
+                    <span style={{ fontSize: 15, fontWeight: 600, color: isUnread(conv) ? '#fff' : '#ccc' }}>{conv.customer_name || formatPhone(conv.customer_phone)}</span>
+                    {conv.customer_name && <span style={{ fontSize: 12, color: '#555' }}>{formatPhone(conv.customer_phone)}</span>}
                   </div>
                   <div style={{ fontSize: 13, color: '#888', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: 500 }}>{getLastMessage(conv)}</div>
                 </div>
