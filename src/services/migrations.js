@@ -15,7 +15,8 @@ async function runMigrations() {
     await client.query(`ALTER TABLE businesses ADD COLUMN IF NOT EXISTS outside_radius_behavior text DEFAULT 'reject'`);
     await client.query(`ALTER TABLE appointments ADD COLUMN IF NOT EXISTS customer_address text`);
     await client.query(`ALTER TABLE conversations ADD COLUMN IF NOT EXISTS customer_address text`);
-    console.log('[Migrations] Service area + address columns ready');
+    await client.query(`ALTER TABLE businesses ADD COLUMN IF NOT EXISTS avg_job_value integer DEFAULT 400`);
+    console.log('[Migrations] Service area + address + avg_job_value columns ready');
   } finally {
     client.release();
     await pool.end();

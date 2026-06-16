@@ -163,6 +163,7 @@ export default function SettingsPage() {
   const [bizForm, setBizForm] = useState({ name: '', owner_phone: '' });
   const [services, setServices] = useState([]);
   const [requireApproval, setRequireApproval] = useState(false);
+  const [avgJobValue, setAvgJobValue] = useState(400);
   const [serviceArea, setServiceArea] = useState({ base_address: '', radius_miles: 25, outside_radius_behavior: 'reject' });
   const [hours, setHours] = useState(defaultHours);
   const [greeting, setGreeting] = useState('');
@@ -185,6 +186,7 @@ export default function SettingsPage() {
     setTone(authBusiness.tone || 'friendly');
     setFaqs(authBusiness.faqs || []);
     setRequireApproval(!!authBusiness.require_approval);
+    setAvgJobValue(authBusiness.avg_job_value ?? 400);
     setServiceArea({
       base_address: authBusiness.service_base_address || '',
       radius_miles: authBusiness.service_radius_miles ?? 25,
@@ -210,6 +212,7 @@ export default function SettingsPage() {
         service_base_address: serviceArea.base_address || null,
         service_radius_miles: serviceArea.radius_miles ? parseInt(serviceArea.radius_miles) : 25,
         outside_radius_behavior: serviceArea.outside_radius_behavior,
+        avg_job_value: avgJobValue ? parseInt(avgJobValue) : 400,
       });
       await reloadBusiness();
       flash();
@@ -435,6 +438,24 @@ export default function SettingsPage() {
               transition: 'left .2s', display: 'block',
             }} />
           </button>
+        </div>
+
+        <div style={{ ...s.sectionTitle, marginTop: 28 }}>Revenue Tracking</div>
+        <div style={{ display: 'flex', alignItems: 'flex-end', gap: 16, marginBottom: 20 }}>
+          <div style={{ maxWidth: 200 }}>
+            <label style={s.label}>Average Job Value ($)</label>
+            <input
+              style={s.input}
+              type="number"
+              min="1"
+              placeholder="400"
+              value={avgJobValue}
+              onChange={e => setAvgJobValue(e.target.value)}
+            />
+          </div>
+          <div style={{ fontSize: 13, color: '#555', paddingBottom: 12, lineHeight: 1.5 }}>
+            Used to calculate revenue recovered on your dashboard.
+          </div>
         </div>
 
         <SaveButton onClick={saveBusiness} />

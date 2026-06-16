@@ -944,9 +944,15 @@ export default function LandingPage() {
       <section className="ansa-hero">
         <div className="ansa-hero-glow" />
         <div className="ansa-hero-badge"><Zap size={14} /> Built for Home Service Pros</div>
+        <div style={{ display:'inline-flex', alignItems:'center', gap:8, marginBottom:20, animation:'ansa-fadeUp .7s ease .05s both' }}>
+          <div style={{ display:'flex', gap:2 }}>
+            {[...Array(5)].map((_,i) => <Star key={i} size={13} fill="#facc15" color="#facc15" />)}
+          </div>
+          <span style={{ fontSize:13, color:'#a1a1aa', fontWeight:500 }}>Loved by contractors, plumbers &amp; HVAC pros</span>
+        </div>
         <h1>Every Missed Call Is a Job You Didn't Book</h1>
         <p className="ansa-hero-sub">
-          Built for contractors, plumbers, roofers, and HVAC pros — Ansa texts back within 15 seconds of a missed call, answers their questions with AI, and books the appointment. While you're still on the job.
+          When you miss a call, Ansa texts back in under 15 seconds, answers their questions with AI, and books the appointment — all before they call your competitor. No receptionist. No voicemail. No lost jobs.
         </p>
         <div className="ansa-hero-ctas">
           <a href="#/signup" className="ansa-btn ansa-btn-blue">Start Free Trial <ArrowRight size={16} /></a>
@@ -1100,12 +1106,12 @@ export default function LandingPage() {
               <span style={{ color:'#fca5a5' }}>Without Ansa</span>
             </div>
             {[
-              "Phone rings while you're on a job",
-              "Call goes to voicemail — or just rings out",
-              "Customer Googles the next plumber/HVAC/roofer",
+              "Phone rings while you're on the job",
+              "Missed call — goes to voicemail or rings out",
+              "Customer Googles the next contractor",
+              "They call someone else and book with them",
               "You find out hours later, if at all",
-              "Job goes to a competitor",
-              "You lose $1,200+ in revenue",
+              "You lose a $400–$2,000 job. Again.",
             ].map((row,i) => (
               <div className="ansa-compare-row" key={i}>
                 <XCircle size={15} className="ansa-compare-icon-bad" />
@@ -1119,12 +1125,12 @@ export default function LandingPage() {
               <span style={{ color:'#6ee7b7' }}>With Ansa</span>
             </div>
             {[
-              "Phone rings while you're on a job",
+              "Phone rings while you're on the job",
               "Ansa detects the missed call in seconds",
-              "Customer gets a friendly text from your number",
-              "AI answers questions and books the appointment",
-              "You get a notification: new job confirmed",
-              "You earn $1,200+ without picking up the phone",
+              "Customer gets a text from your number in 15s",
+              "AI answers questions, handles objections, books it",
+              "You get a notification: new job booked",
+              "You just made $400–$2,000 without touching your phone.",
             ].map((row,i) => (
               <div className="ansa-compare-row" key={i}>
                 <CheckCircle size={15} className="ansa-compare-icon-good" />
@@ -1275,13 +1281,13 @@ export default function LandingPage() {
       <section className="ansa-section" id="pricing">
         <div className="ansa-reveal">
           <p className="ansa-section-label">Pricing</p>
-          <h2 className="ansa-section-title">Simple Pricing, Serious ROI</h2>
-          <p className="ansa-section-sub">One missed call recovered pays for an entire month. No contracts, cancel anytime.</p>
+          <h2 className="ansa-section-title">One Recovered Job Pays for the Year</h2>
+          <p className="ansa-section-sub">The average contractor loses $2,400/month to missed calls. Ansa costs $297. Do the math.</p>
         </div>
         <div className="ansa-pricing-grid ansa-reveal">
           <div className="ansa-pricing-card">
             <div className="ansa-pricing-roi">
-              Home service businesses recover an average of <strong>$2,400/month</strong> in missed revenue with Ansa. That's 8× your investment.
+              If Ansa books just <strong>1 job per month</strong>, it pays for itself. Most customers recover <strong>$2,400+/month</strong>. That's 8× ROI on day one.
             </div>
             <div className="ansa-pricing-tier">Pro</div>
             <div className="ansa-pricing-price">$297<span>/mo</span></div>
