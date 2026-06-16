@@ -1248,30 +1248,30 @@ export default function LandingPage() {
           </div>
           {/* Right: phone notifications */}
           <div style={{ display:'flex',justifyContent:'center' }}>
-            <div style={{ background:'#141414',border:'1px solid rgba(255,255,255,.08)',borderRadius:32,padding:'24px 18px',width:320,boxShadow:'0 24px 80px rgba(0,0,0,.5),0 0 60px rgba(79,110,247,.08)' }}>
-              <div style={{ width:70,height:4,background:'#2a2a2a',borderRadius:99,margin:'0 auto 20px' }} />
+            <div style={{ background:'linear-gradient(160deg,#1a1a1a 0%,#111 100%)',border:'1px solid rgba(255,255,255,.18)',borderRadius:40,padding:'24px 18px',width:320,boxShadow:'0 0 0 1px rgba(0,0,0,.8),0 32px 80px rgba(0,0,0,.7),0 0 80px rgba(79,110,247,.18),inset 0 1px 0 rgba(255,255,255,.08)' }}>
+              <div style={{ width:70,height:4,background:'rgba(255,255,255,.15)',borderRadius:99,margin:'0 auto 20px' }} />
               <div style={{ textAlign:'center',marginBottom:22 }}>
-                <div style={{ fontSize:12,color:'#444',marginBottom:3 }}>Monday, June 9</div>
+                <div style={{ fontSize:12,color:'#666',marginBottom:3 }}>Monday, June 9</div>
                 <div style={{ fontSize:38,fontWeight:700,color:'#fff',letterSpacing:-1,lineHeight:1 }}>2:14 PM</div>
               </div>
-              <div style={{ fontSize:11,fontWeight:600,color:'#555',textTransform:'uppercase',letterSpacing:'1px',marginBottom:10,paddingLeft:2 }}>Notifications</div>
+              <div style={{ fontSize:11,fontWeight:600,color:'#444',textTransform:'uppercase',letterSpacing:'1px',marginBottom:10,paddingLeft:2 }}>Notifications</div>
               {[
                 { title:'Missed Call', body:'(714) 555-0182 just called. AI response sent in 12 seconds.', time:'2:14 PM', color:'#3b82f6' },
                 { title:'Appointment Booked', body:'Marcus T. booked a leaking faucet repair · Thu Jun 12, 10:00 AM', time:'2:17 PM', color:'#22c55e' },
                 { title:'Callback Requested', body:'(949) 555-0391: "I\'d rather just talk — can you call me back?"', time:'3:44 PM', color:'#f59e0b' },
               ].map((n,i) => (
-                <div key={i} style={{ background:'rgba(255,255,255,.03)',border:'1px solid rgba(255,255,255,.07)',borderRadius:14,padding:'11px 13px',marginBottom:i<2?8:0 }}>
+                <div key={i} style={{ background:'rgba(255,255,255,.05)',border:'1px solid rgba(255,255,255,.1)',borderRadius:16,padding:'11px 13px',marginBottom:i<2?8:0,backdropFilter:'blur(8px)' }}>
                   <div style={{ display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:4 }}>
                     <div style={{ display:'flex',alignItems:'center',gap:6 }}>
-                      <span style={{ width:7,height:7,borderRadius:'50%',background:n.color,display:'inline-block',flexShrink:0 }}/>
+                      <span style={{ width:7,height:7,borderRadius:'50%',background:n.color,display:'inline-block',flexShrink:0,boxShadow:`0 0 6px ${n.color}` }}/>
                       <span style={{ fontSize:11.5,fontWeight:700,color:'#e5e5e5' }}>{n.title}</span>
                     </div>
-                    <span style={{ fontSize:10,color:'#444' }}>{n.time}</span>
+                    <span style={{ fontSize:10,color:'#555' }}>{n.time}</span>
                   </div>
-                  <div style={{ fontSize:11,color:'#71717a',lineHeight:1.5 }}>{n.body}</div>
+                  <div style={{ fontSize:11,color:'#888',lineHeight:1.5 }}>{n.body}</div>
                 </div>
               ))}
-              <div style={{ width:100,height:3,background:'#222',borderRadius:99,margin:'20px auto 0' }} />
+              <div style={{ width:100,height:4,background:'rgba(255,255,255,.15)',borderRadius:99,margin:'20px auto 0' }} />
             </div>
           </div>
         </div>
