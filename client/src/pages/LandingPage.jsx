@@ -65,7 +65,7 @@ const injectStyles = () => {
     .ansa-phone-slot.is-side:hover .ansa-phone{border-color:#4F6EF7;box-shadow:0 0 0 1px #4F6EF7,0 32px 80px rgba(0,0,0,.6)}
     @media(max-width:820px){.ansa-phone-slot.is-side{display:none!important}.ansa-phones-row{justify-content:center}}
     .ansa-phone{background:#1c1c1e;border:1px solid #2c2c2e;border-radius:36px;padding:20px 16px 24px;position:relative;box-shadow:0 32px 80px rgba(0,0,0,.6),0 0 60px rgba(79,110,247,.07);height:600px;display:flex;flex-direction:column;overflow:hidden}
-    .ansa-chat-area{display:flex;flex-direction:column;gap:6px;align-items:flex-start;text-align:left;flex:1;overflow-y:auto;padding-right:2px}
+    .ansa-chat-area{display:flex;flex-direction:column;gap:10px;align-items:flex-start;text-align:left;flex:1;overflow-y:auto;padding-right:2px}
     .ansa-chat-area::-webkit-scrollbar{width:3px}
     .ansa-chat-area::-webkit-scrollbar-track{background:transparent}
     .ansa-chat-area::-webkit-scrollbar-thumb{background:#3a3a3c;border-radius:99px}
@@ -449,12 +449,14 @@ function VisualTextBack() {
 function VisualConversation() {
   return (
     <div className="ansa-chess-visual">
-      <div style={{ fontSize:11,color:'#52525b',marginBottom:12,fontWeight:600,textTransform:'uppercase',letterSpacing:'1px' }}>Conversation · AI Handling</div>
-      <div className="ansa-chat-bubble ansa-chat-outgoing" style={{ fontSize:13,marginLeft:'auto' }}>Do you guys do water heater installs?</div>
-      <div className="ansa-chat-bubble ansa-chat-incoming" style={{ fontSize:13 }}>Yes! We install gas and tankless units. Labor starts at $325. Want to book a free estimate?</div>
-      <div className="ansa-chat-bubble ansa-chat-outgoing" style={{ fontSize:13,marginLeft:'auto' }}>Yes please, tomorrow afternoon works</div>
-      <div className="ansa-chat-bubble ansa-chat-incoming" style={{ fontSize:13 }}>Perfect — I've got 1:00 PM or 3:00 PM open tomorrow. Which works best?</div>
-      <div className="ansa-chat-typing"><span /><span /><span /></div>
+      <div style={{ fontSize:11,color:'#52525b',marginBottom:14,fontWeight:600,textTransform:'uppercase',letterSpacing:'1px' }}>Conversation · AI Handling</div>
+      <div style={{ display:'flex',flexDirection:'column',gap:10 }}>
+        <div className="ansa-chat-bubble ansa-chat-outgoing" style={{ fontSize:13,marginLeft:'auto' }}>Do you guys do water heater installs?</div>
+        <div className="ansa-chat-bubble ansa-chat-incoming" style={{ fontSize:13 }}>Yes! We install gas and tankless units. Labor starts at $325. Want to book a free estimate?</div>
+        <div className="ansa-chat-bubble ansa-chat-outgoing" style={{ fontSize:13,marginLeft:'auto' }}>Yes please, tomorrow afternoon works</div>
+        <div className="ansa-chat-bubble ansa-chat-incoming" style={{ fontSize:13 }}>Perfect — I've got 1:00 PM or 3:00 PM open tomorrow. Which works best?</div>
+        <div className="ansa-chat-typing"><span /><span /><span /></div>
+      </div>
     </div>
   );
 }
