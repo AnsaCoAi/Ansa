@@ -98,10 +98,11 @@ const injectStyles = () => {
     .ansa-proof-dot{width:3px;height:3px;border-radius:50%;background:#3f3f46;flex-shrink:0}
 
     /* Big stats band */
-    .ansa-stats-band{max-width:960px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.06);border-radius:20px;overflow:hidden}
-    .ansa-stats-band-cell{background:#0f0f0f;padding:36px 24px;text-align:center}
-    .ansa-stats-band-num{font-size:clamp(36px,4vw,52px);font-weight:900;letter-spacing:-.04em;line-height:1;background:linear-gradient(135deg,#fff 30%,#818CF8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px}
-    .ansa-stats-band-label{font-size:13px;color:#52525b;font-weight:500;line-height:1.4}
+    .ansa-stats-band{max-width:900px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:0}
+    .ansa-stats-band-cell{padding:40px 32px;text-align:center;border-right:1px solid rgba(255,255,255,.06)}
+    .ansa-stats-band-cell:last-child{border-right:none}
+    .ansa-stats-band-num{font-size:52px;font-weight:800;letter-spacing:-.03em;line-height:1;color:#fff;margin-bottom:10px}
+    .ansa-stats-band-label{font-size:14px;color:#52525b;font-weight:400;line-height:1.5;max-width:180px;margin:0 auto}
 
     /* legacy - keep for any leftover usages */
     .ansa-proof-stats{display:flex;justify-content:center;gap:48px;padding:28px 24px;max-width:800px;margin:0 auto}
@@ -944,12 +945,6 @@ export default function LandingPage() {
       <section className="ansa-hero">
         <div className="ansa-hero-glow" />
         <div className="ansa-hero-badge"><Zap size={14} /> Built for Home Service Pros</div>
-        <div style={{ display:'inline-flex', alignItems:'center', gap:8, marginBottom:20, animation:'ansa-fadeUp .7s ease .05s both' }}>
-          <div style={{ display:'flex', gap:2 }}>
-            {[...Array(5)].map((_,i) => <Star key={i} size={13} fill="#facc15" color="#facc15" />)}
-          </div>
-          <span style={{ fontSize:13, color:'#a1a1aa', fontWeight:500 }}>Loved by contractors, plumbers &amp; HVAC pros</span>
-        </div>
         <h1>Every Missed Call Is a Job You Didn't Book</h1>
         <p className="ansa-hero-sub">
           When you miss a call, Ansa texts back in under 15 seconds, answers their questions with AI, and books the appointment — all before they call your competitor. No receptionist. No voicemail. No lost jobs.
@@ -1016,15 +1011,15 @@ export default function LandingPage() {
         <div className="ansa-stats-band ansa-reveal">
           <div className="ansa-stats-band-cell">
             <div className="ansa-stats-band-num">15s</div>
-            <div className="ansa-stats-band-label">Average text-back time after a missed call</div>
+            <div className="ansa-stats-band-label">Text-back time after a missed call</div>
           </div>
-          <div className="ansa-stats-band-cell" style={{ borderLeft:'1px solid rgba(255,255,255,.06)', borderRight:'1px solid rgba(255,255,255,.06)' }}>
+          <div className="ansa-stats-band-cell">
             <div className="ansa-stats-band-num">30</div>
             <div className="ansa-stats-band-label">Day free trial — no credit card required</div>
           </div>
           <div className="ansa-stats-band-cell">
             <div className="ansa-stats-band-num">24/7</div>
-            <div className="ansa-stats-band-label">Always on, nights, weekends, and holidays</div>
+            <div className="ansa-stats-band-label">Always on — nights, weekends, holidays</div>
           </div>
         </div>
       </div>
