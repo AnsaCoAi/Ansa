@@ -82,19 +82,16 @@ const DEFAULT_FAQS = {
 const TONES = [
   {
     value: 'Professional',
-    emoji: '👔',
     label: 'Professional',
     desc: 'Formal and polished',
   },
   {
     value: 'Friendly',
-    emoji: '😊',
     label: 'Friendly',
     desc: 'Warm and approachable',
   },
   {
     value: 'Casual',
-    emoji: '🤙',
     label: 'Casual',
     desc: 'Relaxed and real',
   },
@@ -376,7 +373,7 @@ export default function OnboardingPage() {
               </div>
 
               <div style={{ marginTop:16, padding:'12px 16px', background:'#0f0f0f', borderRadius:10, border:'1px solid #1e1e1e', fontSize:13, color:'#555', lineHeight:1.55 }}>
-                💡 You can update your hours anytime in <strong style={{ color:'#666' }}>Settings → Business Info</strong>.
+                You can update your hours anytime in <strong style={{ color:'#666' }}>Settings → Business Info</strong>.
               </div>
             </div>
           )}
@@ -399,7 +396,6 @@ export default function OnboardingPage() {
                   <button key={t.value}
                     onClick={() => handleToneChange(t.value)}
                     style={{ flex:1, padding:'14px 10px', background:tone===t.value?'rgba(59,130,246,0.12)':'#0f0f0f', border:`1px solid ${tone===t.value?'#3b82f6':'#2a2a2a'}`, borderRadius:12, cursor:'pointer', textAlign:'center', transition:'all .15s' }}>
-                    <div style={{ fontSize:22, marginBottom:6 }}>{t.emoji}</div>
                     <div style={{ fontSize:13, fontWeight:700, color:tone===t.value?'#fff':'#aaa', marginBottom:2 }}>{t.label}</div>
                     <div style={{ fontSize:11, color:'#555' }}>{t.desc}</div>
                   </button>

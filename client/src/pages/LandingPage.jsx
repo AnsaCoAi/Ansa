@@ -475,7 +475,7 @@ function VisualBooking() {
       </div>
       <div className="ansa-booked-banner">
         <div className="ansa-booked-banner-dot" />
-        <div className="ansa-booked-banner-text">🎉 Job booked automatically while you were on-site. No calls needed.</div>
+        <div className="ansa-booked-banner-text">Job booked automatically while you were on-site. No calls needed.</div>
       </div>
     </div>
   );
