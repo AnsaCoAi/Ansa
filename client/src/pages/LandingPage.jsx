@@ -98,11 +98,10 @@ const injectStyles = () => {
     .ansa-proof-dot{width:3px;height:3px;border-radius:50%;background:#3f3f46;flex-shrink:0}
 
     /* Big stats band */
-    .ansa-stats-band{max-width:900px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:0}
-    .ansa-stats-band-cell{padding:40px 32px;text-align:center;border-right:1px solid rgba(255,255,255,.06)}
-    .ansa-stats-band-cell:last-child{border-right:none}
-    .ansa-stats-band-num{font-size:52px;font-weight:800;letter-spacing:-.03em;line-height:1;color:#fff;margin-bottom:10px}
-    .ansa-stats-band-label{font-size:14px;color:#52525b;font-weight:400;line-height:1.5;max-width:180px;margin:0 auto}
+    .ansa-stats-band{max-width:900px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.06);border-radius:20px;overflow:hidden}
+    .ansa-stats-band-cell{background:#0f0f0f;padding:40px 32px;text-align:center}
+    .ansa-stats-band-num{font-size:56px;font-weight:700;letter-spacing:-.02em;line-height:1;color:#fff;margin-bottom:10px;font-variant-numeric:tabular-nums}
+    .ansa-stats-band-label{font-size:13px;color:#52525b;font-weight:400;line-height:1.55;max-width:160px;margin:0 auto}
 
     /* legacy - keep for any leftover usages */
     .ansa-proof-stats{display:flex;justify-content:center;gap:48px;padding:28px 24px;max-width:800px;margin:0 auto}
@@ -131,7 +130,7 @@ const injectStyles = () => {
     .ansa-problem-card:hover{border-color:rgba(79,110,247,.3);transform:translateY(-3px)}
     .ansa-problem-card:hover::after{opacity:1}
     .ansa-problem-icon{width:48px;height:48px;border-radius:14px;background:rgba(79,110,247,.1);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;color:${PRIMARY}}
-    .ansa-problem-stat{font-size:clamp(28px,3.5vw,40px);font-weight:900;margin-bottom:8px;letter-spacing:-.04em;transition:all .3s;background:linear-gradient(135deg,#fff 20%,#818CF8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1}
+    .ansa-problem-stat{font-size:clamp(28px,3.5vw,40px);font-weight:700;margin-bottom:8px;letter-spacing:-.03em;transition:all .3s;color:#fff;line-height:1}
     .ansa-problem-desc{font-size:14px;color:#71717a;line-height:1.55}
 
     /* Testimonials */
@@ -191,8 +190,8 @@ const injectStyles = () => {
     .ansa-bento-full{grid-column:span 3}
     .ansa-bento-accent{background:linear-gradient(135deg,rgba(79,110,247,.1) 0%,#141414 100%);border-color:rgba(79,110,247,.2)}
     .ansa-bento-accent:hover{border-color:rgba(79,110,247,.4)}
-    .ansa-bento-num{font-size:clamp(44px,5vw,64px);font-weight:900;letter-spacing:-.04em;line-height:1;background:linear-gradient(135deg,#fff 20%,#818CF8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px}
-    .ansa-bento-num-label{font-size:14px;color:#71717a;line-height:1.5}
+    .ansa-bento-num{font-size:clamp(44px,5vw,64px);font-weight:700;letter-spacing:-.03em;line-height:1;color:#fff;margin-bottom:8px;text-align:center}
+    .ansa-bento-num-label{font-size:14px;color:#71717a;line-height:1.5;text-align:center}
     .ansa-bento-eyebrow{font-size:11px;font-weight:700;color:${PRIMARY};text-transform:uppercase;letter-spacing:2px;margin-bottom:10px}
     .ansa-bento-title{font-size:clamp(18px,2vw,22px);font-weight:800;letter-spacing:-.03em;line-height:1.25;margin-bottom:12px;color:#fff}
     .ansa-bento-body{font-size:14px;color:#71717a;line-height:1.65;margin-bottom:16px}
@@ -1159,13 +1158,13 @@ export default function LandingPage() {
                 </ul>
               </div>
             </div>
-            <div className="ansa-bento-card ansa-bento-accent" style={{ display:'flex', flexDirection:'column', justifyContent:'center', minHeight:200 }}>
+            <div className="ansa-bento-card ansa-bento-accent" style={{ display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center', textAlign:'center', minHeight:200 }}>
               <div className="ansa-bento-num">62%</div>
               <div className="ansa-bento-num-label">of home service calls go unanswered during work hours</div>
             </div>
 
             {/* Row 2: stat card + AI (wide) */}
-            <div className="ansa-bento-card ansa-bento-accent" style={{ display:'flex', flexDirection:'column', justifyContent:'center', minHeight:200 }}>
+            <div className="ansa-bento-card ansa-bento-accent" style={{ display:'flex', flexDirection:'column', justifyContent:'center', alignItems:'center', textAlign:'center', minHeight:200 }}>
               <div className="ansa-bento-num">85%</div>
               <div className="ansa-bento-num-label">of callers won't leave a voicemail — they call the next business</div>
             </div>
