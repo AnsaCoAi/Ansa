@@ -286,6 +286,17 @@
 - New: ManyOfMillions67105190
 - Railway DATABASE_URL: postgresql://postgres.jerckjzivlsuabaokopw:ManyOfMillions67105190@aws-1-us-west-1.pooler.supabase.com:5432/postgres
 
+### Session 2026-06-15 (evening) — Landing Page + Showcase Updates
+- Dashboard showcase: replaced auto-cycling timer with manual left/right arrow nav + dot indicator
+- Dashboard showcase: updated to match real dashboard — Revenue Recovered stat (was "Jobs Booked"), customer names as primary in Recent Activity and Conversations tab
+- Phone mockup (Integrations section): brighter border rgba(255,255,255,.18), blue ambient glow, glowing colored dots on notification cards, gradient background, inner highlight
+- Rule established: always commit and push to main after every change — Tyler never deploys manually
+
+## Annual Pricing Plan (TODO — 2026-06-16)
+- Add annual plan at 2 months free: $297 × 10 = $2,970/yr (saves $594)
+- Needs: new Stripe price ID for annual, toggle on pricing page (Monthly / Annual), handle in checkout + webhook
+- Decide: lead with monthly or annual as default?
+
 ## Outstanding Before Launch
 1. SMS end-to-end test: DONE ✅ — text-back works, A2P unblocked
 2. Full signup test with real card (separate account, not admin email) — STILL PENDING
