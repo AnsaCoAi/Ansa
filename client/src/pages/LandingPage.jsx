@@ -592,7 +592,6 @@ const SC_REAL = {
 function ShowcaseOverview() {
   return (
     <div>
-      <div style={{ fontSize:18,fontWeight:700,color:'#fff',marginBottom:3 }}>Overview</div>
       <div style={{ fontSize:13,color:'#888',marginBottom:14 }}>Here's what happened while you were on the job.</div>
       <div className="ansa-sc-statgrid">
         {[
@@ -642,7 +641,6 @@ function ShowcaseOverview() {
 function ShowcaseMissedCalls() {
   return (
     <div>
-      <div style={{ fontSize:18,fontWeight:700,color:'#fff',marginBottom:4 }}>Missed Calls</div>
       <div style={{ fontSize:13,color:'#888',marginBottom:14 }}>Every missed call, captured and followed up automatically.</div>
       {MOCK_CALLS.map((c,i) => (
         <div key={i} className="ansa-sc-row">
@@ -674,7 +672,6 @@ function ShowcaseConversations() {
     : MOCK_CONVS.filter(c => c.status === tab);
   return (
     <div>
-      <div style={{ fontSize:18,fontWeight:700,color:'#fff',marginBottom:10 }}>Conversations</div>
       <div style={{ display:'flex',gap:2,marginBottom:12,background:'#141414',borderRadius:10,padding:4,width:'fit-content',border:'1px solid #1e1e1e' }}>
         {SC_TABS.map(t => (
           <button key={t.key} onClick={() => setTab(t.key)}
@@ -710,7 +707,6 @@ function ShowcaseConversations() {
 function ShowcaseAppointments() {
   return (
     <div>
-      <div style={{ fontSize:18,fontWeight:700,color:'#fff',marginBottom:14 }}>Appointments</div>
       {MOCK_APPTS.map((a,i) => (
         <div key={i} className="ansa-sc-row" style={{ alignItems:'flex-start' }}>
           <div className="ansa-sc-avatar" style={{ marginTop:2 }}><CalendarCheck size={15}/></div>
@@ -729,7 +725,6 @@ function ShowcaseAppointments() {
 function ShowcaseAnalytics() {
   return (
     <div>
-      <div style={{ fontSize:18,fontWeight:700,color:'#fff',marginBottom:14 }}>Analytics</div>
       <div className="ansa-sc-statgrid">
         {[
           { icon:<PhoneMissed size={16}/>, color:'#3b82f6', val:'31',   label:'Total Calls' },
@@ -767,7 +762,6 @@ function ShowcaseAnalytics() {
 function ShowcaseSettings() {
   return (
     <div>
-      <div style={{ fontSize:18,fontWeight:700,color:'#fff',marginBottom:14 }}>Settings</div>
       <div className="ansa-sc-card" style={{ marginBottom:10 }}>
         <div className="ansa-sc-card-title">Business Info</div>
         {[
