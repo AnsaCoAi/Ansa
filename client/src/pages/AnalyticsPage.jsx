@@ -85,7 +85,6 @@ function buildHourlyData(convs) {
 const styles = {
   page:         { padding: '32px', maxWidth: 1200, margin: '0 auto' },
   header:       { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28 },
-  title:        { fontSize: 24, fontWeight: 700, color: '#fff', margin: 0 },
   rangeToggle:  { display: 'flex', gap: 4, background: '#141414', borderRadius: 8, padding: 3 },
   rangeBtn:     (active) => ({ padding: '7px 14px', borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer', border: 'none', background: active ? '#3b82f6' : 'transparent', color: active ? '#fff' : '#888' }),
   statsRow:     { display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 28 },
@@ -145,7 +144,6 @@ export default function AnalyticsPage() {
   return (
     <div style={styles.page}>
       <div style={styles.header}>
-        <h1 style={styles.title}>Analytics</h1>
         <div style={styles.rangeToggle}>
           {timeRanges.map(r => (
             <button key={r} style={styles.rangeBtn(range === r)} onClick={() => setRange(r)}>{r}</button>

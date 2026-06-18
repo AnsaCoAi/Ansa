@@ -41,8 +41,6 @@ const filterTabs = ['Upcoming', 'Past', 'Cancelled'];
 
 const styles = {
   page:         { padding: '32px', maxWidth: 1200, margin: '0 auto' },
-  header:       { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28 },
-  title:        { fontSize: 24, fontWeight: 700, color: '#fff', margin: 0 },
   filters:      { display: 'flex', gap: 6, marginBottom: 24 },
   filterBtn:    (active) => ({ padding: '7px 16px', borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: 'pointer', border: '1px solid', background: active ? '#3b82f6' : 'transparent', borderColor: active ? '#3b82f6' : '#333', color: active ? '#fff' : '#aaa' }),
   grid:         { display: 'flex', flexDirection: 'column', gap: 10 },
@@ -112,10 +110,6 @@ export default function AppointmentsPage() {
 
   return (
     <div style={styles.page}>
-      <div style={styles.header}>
-        <h1 style={styles.title}>Appointments</h1>
-      </div>
-
       <div style={styles.filters}>
         {filterTabs.map(f => (
           <button key={f} style={styles.filterBtn(filter === f)} onClick={() => setFilter(f)}>{f}</button>

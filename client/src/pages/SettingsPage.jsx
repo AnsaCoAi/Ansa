@@ -110,7 +110,6 @@ const defaultHours = {
 
 const s = {
   page: { padding: '32px', maxWidth: 1200, margin: '0 auto' },
-  title: { fontSize: 24, fontWeight: 700, color: '#fff', margin: 0, marginBottom: 28 },
   tabs: { display: 'flex', gap: 4, marginBottom: 32, background: '#141414', borderRadius: 10, padding: 4, width: 'fit-content' },
   tab: (active) => ({ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 18px', borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: 'pointer', border: 'none', background: active ? '#222' : 'transparent', color: active ? '#fff' : '#888' }),
   section: { background: '#141414', borderRadius: 12, border: '1px solid #1e1e1e', padding: 28 },
@@ -614,7 +613,6 @@ export default function SettingsPage() {
 
   return (
     <div style={s.page}>
-      <h1 style={s.title}>Settings</h1>
       <div style={s.tabs}>
         {tabConfig.map(tab => {
           const Icon = tab.icon;

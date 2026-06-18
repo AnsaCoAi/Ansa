@@ -116,7 +116,6 @@ export default function ConversationsPage() {
         .conv-row.conv-takeover { border-color: #f59e0b !important; }
         .conv-row.conv-takeover:hover { border-color: #f59e0b !important; }
       `}</style>
-      <h1 style={{ fontSize: 24, fontWeight: 700, color: '#fff', margin: 0, marginBottom: 24 }}>Conversations</h1>
       {loadError && (
         <div style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 10, padding: '12px 18px', marginBottom: 20, fontSize: 13, color: '#fca5a5' }}>
           Unable to load conversations. Check your connection — retrying automatically.

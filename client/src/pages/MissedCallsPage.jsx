@@ -80,8 +80,7 @@ export default function MissedCallsPage() {
 
   return (
     <div style={{ padding: '32px', maxWidth: 1200, margin: '0 auto' }}>
-      <h1 style={{ fontSize: 24, fontWeight: 700, color: '#fff', margin: 0 }}>Missed Calls</h1>
-      <p style={{ fontSize: 14, color: '#888', marginTop: 4, marginBottom: 28 }}>Every missed call that triggered an Ansa text-back</p>
+      <p style={{ fontSize: 14, color: '#888', margin: '0 0 28px 0' }}>Every missed call that triggered an Ansa text-back</p>
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, gap: 16, flexWrap: 'wrap' }}>
         <div style={{ display: 'flex', gap: 6 }}>
