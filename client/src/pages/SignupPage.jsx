@@ -19,8 +19,11 @@ export default function SignupPage() {
       setError('Please fill in all fields.');
       return;
     }
+    const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+    if (!emailValid) { setError('Please enter a valid email address.'); return; }
+    if (password.length < 8) { setError('Password must be at least 8 characters.'); return; }
     setError('');
-    localStorage.setItem('ansa_signup', JSON.stringify({ fullName, email, password, businessName, businessPhone, businessType }));
+    localStorage.setItem('ansa_signup', JSON.stringify({ fullName, email: email.trim().toLowerCase(), password, businessName, businessPhone, businessType }));
     window.location.hash = '#/onboarding';
   };
 

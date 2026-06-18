@@ -21,9 +21,9 @@ function timeAgo(ts) {
 }
 
 const statusConfig = {
-  active: { label: 'SMS Sent', color: '#3b82f6', bg: 'rgba(59,130,246,0.15)' },
-  booked: { label: 'Booked', color: '#22c55e', bg: 'rgba(34,197,94,0.15)' },
-  closed: { label: 'Closed', color: '#6b7280', bg: 'rgba(107,114,128,0.15)' },
+  active: { label: 'AI Replied', color: '#3b82f6', bg: 'rgba(59,130,246,0.15)' },
+  booked: { label: 'Booked',     color: '#22c55e', bg: 'rgba(34,197,94,0.15)' },
+  closed: { label: 'Closed',     color: '#6b7280', bg: 'rgba(107,114,128,0.15)' },
 };
 
 const dateFilters = ['Today', 'Yesterday', 'This Week', 'This Month', 'All'];
@@ -64,7 +64,11 @@ export default function MissedCallsPage() {
 
     if (search.trim()) {
       const q = search.toLowerCase();
-      calls = calls.filter(c => c.customer_phone?.includes(q) || formatPhone(c.customer_phone || '').includes(q));
+      const qDigits = q.replace(/\D/g, '');
+      calls = calls.filter(c => {
+        const raw = (c.customer_phone || '').replace(/\D/g, '');
+        return raw.includes(qDigits) || formatPhone(c.customer_phone || '').toLowerCase().includes(q);
+      });
     }
 
     return calls;

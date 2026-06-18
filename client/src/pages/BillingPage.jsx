@@ -13,20 +13,24 @@ export default function BillingPage() {
     if (!businessId) { setError('Business not found. Try refreshing.'); return; }
     setLoading(true);
     setError('');
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10000);
     try {
       const apiUrl = import.meta.env.VITE_API_URL || 'https://ansa-production.up.railway.app';
       const res = await fetch(`${apiUrl}/api/stripe/checkout`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ businessId }),
+        signal: controller.signal,
       });
       const data = await res.json();
       if (data.url) { window.location.href = data.url; return; }
       if (data.bypass) { window.location.hash = '#/dashboard'; return; }
       setError(data.error || 'Something went wrong. Please try again.');
-    } catch (_) {
-      setError('Connection error. Please try again.');
+    } catch (err) {
+      setError(err.name === 'AbortError' ? 'Request timed out. Please try again.' : 'Connection error. Please try again.');
     } finally {
+      clearTimeout(timeout);
       setLoading(false);
     }
   };

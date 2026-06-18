@@ -2,9 +2,9 @@ import { useState, useEffect, useRef } from 'react';
 import { PhoneOff, MessageSquareOff, DollarSign, Phone, MessageCircle, CalendarCheck, Zap, Check, ChevronDown, Star, ArrowRight, Menu, X, CheckCircle, XCircle, LayoutDashboard, PhoneMissed, MessageSquare, BarChart3, Settings, LogOut, HeadphonesIcon } from 'lucide-react';
 
 const STYLE_ID = 'ansa-landing-styles';
-const PRIMARY = '#4F6EF7';
-const PRIMARY_HOVER = '#3D55E8';
-const PRIMARY_LIGHT = '#818CF8';
+const PRIMARY = '#3b82f6';
+const PRIMARY_HOVER = '#2563eb';
+const PRIMARY_LIGHT = '#93c5fd';
 
 const injectStyles = () => {
   if (document.getElementById(STYLE_ID)) return;
@@ -36,8 +36,8 @@ const injectStyles = () => {
 
     /* Buttons */
     .ansa-btn{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;transition:all .25s;text-decoration:none;border:none;font-family:inherit}
-    .ansa-btn-blue{background:${PRIMARY};color:#fff!important;box-shadow:0 0 0 1px rgba(79,110,247,.3),0 4px 16px rgba(79,110,247,.4)}
-    .ansa-btn-blue:hover{background:${PRIMARY_HOVER};box-shadow:0 0 0 1px rgba(79,110,247,.4),0 8px 24px rgba(79,110,247,.55);transform:translateY(-1px)}
+    .ansa-btn-blue{background:${PRIMARY};color:#fff!important;box-shadow:0 0 0 1px rgba(59,130,246,.3),0 4px 16px rgba(59,130,246,.4)}
+    .ansa-btn-blue:hover{background:${PRIMARY_HOVER};box-shadow:0 0 0 1px rgba(59,130,246,.4),0 8px 24px rgba(59,130,246,.55);transform:translateY(-1px)}
     .ansa-btn-outline{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.12)}
     .ansa-btn-outline:hover{border-color:rgba(255,255,255,.25);background:rgba(255,255,255,.04);transform:translateY(-1px)}
 
@@ -46,10 +46,10 @@ const injectStyles = () => {
 
     /* Hero */
     .ansa-hero{position:relative;padding:140px 24px 60px;text-align:center;overflow:hidden}
-    .ansa-hero-glow{position:absolute;top:-100px;left:50%;transform:translateX(-50%);width:900px;height:900px;border-radius:50%;background:radial-gradient(ellipse at center,rgba(79,110,247,.18) 0%,transparent 70%);pointer-events:none;animation:ansa-pulse 6s ease-in-out infinite}
-    .ansa-hero-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 16px;border-radius:999px;font-size:13px;font-weight:600;background:rgba(79,110,247,.1);border:1px solid rgba(79,110,247,.25);color:${PRIMARY_LIGHT};margin-bottom:16px;animation:ansa-fadeUp .7s ease both}
+    .ansa-hero-glow{position:absolute;top:-100px;left:50%;transform:translateX(-50%);width:900px;height:900px;border-radius:50%;background:radial-gradient(ellipse at center,rgba(59,130,246,.18) 0%,transparent 70%);pointer-events:none;animation:ansa-pulse 6s ease-in-out infinite}
+    .ansa-hero-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 16px;border-radius:999px;font-size:13px;font-weight:600;background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.25);color:${PRIMARY_LIGHT};margin-bottom:16px;animation:ansa-fadeUp .7s ease both}
     .ansa-hero-announce{display:inline-flex;align-items:center;gap:7px;padding:6px 14px 6px 10px;border-radius:999px;font-size:13px;font-weight:500;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#a1a1aa;text-decoration:none;margin-bottom:28px;animation:ansa-fadeUp .8s ease .1s both;transition:border-color .2s,color .2s}
-    .ansa-hero-announce:hover{border-color:rgba(79,110,247,.5);color:#fff}
+    .ansa-hero-announce:hover{border-color:rgba(59,130,246,.5);color:#fff}
     .ansa-hero-announce-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;flex-shrink:0;box-shadow:0 0 6px #22c55e}
     .ansa-hero h1{font-size:clamp(36px,5.5vw,64px);font-weight:900;line-height:1.05;max-width:820px;margin:0 auto 24px;letter-spacing:-.035em;animation:ansa-fadeUp .7s ease .1s both}
     .ansa-hero-sub{font-size:clamp(16px,2vw,19px);color:#a1a1aa;max-width:620px;margin:0 auto 40px;line-height:1.65;animation:ansa-fadeUp .7s ease .2s both}
@@ -62,14 +62,14 @@ const injectStyles = () => {
     .ansa-phone-slot.is-side:hover{opacity:.9;transform:scale(.92)}
     .ansa-phone-slot.is-side .ansa-phone{filter:brightness(.75)}
     .ansa-phone-slot.is-side:hover .ansa-phone{filter:brightness(.9)}
-    .ansa-phone-slot.is-side:hover .ansa-phone{border-color:#4F6EF7;box-shadow:0 0 0 1px #4F6EF7,0 32px 80px rgba(0,0,0,.6)}
+    .ansa-phone-slot.is-side:hover .ansa-phone{border-color:#3b82f6;box-shadow:0 0 0 1px #3b82f6,0 32px 80px rgba(0,0,0,.6)}
     @media(max-width:820px){.ansa-phone-slot.is-side{display:none!important}.ansa-phones-row{justify-content:center}}
-    .ansa-phone{background:#1c1c1e;border:1px solid #2c2c2e;border-radius:36px;padding:20px 16px 24px;position:relative;box-shadow:0 32px 80px rgba(0,0,0,.6),0 0 60px rgba(79,110,247,.07);height:600px;display:flex;flex-direction:column;overflow:hidden}
+    .ansa-phone{background:#1c1c1e;border:1px solid #2c2c2e;border-radius:36px;padding:20px 16px 24px;position:relative;box-shadow:0 32px 80px rgba(0,0,0,.6),0 0 60px rgba(59,130,246,.07);height:600px;display:flex;flex-direction:column;overflow:hidden}
     .ansa-chat-area{display:flex;flex-direction:column;gap:10px;align-items:flex-start;text-align:left;flex:1;overflow-y:auto;padding-right:2px}
     .ansa-chat-area::-webkit-scrollbar{width:3px}
     .ansa-chat-area::-webkit-scrollbar-track{background:transparent}
     .ansa-chat-area::-webkit-scrollbar-thumb{background:#3a3a3c;border-radius:99px}
-    .ansa-phone-slot.is-center .ansa-phone{animation:ansa-float 6s ease-in-out infinite;border-color:rgba(79,110,247,.5);box-shadow:0 0 0 1px rgba(79,110,247,.3),0 32px 80px rgba(0,0,0,.6),0 0 40px rgba(79,110,247,.12)}
+    .ansa-phone-slot.is-center .ansa-phone{animation:ansa-float 6s ease-in-out infinite;border-color:rgba(59,130,246,.5);box-shadow:0 0 0 1px rgba(59,130,246,.3),0 32px 80px rgba(0,0,0,.6),0 0 40px rgba(59,130,246,.12)}
     .ansa-phone-notch{width:100px;height:5px;background:#2c2c2e;border-radius:99px;margin:0 auto 18px}
     .ansa-phone-status{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding:0 2px}
     .ansa-phone-biz{font-size:12px;font-weight:600;color:#fff;letter-spacing:-.1px}
@@ -106,7 +106,7 @@ const injectStyles = () => {
     /* legacy - keep for any leftover usages */
     .ansa-proof-stats{display:flex;justify-content:center;gap:48px;padding:28px 24px;max-width:800px;margin:0 auto}
     .ansa-proof-stat{text-align:center}
-    .ansa-proof-stat-num{font-size:28px;font-weight:800;letter-spacing:-1px;background:linear-gradient(135deg,#fff 30%,#818CF8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+    .ansa-proof-stat-num{font-size:28px;font-weight:800;letter-spacing:-1px;background:linear-gradient(135deg,#fff 30%,#93c5fd 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
     .ansa-proof-stat-label{font-size:12px;color:#71717a;margin-top:2px}
 
     /* Sections */
@@ -120,24 +120,24 @@ const injectStyles = () => {
     .ansa-section-wrap-tinted::before{content:'';position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.035) 1px,transparent 1px);background-size:28px 28px;pointer-events:none;z-index:0}
     .ansa-section-wrap-tinted .ansa-section{position:relative;z-index:1}
     .ansa-section-wrap-blue{position:relative;background:linear-gradient(180deg,#0a0a0a 0%,#07101f 40%,#07101f 60%,#0a0a0a 100%)}
-    .ansa-section-wrap-blue::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 800px 400px at 50% 50%,rgba(79,110,247,.08) 0%,transparent 70%);pointer-events:none}
+    .ansa-section-wrap-blue::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 800px 400px at 50% 50%,rgba(59,130,246,.08) 0%,transparent 70%);pointer-events:none}
     .ansa-section-wrap-blue .ansa-section{position:relative;z-index:1}
 
     /* Problem cards */
     .ansa-problem-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
     .ansa-problem-card{background:#141414;border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:32px 24px;text-align:center;transition:border-color .3s,transform .3s;position:relative;overflow:hidden}
-    .ansa-problem-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(79,110,247,.3),transparent);opacity:0;transition:opacity .3s}
-    .ansa-problem-card:hover{border-color:rgba(79,110,247,.3);transform:translateY(-3px)}
+    .ansa-problem-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(59,130,246,.3),transparent);opacity:0;transition:opacity .3s}
+    .ansa-problem-card:hover{border-color:rgba(59,130,246,.3);transform:translateY(-3px)}
     .ansa-problem-card:hover::after{opacity:1}
-    .ansa-problem-icon{width:48px;height:48px;border-radius:14px;background:rgba(79,110,247,.1);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;color:${PRIMARY}}
+    .ansa-problem-icon{width:48px;height:48px;border-radius:14px;background:rgba(59,130,246,.1);display:flex;align-items:center;justify-content:center;margin:0 auto 16px;color:${PRIMARY}}
     .ansa-problem-stat{font-size:clamp(28px,3.5vw,40px);font-weight:700;margin-bottom:8px;letter-spacing:-.03em;transition:all .3s;color:#fff;line-height:1}
     .ansa-problem-desc{font-size:14px;color:#71717a;line-height:1.55}
 
     /* Testimonials */
     .ansa-testimonials{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
     .ansa-testimonial-card{background:#141414;border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:32px 28px;transition:border-color .3s;position:relative;overflow:hidden}
-    .ansa-testimonial-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(79,110,247,.4),transparent)}
-    .ansa-testimonial-card:hover{border-color:rgba(79,110,247,.25)}
+    .ansa-testimonial-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(59,130,246,.4),transparent)}
+    .ansa-testimonial-card:hover{border-color:rgba(59,130,246,.25)}
     .ansa-testimonial-stars{display:flex;gap:3px;margin-bottom:16px;color:#facc15}
     .ansa-testimonial-text{font-size:15px;color:#d1d5db;line-height:1.65;margin-bottom:20px}
     .ansa-testimonial-author{display:flex;align-items:center;gap:12px}
@@ -151,7 +151,7 @@ const injectStyles = () => {
     .ansa-step-card{background:#141414;border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:36px 24px;text-align:center;position:relative;transition:border-color .3s,transform .3s}
     .ansa-step-card:hover{border-color:${PRIMARY};transform:translateY(-4px)}
     .ansa-step-num{position:absolute;top:-14px;left:50%;transform:translateX(-50%);width:28px;height:28px;border-radius:50%;background:${PRIMARY};color:#fff;font-size:13px;font-weight:700;display:flex;align-items:center;justify-content:center}
-    .ansa-step-icon{width:52px;height:52px;border-radius:14px;background:rgba(79,110,247,.1);display:flex;align-items:center;justify-content:center;margin:8px auto 18px;color:${PRIMARY}}
+    .ansa-step-icon{width:52px;height:52px;border-radius:14px;background:rgba(59,130,246,.1);display:flex;align-items:center;justify-content:center;margin:8px auto 18px;color:${PRIMARY}}
     .ansa-step-title{font-size:18px;font-weight:700;margin-bottom:10px}
     .ansa-step-desc{font-size:14px;color:#a1a1aa;line-height:1.6}
     .ansa-step-arrow{display:flex;align-items:center;justify-content:center;color:${PRIMARY};padding-top:60px;font-size:24px;opacity:.5}
@@ -178,18 +178,18 @@ const injectStyles = () => {
     .ansa-chess-points{list-style:none;padding:0;display:flex;flex-direction:column;gap:10px}
     .ansa-chess-points li{display:flex;align-items:center;gap:10px;font-size:14px;color:#d1d5db}
     .ansa-chess-visual{background:#141414;border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:28px;min-height:240px;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden;transition:border-color .3s}
-    .ansa-chess-visual:hover{border-color:rgba(79,110,247,.25)}
-    .ansa-chess-visual::before{content:'';position:absolute;top:-60px;right:-60px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(79,110,247,.08) 0%,transparent 70%);pointer-events:none}
+    .ansa-chess-visual:hover{border-color:rgba(59,130,246,.25)}
+    .ansa-chess-visual::before{content:'';position:absolute;top:-60px;right:-60px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(59,130,246,.08) 0%,transparent 70%);pointer-events:none}
 
     /* Bento grid layout */
     .ansa-bento{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
     .ansa-bento-card{background:#141414;border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:28px;position:relative;overflow:hidden;transition:border-color .3s,transform .25s}
-    .ansa-bento-card:hover{border-color:rgba(79,110,247,.3);transform:translateY(-2px)}
-    .ansa-bento-card::before{content:'';position:absolute;top:-80px;right:-80px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(79,110,247,.06) 0%,transparent 70%);pointer-events:none}
+    .ansa-bento-card:hover{border-color:rgba(59,130,246,.3);transform:translateY(-2px)}
+    .ansa-bento-card::before{content:'';position:absolute;top:-80px;right:-80px;width:200px;height:200px;border-radius:50%;background:radial-gradient(circle,rgba(59,130,246,.06) 0%,transparent 70%);pointer-events:none}
     .ansa-bento-wide{grid-column:span 2}
     .ansa-bento-full{grid-column:span 3}
-    .ansa-bento-accent{background:linear-gradient(135deg,rgba(79,110,247,.1) 0%,#141414 100%);border-color:rgba(79,110,247,.2)}
-    .ansa-bento-accent:hover{border-color:rgba(79,110,247,.4)}
+    .ansa-bento-accent{background:linear-gradient(135deg,rgba(59,130,246,.1) 0%,#141414 100%);border-color:rgba(59,130,246,.2)}
+    .ansa-bento-accent:hover{border-color:rgba(59,130,246,.4)}
     .ansa-bento-num{font-size:clamp(44px,5vw,64px);font-weight:700;letter-spacing:-.03em;line-height:1;color:#fff;margin-bottom:8px;text-align:center}
     .ansa-bento-num-label{font-size:14px;color:#71717a;line-height:1.5;text-align:center}
     .ansa-bento-eyebrow{font-size:11px;font-weight:700;color:${PRIMARY};text-transform:uppercase;letter-spacing:2px;margin-bottom:10px}
@@ -203,8 +203,8 @@ const injectStyles = () => {
     /* Integrations */
     .ansa-integrations{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;max-width:520px;margin:0 auto}
     .ansa-integration-pill{display:flex;align-items:center;gap:12px;background:#141414;border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px 20px;font-size:14px;font-weight:500;color:#d1d5db;transition:border-color .2s,transform .2s}
-    .ansa-integration-pill:hover{border-color:rgba(79,110,247,.3);transform:translateY(-2px)}
-    .ansa-integration-icon{width:36px;height:36px;border-radius:10px;background:rgba(79,110,247,.1);border:1px solid rgba(79,110,247,.15);display:flex;align-items:center;justify-content:center;color:${PRIMARY};flex-shrink:0}
+    .ansa-integration-pill:hover{border-color:rgba(59,130,246,.3);transform:translateY(-2px)}
+    .ansa-integration-icon{width:36px;height:36px;border-radius:10px;background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.15);display:flex;align-items:center;justify-content:center;color:${PRIMARY};flex-shrink:0}
     .ansa-integration-plus{display:none}
 
     /* Split section: integrations left + notifications right */
@@ -216,9 +216,9 @@ const injectStyles = () => {
 
     /* Pricing */
     .ansa-pricing-grid{display:grid;grid-template-columns:1fr;gap:24px;max-width:480px;margin:0 auto}
-    .ansa-pricing-card{background:#141414;border:1px solid ${PRIMARY};border-radius:22px;padding:40px 32px;position:relative;transition:border-color .3s,transform .3s;box-shadow:0 0 0 1px rgba(79,110,247,.15),0 20px 60px rgba(79,110,247,.15)}
-    .ansa-pricing-card:hover{transform:translateY(-4px);box-shadow:0 0 0 1px rgba(79,110,247,.3),0 24px 80px rgba(79,110,247,.25)}
-    .ansa-pricing-roi{font-size:13px;color:#a1a1aa;text-align:center;margin-bottom:20px;padding:10px 14px;background:rgba(79,110,247,.06);border-radius:10px;border:1px solid rgba(79,110,247,.15)}
+    .ansa-pricing-card{background:#141414;border:1px solid ${PRIMARY};border-radius:22px;padding:40px 32px;position:relative;transition:border-color .3s,transform .3s;box-shadow:0 0 0 1px rgba(59,130,246,.15),0 20px 60px rgba(59,130,246,.15)}
+    .ansa-pricing-card:hover{transform:translateY(-4px);box-shadow:0 0 0 1px rgba(59,130,246,.3),0 24px 80px rgba(59,130,246,.25)}
+    .ansa-pricing-roi{font-size:13px;color:#a1a1aa;text-align:center;margin-bottom:20px;padding:10px 14px;background:rgba(59,130,246,.06);border-radius:10px;border:1px solid rgba(59,130,246,.15)}
     .ansa-pricing-roi strong{color:${PRIMARY_LIGHT}}
     .ansa-pricing-popular-badge{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:${PRIMARY};color:#fff;font-size:12px;font-weight:700;padding:4px 16px;border-radius:999px;text-transform:uppercase;letter-spacing:.5px}
     .ansa-pricing-tier{font-size:18px;font-weight:700;margin-bottom:6px}
@@ -228,13 +228,13 @@ const injectStyles = () => {
     .ansa-pricing-features{list-style:none;padding:0;margin-bottom:32px}
     .ansa-pricing-features li{display:flex;align-items:center;gap:10px;font-size:14px;color:#d1d5db;padding:8px 0}
     .ansa-pricing-cta{display:block;width:100%;text-align:center;padding:14px;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;text-decoration:none;font-family:inherit;transition:all .25s}
-    .ansa-pricing-cta-primary{background:${PRIMARY};color:#fff;border:none;box-shadow:0 0 0 1px rgba(79,110,247,.3),0 4px 16px rgba(79,110,247,.4)}
+    .ansa-pricing-cta-primary{background:${PRIMARY};color:#fff;border:none;box-shadow:0 0 0 1px rgba(59,130,246,.3),0 4px 16px rgba(59,130,246,.4)}
     .ansa-pricing-cta-primary:hover{background:${PRIMARY_HOVER}}
 
     /* FAQ */
     .ansa-faq-list{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
     .ansa-faq-item{background:#141414;border:1px solid rgba(255,255,255,.08);border-radius:16px;overflow:hidden;transition:border-color .3s}
-    .ansa-faq-item:hover{border-color:rgba(79,110,247,.25)}
+    .ansa-faq-item:hover{border-color:rgba(59,130,246,.25)}
     .ansa-faq-q{width:100%;background:none;border:none;color:#fff;display:flex;align-items:center;justify-content:space-between;padding:20px 24px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;text-align:left}
     .ansa-faq-q svg{flex-shrink:0;transition:transform .3s;color:#71717a}
     .ansa-faq-q.open svg{transform:rotate(180deg)}
@@ -244,7 +244,7 @@ const injectStyles = () => {
 
     /* Final CTA */
     .ansa-final-cta{max-width:1200px;margin:0 auto 80px;padding:0 24px}
-    .ansa-final-cta-inner{background:linear-gradient(135deg,#1a1a4e 0%,#2D3DB0 40%,${PRIMARY} 100%);border-radius:28px;padding:72px 40px;text-align:center;position:relative;overflow:hidden;background-size:200% 200%;animation:ansa-gradient 8s ease infinite}
+    .ansa-final-cta-inner{background:linear-gradient(135deg,#0c1a3a 0%,#1d4ed8 40%,${PRIMARY} 100%);border-radius:28px;padding:72px 40px;text-align:center;position:relative;overflow:hidden;background-size:200% 200%;animation:ansa-gradient 8s ease infinite}
     .ansa-final-cta h2{font-size:clamp(28px,4vw,40px);font-weight:800;margin-bottom:16px;letter-spacing:-.5px;position:relative}
     .ansa-final-cta p{font-size:17px;color:rgba(255,255,255,.8);margin-bottom:36px;position:relative}
 
@@ -260,7 +260,7 @@ const injectStyles = () => {
 
     /* Sticky mobile CTA */
     .ansa-sticky-cta{display:none;position:fixed;bottom:0;left:0;right:0;padding:12px 16px 20px;background:rgba(10,10,10,.96);border-top:1px solid #1e1e1e;z-index:98;backdrop-filter:blur(12px)}
-    .ansa-sticky-cta a{display:flex;align-items:center;justify-content:center;gap:8px;background:${PRIMARY};color:#fff;font-size:15px;font-weight:700;padding:14px;border-radius:12px;text-decoration:none;box-shadow:0 0 24px rgba(79,110,247,.4)}
+    .ansa-sticky-cta a{display:flex;align-items:center;justify-content:center;gap:8px;background:${PRIMARY};color:#fff;font-size:15px;font-weight:700;padding:14px;border-radius:12px;text-decoration:none;box-shadow:0 0 24px rgba(59,130,246,.4)}
 
     /* Dashboard Showcase */
     .ansa-showcase-wrap{border-radius:16px;overflow:hidden;border:1px solid #3b82f6;background:#111111;box-shadow:0 0 0 4px rgba(59,130,246,.15),0 40px 100px rgba(0,0,0,.8),0 0 80px rgba(59,130,246,.2)}
@@ -382,9 +382,9 @@ const FAQ_DATA = [
 ];
 
 const TESTIMONIALS = [
-  { text:"I was skeptical at first, but Ansa booked 14 jobs in its first month. That's over $18,000 in revenue I would have lost. This thing pays for itself ten times over.", name:'Mike Rodriguez', biz:"Rodriguez Plumbing Co.", initials:'MR', color:'#4F6EF7' },
-  { text:"We're a two-man crew. We can't answer the phone when we're on a roof. Ansa catches every single call and the customers love how fast we respond. Game changer.", name:'Travis Johnson', biz:'Peak Roofing Solutions', initials:'TJ', color:'#8b5cf6' },
-  { text:"My wife and I run our HVAC business together. Ansa lets us focus on the work instead of constantly checking our phones. We've grown 40% since we started using it.", name:'Sarah Chen', biz:"Chen's Heating & Air", initials:'SC', color:'#10b981' },
+  { location:'Orange County, CA', text:"I was skeptical at first, but Ansa booked 14 jobs in its first month. That's over $18,000 in revenue I would have lost. This thing pays for itself ten times over.", name:'Mike Rodriguez', biz:"Rodriguez Plumbing Co.", initials:'MR', color:'#3b82f6' },
+  { location:'Phoenix, AZ', text:"We're a two-man crew. We can't answer the phone when we're on a roof. Ansa catches every single call and the customers love how fast we respond. Game changer.", name:'Travis Johnson', biz:'Peak Roofing Solutions', initials:'TJ', color:'#8b5cf6' },
+  { location:'Austin, TX', text:"My wife and I run our HVAC business together. Ansa lets us focus on the work instead of constantly checking our phones. We've grown 40% since we started using it.", name:'Sarah Chen', biz:"Chen's Heating & Air", initials:'SC', color:'#10b981' },
 ];
 
 function FaqItem({ q, a }) {
@@ -465,11 +465,11 @@ function VisualBooking() {
   return (
     <div className="ansa-chess-visual">
       <div style={{ fontSize:11,color:'#52525b',marginBottom:12,fontWeight:600,textTransform:'uppercase',letterSpacing:'1px' }}>Dashboard · New Booking</div>
-      <div style={{ background:'rgba(79,110,247,.08)',border:'1px solid rgba(79,110,247,.2)',borderRadius:14,padding:'16px 18px',marginBottom:12 }}>
+      <div style={{ background:'rgba(59,130,246,.08)',border:'1px solid rgba(59,130,246,.2)',borderRadius:14,padding:'16px 18px',marginBottom:12 }}>
         <div style={{ display:'flex',justifyContent:'space-between',alignItems:'flex-start',marginBottom:8 }}>
           <div>
             <div style={{ fontSize:14,fontWeight:700,color:'#fff' }}>Water Heater Install</div>
-            <div style={{ fontSize:12,color:'#818CF8',marginTop:2 }}>Marcus T. · Tomorrow 1:00 PM</div>
+            <div style={{ fontSize:12,color:'#93c5fd',marginTop:2 }}>Marcus T. · Tomorrow 1:00 PM</div>
           </div>
           <div style={{ background:'rgba(16,185,129,.15)',color:'#10b981',fontSize:11,fontWeight:700,padding:'3px 10px',borderRadius:999 }}>CONFIRMED</div>
         </div>
@@ -988,8 +988,8 @@ export default function LandingPage() {
                       </div>
                     )}
                     {p.callbackBanner && (
-                      <div className="ansa-booked-banner" style={{ background:'rgba(79,110,247,.08)',borderColor:'rgba(79,110,247,.2)' }}>
-                        <div className="ansa-booked-banner-dot" style={{ background:'#4F6EF7' }} />
+                      <div className="ansa-booked-banner" style={{ background:'rgba(59,130,246,.08)',borderColor:'rgba(59,130,246,.2)' }}>
+                        <div className="ansa-booked-banner-dot" style={{ background:'#3b82f6' }} />
                         <div className="ansa-booked-banner-text" style={{ color:'#818cf8' }}>{p.callbackBanner}</div>
                       </div>
                     )}
@@ -1063,11 +1063,18 @@ export default function LandingPage() {
         <div className="ansa-testimonials ansa-reveal">
           {TESTIMONIALS.map((t,i) => (
             <div className="ansa-testimonial-card" key={i}>
-              <div className="ansa-testimonial-stars">{[...Array(5)].map((_,j) => <Star key={j} size={16} fill="#facc15" stroke="#facc15"/>)}</div>
+              <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start', marginBottom:16 }}>
+                <div className="ansa-testimonial-stars">{[...Array(5)].map((_,j) => <Star key={j} size={15} fill="#facc15" stroke="#facc15"/>)}</div>
+                <span style={{ fontSize:11, fontWeight:600, color:'#22c55e', background:'rgba(34,197,94,0.1)', border:'1px solid rgba(34,197,94,0.2)', borderRadius:20, padding:'3px 10px', letterSpacing:'0.3px' }}>Verified Pro</span>
+              </div>
               <div className="ansa-testimonial-text">"{t.text}"</div>
               <div className="ansa-testimonial-author">
-                <div className="ansa-testimonial-avatar-initials" style={{ background:t.color }}>{t.initials}</div>
-                <div><div className="ansa-testimonial-name">{t.name}</div><div className="ansa-testimonial-biz">{t.biz}</div></div>
+                <div className="ansa-testimonial-avatar-initials" style={{ background:t.color, width:46, height:46, fontSize:16 }}>{t.initials}</div>
+                <div>
+                  <div className="ansa-testimonial-name" style={{ color:'#fff' }}>{t.name}</div>
+                  <div className="ansa-testimonial-biz">{t.biz}</div>
+                  <div style={{ fontSize:12, color:'#52525b', marginTop:2 }}>{t.location}</div>
+                </div>
               </div>
             </div>
           ))}
@@ -1248,7 +1255,7 @@ export default function LandingPage() {
           </div>
           {/* Right: phone notifications */}
           <div style={{ display:'flex',justifyContent:'center' }}>
-            <div style={{ background:'linear-gradient(160deg,#1a1a1a 0%,#111 100%)',border:'1px solid rgba(255,255,255,.18)',borderRadius:40,padding:'24px 18px',width:320,boxShadow:'0 0 0 1px rgba(0,0,0,.8),0 32px 80px rgba(0,0,0,.7),0 0 80px rgba(79,110,247,.18),inset 0 1px 0 rgba(255,255,255,.08)' }}>
+            <div style={{ background:'linear-gradient(160deg,#1a1a1a 0%,#111 100%)',border:'1px solid rgba(255,255,255,.18)',borderRadius:40,padding:'24px 18px',width:320,boxShadow:'0 0 0 1px rgba(0,0,0,.8),0 32px 80px rgba(0,0,0,.7),0 0 80px rgba(59,130,246,.18),inset 0 1px 0 rgba(255,255,255,.08)' }}>
               <div style={{ width:70,height:4,background:'rgba(255,255,255,.15)',borderRadius:99,margin:'0 auto 20px' }} />
               <div style={{ textAlign:'center',marginBottom:22 }}>
                 <div style={{ fontSize:12,color:'#666',marginBottom:3 }}>Monday, June 9</div>

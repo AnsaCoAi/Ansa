@@ -53,12 +53,13 @@ export default function ConversationsPage() {
   const [activeTab, setActiveTab] = useState('all');
   const [conversations, setConversations] = useState(cache.bizId === business?.id ? cache.data || [] : []);
   const [loading, setLoading] = useState(cache.bizId !== business?.id);
+  const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
     if (!business?.id) return;
     const load = () => api.getConversations(business.id)
-      .then(data => { cache.data = data || []; cache.bizId = business.id; setConversations(data || []); })
-      .catch(() => {});
+      .then(data => { cache.data = data || []; cache.bizId = business.id; setConversations(data || []); setLoadError(false); })
+      .catch(() => setLoadError(true));
     load().finally(() => setLoading(false));
     const poll = setInterval(load, 5000);
     return () => clearInterval(poll);
@@ -116,6 +117,11 @@ export default function ConversationsPage() {
         .conv-row.conv-takeover:hover { border-color: #f59e0b !important; }
       `}</style>
       <h1 style={{ fontSize: 24, fontWeight: 700, color: '#fff', margin: 0, marginBottom: 24 }}>Conversations</h1>
+      {loadError && (
+        <div style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 10, padding: '12px 18px', marginBottom: 20, fontSize: 13, color: '#fca5a5' }}>
+          Unable to load conversations. Check your connection — retrying automatically.
+        </div>
+      )}
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
         <div style={{ display: 'flex', gap: 4, background: '#141414', borderRadius: 10, padding: 4 }}>

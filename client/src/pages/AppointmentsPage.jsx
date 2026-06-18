@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Calendar, Clock, User, Tag, List, CalendarDays, Eye, XCircle, CheckCircle } from 'lucide-react';
+import { Calendar, Clock, User, Tag, Eye, XCircle, CheckCircle, AlertTriangle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
 
@@ -8,6 +8,7 @@ function formatPhone(phone) {
   if (digits.length === 11 && digits[0] === '1') {
     return `(${digits.slice(1, 4)}) ${digits.slice(4, 7)}-${digits.slice(7)}`;
   }
+  if (digits.length === 10) return `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`;
   return phone;
 }
 
@@ -31,7 +32,7 @@ function isPast(apt) {
 
 const statusConfig = {
   confirmed: { label: 'Scheduled', color: '#3b82f6', bg: 'rgba(59,130,246,0.15)' },
-  pending: { label: 'Pending', color: '#f59e0b', bg: 'rgba(245,158,11,0.15)' },
+  pending:   { label: 'Pending',   color: '#f59e0b', bg: 'rgba(245,158,11,0.15)' },
   completed: { label: 'Completed', color: '#22c55e', bg: 'rgba(34,197,94,0.15)' },
   cancelled: { label: 'Cancelled', color: '#ef4444', bg: 'rgba(239,68,68,0.15)' },
 };
@@ -39,44 +40,49 @@ const statusConfig = {
 const filterTabs = ['Upcoming', 'Past', 'Cancelled'];
 
 const styles = {
-  page: { padding: '32px', maxWidth: 1200, margin: '0 auto' },
-  header: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28 },
-  title: { fontSize: 24, fontWeight: 700, color: '#fff', margin: 0 },
-  viewToggle: { display: 'flex', gap: 4, background: '#141414', borderRadius: 8, padding: 3 },
-  viewBtn: (active) => ({ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 14px', borderRadius: 6, fontSize: 13, fontWeight: 500, cursor: 'pointer', border: 'none', background: active ? '#222' : 'transparent', color: active ? '#fff' : '#666' }),
-  filters: { display: 'flex', gap: 6, marginBottom: 24 },
-  filterBtn: (active) => ({ padding: '7px 16px', borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: 'pointer', border: '1px solid', background: active ? '#3b82f6' : 'transparent', borderColor: active ? '#3b82f6' : '#333', color: active ? '#fff' : '#aaa' }),
-  grid: { display: 'flex', flexDirection: 'column', gap: 10 },
-  card: { background: '#141414', borderRadius: 12, border: '1px solid #1e1e1e', padding: '20px 24px', transition: 'all 0.15s' },
-  cardTop: { display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 },
-  cardLeft: { display: 'flex', alignItems: 'center', gap: 14 },
-  avatar: { width: 44, height: 44, borderRadius: '50%', background: '#1e1e1e', display: 'flex', alignItems: 'center', justifyContent: 'center' },
+  page:         { padding: '32px', maxWidth: 1200, margin: '0 auto' },
+  header:       { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28 },
+  title:        { fontSize: 24, fontWeight: 700, color: '#fff', margin: 0 },
+  filters:      { display: 'flex', gap: 6, marginBottom: 24 },
+  filterBtn:    (active) => ({ padding: '7px 16px', borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: 'pointer', border: '1px solid', background: active ? '#3b82f6' : 'transparent', borderColor: active ? '#3b82f6' : '#333', color: active ? '#fff' : '#aaa' }),
+  grid:         { display: 'flex', flexDirection: 'column', gap: 10 },
+  card:         { background: '#141414', borderRadius: 12, border: '1px solid #1e1e1e', padding: '20px 24px', transition: 'all 0.15s' },
+  cardTop:      { display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 14 },
+  cardLeft:     { display: 'flex', alignItems: 'center', gap: 14 },
+  avatar:       { width: 44, height: 44, borderRadius: '50%', background: '#1e1e1e', display: 'flex', alignItems: 'center', justifyContent: 'center' },
   customerName: { fontSize: 15, fontWeight: 600, color: '#fff' },
-  customerPhone: { fontSize: 12, color: '#666', marginTop: 2 },
-  badge: (status) => { const c = statusConfig[status] || statusConfig.confirmed; return { display: 'inline-block', fontSize: 12, fontWeight: 600, padding: '4px 12px', borderRadius: 20, color: c.color, background: c.bg }; },
-  cardBody: { display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16, marginBottom: 14 },
-  detail: { display: 'flex', alignItems: 'center', gap: 8 },
-  detailLabel: { fontSize: 12, color: '#666' },
-  detailValue: { fontSize: 13, color: '#ccc', fontWeight: 500 },
-  notes: { fontSize: 13, color: '#888', lineHeight: 1.5, paddingTop: 12, borderTop: '1px solid #1e1e1e', marginBottom: 12 },
-  actions: { display: 'flex', gap: 8, justifyContent: 'flex-end' },
-  actionBtn: (primary) => ({ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', background: primary ? 'rgba(59,130,246,0.15)' : 'transparent', border: primary ? '1px solid rgba(59,130,246,0.3)' : '1px solid #333', color: primary ? '#3b82f6' : '#888' }),
-  empty: { padding: 60, textAlign: 'center', color: '#666', fontSize: 14 },
+  customerPhone:{ fontSize: 12, color: '#666', marginTop: 2 },
+  badge:        (status) => { const c = statusConfig[status] || statusConfig.confirmed; return { display: 'inline-block', fontSize: 12, fontWeight: 600, padding: '4px 12px', borderRadius: 20, color: c.color, background: c.bg }; },
+  cardBody:     { display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 16, marginBottom: 14 },
+  detail:       { display: 'flex', alignItems: 'center', gap: 8 },
+  detailLabel:  { fontSize: 12, color: '#666' },
+  detailValue:  { fontSize: 13, color: '#ccc', fontWeight: 500 },
+  actions:      { display: 'flex', gap: 8, justifyContent: 'flex-end' },
+  actionBtn:    (primary) => ({ display: 'flex', alignItems: 'center', gap: 6, padding: '7px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', background: primary ? 'rgba(59,130,246,0.15)' : 'transparent', border: primary ? '1px solid rgba(59,130,246,0.3)' : '1px solid #333', color: primary ? '#3b82f6' : '#888' }),
+  empty:        { padding: 60, textAlign: 'center', color: '#666', fontSize: 14 },
+  confirmBox:   { marginTop: 12, padding: '12px 16px', background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 },
+  confirmText:  { fontSize: 13, color: '#fca5a5', display: 'flex', alignItems: 'center', gap: 6 },
+  confirmBtns:  { display: 'flex', gap: 8 },
 };
 
 export default function AppointmentsPage() {
   const { business } = useAuth();
   const [filter, setFilter] = useState('Upcoming');
-  const [view, setView] = useState('list');
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [cancelTarget, setCancelTarget] = useState(null);
+  const [cancelling, setCancelling] = useState(false);
 
   const cancelAppointment = async (id) => {
+    setCancelling(true);
     try {
       await api.updateAppointment(id, { status: 'cancelled' });
       setAppointments(prev => prev.map(a => a.id === id ? { ...a, status: 'cancelled' } : a));
+      setCancelTarget(null);
     } catch (_) {
       alert('Failed to cancel appointment. Please try again.');
+    } finally {
+      setCancelling(false);
     }
   };
 
@@ -98,8 +104,8 @@ export default function AppointmentsPage() {
   }, [business?.id]);
 
   const filtered = useMemo(() => {
-    if (filter === 'Upcoming') return appointments.filter(isUpcoming);
-    if (filter === 'Past') return appointments.filter(isPast);
+    if (filter === 'Upcoming')  return appointments.filter(isUpcoming);
+    if (filter === 'Past')      return appointments.filter(isPast);
     if (filter === 'Cancelled') return appointments.filter(a => a.status === 'cancelled');
     return appointments;
   }, [filter, appointments]);
@@ -108,14 +114,6 @@ export default function AppointmentsPage() {
     <div style={styles.page}>
       <div style={styles.header}>
         <h1 style={styles.title}>Appointments</h1>
-        <div style={styles.viewToggle}>
-          <button style={styles.viewBtn(view === 'list')} onClick={() => setView('list')}>
-            <List size={15} /> List
-          </button>
-          <button style={styles.viewBtn(view === 'calendar')} onClick={() => setView('calendar')}>
-            <CalendarDays size={15} /> Calendar
-          </button>
-        </div>
       </div>
 
       <div style={styles.filters}>
@@ -180,12 +178,28 @@ export default function AppointmentsPage() {
                   <CheckCircle size={13} /> Confirm
                 </button>
               )}
-              {(apt.status === 'confirmed' || apt.status === 'pending') && (
-                <button style={styles.actionBtn(false)} onClick={() => cancelAppointment(apt.id)}>
+              {(apt.status === 'confirmed' || apt.status === 'pending') && cancelTarget !== apt.id && (
+                <button style={styles.actionBtn(false)} onClick={() => setCancelTarget(apt.id)}>
                   <XCircle size={13} /> Cancel
                 </button>
               )}
             </div>
+
+            {cancelTarget === apt.id && (
+              <div style={styles.confirmBox}>
+                <div style={styles.confirmText}>
+                  <AlertTriangle size={14} /> Cancel this appointment? The customer will not be notified automatically.
+                </div>
+                <div style={styles.confirmBtns}>
+                  <button style={{ padding: '5px 14px', borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: 'pointer', background: 'transparent', border: '1px solid #333', color: '#888' }}
+                    onClick={() => setCancelTarget(null)}>Keep</button>
+                  <button style={{ padding: '5px 14px', borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: cancelling ? 'not-allowed' : 'pointer', background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', color: '#ef4444' }}
+                    onClick={() => cancelAppointment(apt.id)} disabled={cancelling}>
+                    {cancelling ? 'Cancelling...' : 'Yes, Cancel'}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         ))}
       </div>

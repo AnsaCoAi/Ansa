@@ -170,16 +170,18 @@ export default function DashboardHome() {
   const [stats, setStats] = useState(null);
   const [convs, setConvs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
     if (!business?.id) return;
+    setLoadError(false);
     Promise.all([
       api.getStats(business.id),
       api.getConversations(business.id),
     ]).then(([s, c]) => {
       setStats(s);
       setConvs(c || []);
-    }).catch(() => {}).finally(() => setLoading(false));
+    }).catch(() => setLoadError(true)).finally(() => setLoading(false));
   }, [business?.id]);
 
   const ownerFirst = business?.owner_name?.split(' ')[0] || 'there';
@@ -208,6 +210,12 @@ export default function DashboardHome() {
     <div style={{ padding: '32px', maxWidth: 1200, margin: '0 auto' }}>
       <h1 style={{ fontSize: 28, fontWeight: 700, color: '#fff', margin: 0 }}>{getGreeting()}, {ownerFirst}</h1>
       <p style={{ fontSize: 15, color: '#888', marginTop: 4, marginBottom: 28 }}>Here's what happened while you were on the job.</p>
+
+      {loadError && (
+        <div style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 10, padding: '12px 18px', marginBottom: 20, fontSize: 13, color: '#fca5a5', display: 'flex', alignItems: 'center', gap: 8 }}>
+          Unable to load dashboard data. Check your connection and refresh.
+        </div>
+      )}
 
       {isNewUser && <OnboardingChecklist business={business} convs={convs} />}
 

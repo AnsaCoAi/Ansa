@@ -12,7 +12,7 @@ const tabConfig = [
   { key: 'billing', label: 'Billing', icon: CreditCard },
 ];
 
-const toneOptions = ['friendly', 'professional', 'casual', 'formal'];
+const toneOptions = ['Friendly', 'Professional', 'Casual', 'Formal'];
 
 const PRICING_TYPES = [
   { value: 'flat_rate',      label: 'Flat Rate' },
@@ -237,8 +237,9 @@ export default function SettingsPage() {
     }
   }
 
-  function addFaq() { setFaqs([...faqs, { id: Date.now().toString(), q: 'New Question?', a: 'Answer here...' }]); }
+  function addFaq() { setFaqs([...faqs, { id: Date.now().toString(), q: '', a: '' }]); }
   function removeFaq(id) { setFaqs(faqs.filter(f => f.id !== id)); }
+  function updateFaq(id, field, value) { setFaqs(faqs.map(f => f.id === id ? { ...f, [field]: value } : f)); }
 
   const SaveButton = ({ onClick }) => (
     <div>
@@ -483,15 +484,26 @@ export default function SettingsPage() {
 
         <div style={{ ...s.sectionTitle, marginTop: 24 }}>AI Tone</div>
         <div style={s.toneGrid}>
-          {toneOptions.map(t => <button key={t} style={s.toneBtn(tone === t)} onClick={() => setTone(t)}>{t}</button>)}
+          {toneOptions.map(t => <button key={t} style={s.toneBtn(tone?.toLowerCase() === t.toLowerCase())} onClick={() => setTone(t.toLowerCase())}>{t}</button>)}
         </div>
 
         <div style={{ ...s.sectionTitle, marginTop: 28 }}>FAQ Manager</div>
         <div style={s.faqList}>
           {faqs.map(faq => (
             <div key={faq.id} style={s.faqItem}>
-              <div style={s.faqQ}>{faq.q}</div>
-              <div style={s.faqA}>{faq.a}</div>
+              <input
+                style={{ ...s.input, marginBottom: 8, fontSize: 13, fontWeight: 600 }}
+                placeholder="Question — e.g. Do you offer free estimates?"
+                value={faq.q}
+                onChange={e => updateFaq(faq.id, 'q', e.target.value)}
+              />
+              <textarea
+                style={{ ...s.textarea, minHeight: 56, fontSize: 13 }}
+                placeholder="Answer — e.g. Yes, all estimates are free with no obligation."
+                value={faq.a}
+                onChange={e => updateFaq(faq.id, 'a', e.target.value)}
+                rows={2}
+              />
               <div style={s.faqActions}>
                 <button style={{ ...s.faqBtn, color: '#ef4444' }} onClick={() => removeFaq(faq.id)}><Trash2 size={12} /> Delete</button>
               </div>
