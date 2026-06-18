@@ -81,7 +81,7 @@ export default function DashboardLayout({ children, currentHash }) {
             <div style={styles.businessAvatar}>{bizInitial}</div>
             <div style={styles.businessText}>
               <div style={styles.businessName}>{bizName}</div>
-              <div style={styles.businessPlan}>{business?.subscription_status === 'active' ? 'Pro plan' : business?.subscription_status === 'trialing' ? 'Trial' : 'Inactive'}</div>
+              <div style={styles.businessPlan}>{business?.subscription_status === 'active' ? 'Pro plan' : business?.subscription_status === 'trialing' ? (daysLeft !== null ? `Trial · ${daysLeft}d left` : 'Trial') : 'Inactive'}</div>
             </div>
           </div>
           <a href="mailto:hello@ansaco.ai" style={styles.logoutBtn}>

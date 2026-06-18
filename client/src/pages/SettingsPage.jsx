@@ -636,7 +636,10 @@ export default function SettingsPage() {
             )}
             {cfg.key === 'googleCalendar' && calendarConnected && authBusiness?.id && (
               <button
-                onClick={async () => { await api.disconnectGoogle(authBusiness.id); await reloadBusiness(); }}
+                onClick={async () => {
+                  try { await api.disconnectGoogle(authBusiness.id); await reloadBusiness(); }
+                  catch (_) { alert('Failed to disconnect Google Calendar. Please try again.'); }
+                }}
                 style={{ padding: '8px 16px', borderRadius: 8, fontSize: 12, fontWeight: 600, background: 'transparent', color: '#ef4444', border: '1px solid rgba(239,68,68,0.3)', cursor: 'pointer' }}>
                 Disconnect
               </button>

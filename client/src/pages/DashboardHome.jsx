@@ -38,7 +38,7 @@ function formatMoney(n) {
 }
 
 const statusColors = {
-  active: { label: 'Active', color: '#3b82f6', bg: 'rgba(59,130,246,0.15)' },
+  active: { label: 'AI Active', color: '#3b82f6', bg: 'rgba(59,130,246,0.15)' },
   booked: { label: 'Booked', color: '#22c55e', bg: 'rgba(34,197,94,0.15)' },
   closed: { label: 'Closed', color: '#6b7280', bg: 'rgba(107,114,128,0.15)' },
 };
@@ -280,7 +280,9 @@ export default function DashboardHome() {
             )}
           </div>
         ) : recentConvs.map(conv => {
-          const cfg = statusColors[conv.status] || statusColors.closed;
+          const cfg = (conv.manual_mode && conv.status === 'active')
+            ? { label: 'Needs Reply', color: '#f59e0b', bg: 'rgba(245,158,11,0.15)' }
+            : (statusColors[conv.status] || statusColors.closed);
           const displayName = conv.customer_name || formatPhone(conv.customer_phone);
           const isPhone = !conv.customer_name;
           const isStale = conv.status === 'active' && hoursAgo(conv.updated_at || conv.created_at) >= 2;

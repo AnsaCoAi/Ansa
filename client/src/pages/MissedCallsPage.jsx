@@ -32,6 +32,7 @@ export default function MissedCallsPage() {
   const { business } = useAuth();
   const [conversations, setConversations] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [dateFilter, setDateFilter] = useState('All');
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
@@ -40,8 +41,8 @@ export default function MissedCallsPage() {
   useEffect(() => {
     if (!business?.id) return;
     api.getConversations(business.id)
-      .then(data => setConversations(data || []))
-      .catch(() => setConversations([]))
+      .then(data => { setConversations(data || []); setLoadError(false); })
+      .catch(() => { setConversations([]); setLoadError(true); })
       .finally(() => setLoading(false));
   }, [business?.id]);
 
@@ -80,7 +81,12 @@ export default function MissedCallsPage() {
 
   return (
     <div style={{ padding: '32px', maxWidth: 1200, margin: '0 auto' }}>
-      <p style={{ fontSize: 14, color: '#888', margin: '0 0 28px 0' }}>Every missed call that triggered an Ansa text-back</p>
+      <p style={{ fontSize: 14, color: '#888', margin: '0 0 16px 0' }}>Every missed call that triggered an Ansa text-back</p>
+      {loadError && (
+        <div style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 10, padding: '12px 18px', marginBottom: 20, fontSize: 13, color: '#fca5a5' }}>
+          Unable to load missed calls. Check your connection — retrying automatically.
+        </div>
+      )}
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, gap: 16, flexWrap: 'wrap' }}>
         <div style={{ display: 'flex', gap: 6 }}>

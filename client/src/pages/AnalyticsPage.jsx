@@ -129,12 +129,13 @@ export default function AnalyticsPage() {
   const [range, setRange] = useState('7 days');
   const [convs, setConvs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
 
   useEffect(() => {
     if (!business?.id) return;
     api.getConversations(business.id)
-      .then(c => setConvs(c || []))
-      .catch(() => {})
+      .then(c => { setConvs(c || []); setLoadError(false); })
+      .catch(() => setLoadError(true))
       .finally(() => setLoading(false));
   }, [business?.id]);
 
@@ -171,6 +172,11 @@ export default function AnalyticsPage() {
 
   return (
     <div style={styles.page}>
+      {loadError && (
+        <div style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 10, padding: '12px 18px', marginBottom: 20, fontSize: 13, color: '#fca5a5' }}>
+          Unable to load analytics data. Check your connection and refresh.
+        </div>
+      )}
       <div style={styles.header}>
         <div style={styles.rangeToggle}>
           {timeRanges.map(r => (
