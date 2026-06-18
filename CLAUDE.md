@@ -292,10 +292,53 @@
 - Phone mockup (Integrations section): brighter border rgba(255,255,255,.18), blue ambient glow, glowing colored dots on notification cards, gradient background, inner highlight
 - Rule established: always commit and push to main after every change — Tyler never deploys manually
 
-## Annual Pricing Plan (TODO — 2026-06-16)
+## Annual Pricing Plan (TODO — next session)
 - Add annual plan at 2 months free: $297 × 10 = $2,970/yr (saves $594)
 - Needs: new Stripe price ID for annual, toggle on pricing page (Monthly / Annual), handle in checkout + webhook
 - Decide: lead with monthly or annual as default?
+
+## Session 2026-06-17 — Platform-Wide Quality Pass (26 fixes across 11 files)
+
+### Round 1 — 15 fixes
+- Landing page: unified brand color #4F6EF7 → #3b82f6 everywhere (31 rgba + hex instances), updated gradient colors
+- Landing page: testimonials upgraded — Verified Pro green badge, city/state location, larger avatar
+- Landing page: "No credit card required" → "30-day free trial" on all 5 instances (LandingPage + SignupPage)
+- Landing page: dashboard showcase replaced auto-cycling timer with manual left/right arrow nav + dot indicator
+- Landing page: showcase updated to match real dashboard — Revenue Recovered stat, customer names in Recent Activity and Conversations
+- Landing page: phone mockup (Integrations section) — brighter border, blue ambient glow, glowing colored dots
+- Appointments: removed broken calendar view toggle button entirely
+- Appointments: cancel now requires inline confirmation (Keep / Yes, Cancel)
+- Analytics: real date filtering for 30/90 day ranges instead of fake 4x/12x multiplier
+- Analytics: Revenue Recovered stat replaces Jobs Booked, chart title updates dynamically
+- Analytics: hourly chart covers 6am–9pm, "AI Replied" in funnel instead of "SMS Sent"
+- Missed Calls: "SMS Sent" badge → "AI Replied", smarter phone search (raw digits or formatted)
+- Settings: tone buttons capitalized (Friendly/Professional/Casual/Formal), FAQ items now inline-editable with text inputs
+- Signup: email regex validation + 8-char minimum password check
+- Billing: 10s AbortController timeout with specific error message
+
+### Round 2 — 11 more fixes
+- DashboardLayout: trial banner only shows ≤7 days remaining (was showing all 30 days from day 1)
+- DashboardLayout: Contact support icon Phone → Headphones (it's a mailto link)
+- ConversationDetail: Take Over/Let AI Handle has loading state + reverts on API failure silently
+- ConversationDetail: "Mark as Closed" requires inline confirmation (Keep Open / Yes, Close)
+- ConversationDetail: status badge shows "AI Active" not raw "active"
+- ConversationDetail: send button disabled when input empty (not just when AI mode)
+- ConversationDetail: "No messages yet" empty state inside chat panel
+- ConversationsPage: "All caught up" is now a non-interactive span, not a broken button with undefined onClick
+- ConversationsPage: status badges show AI Active / Needs Reply / Booked / Closed (not raw status strings)
+- ConversationsPage + MissedCallsPage + AppointmentsPage: empty states have icons + context-aware messages
+- MissedCallsPage: shows customer name as primary when AI collected it
+- SettingsPage Integrations: Stripe shows real status from stripe_customer_id ("Billing active" vs "Not connected")
+- LandingPage: "tap to expand" → "click to expand" on hero phones
+- DashboardHome + ConversationsPage: API failures show red error banner instead of silent empty state
+
+### Current State After This Session
+- All "no credit card required" copy removed — replaced with "30-day free trial"
+- No broken/dead buttons anywhere in the app
+- All empty states have icons and helpful context
+- All status labels use proper display text (not raw DB strings)
+- Brand color unified between landing page and app
+- Build: ✅ clean (0 errors, bundle size warning is pre-existing)
 
 ## Outstanding Before Launch
 1. SMS end-to-end test: DONE ✅ — text-back works, A2P unblocked

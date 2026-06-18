@@ -16,6 +16,12 @@ async function patch(path, body) {
   return res.json();
 }
 
+async function del(path) {
+  const res = await fetch(`${BASE_URL}${path}`, { method: 'DELETE' });
+  if (!res.ok) throw new Error(`API error: ${res.status}`);
+  return res.json();
+}
+
 async function post(path, body) {
   const res = await fetch(`${BASE_URL}${path}`, {
     method: 'POST',
@@ -36,4 +42,8 @@ export const api = {
   updateConversation: (id, data) => patch(`/api/conversations/${id}`, data),
   updateAppointment: (id, data) => patch(`/api/appointments/${id}`, data),
   sendMessage: (conversationId, message) => post(`/api/conversations/${conversationId}/send`, { message }),
+  deleteConversation: (id) => del(`/api/conversations/${id}`),
+  getConversationAppointment: (conversationId) => get(`/api/conversations/${conversationId}/appointment`),
+  cancelAppointmentWithNotify: (id, notifyCustomer, cancellationMessage) =>
+    patch(`/api/appointments/${id}`, { status: 'cancelled', notify_customer: notifyCustomer, cancellation_message: cancellationMessage }),
 };

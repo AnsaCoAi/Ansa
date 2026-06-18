@@ -70,13 +70,25 @@ export default function AppointmentsPage() {
   const [loading, setLoading] = useState(true);
   const [cancelTarget, setCancelTarget] = useState(null);
   const [cancelling, setCancelling] = useState(false);
+  const [cancelStep, setCancelStep] = useState('confirm'); // 'confirm' | 'notify'
+  const [cancelMsg, setCancelMsg] = useState('');
 
-  const cancelAppointment = async (id) => {
+  const startCancel = (apt) => {
+    const dt = new Date(apt.scheduled_at);
+    const dateStr = dt.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+    const timeStr = dt.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+    setCancelMsg(`Hi ${apt.customer_name || 'there'} — we need to cancel your appointment scheduled for ${dateStr} at ${timeStr}. We apologize for the inconvenience. Please call or text us to reschedule.`);
+    setCancelTarget(apt.id);
+    setCancelStep('confirm');
+  };
+
+  const cancelAppointment = async (notify, message) => {
     setCancelling(true);
     try {
-      await api.updateAppointment(id, { status: 'cancelled' });
-      setAppointments(prev => prev.map(a => a.id === id ? { ...a, status: 'cancelled' } : a));
+      await api.cancelAppointmentWithNotify(cancelTarget, notify, message);
+      setAppointments(prev => prev.map(a => a.id === cancelTarget ? { ...a, status: 'cancelled' } : a));
       setCancelTarget(null);
+      setCancelStep('confirm');
     } catch (_) {
       alert('Failed to cancel appointment. Please try again.');
     } finally {
@@ -181,23 +193,44 @@ export default function AppointmentsPage() {
                 </button>
               )}
               {(apt.status === 'confirmed' || apt.status === 'pending') && cancelTarget !== apt.id && (
-                <button style={styles.actionBtn(false)} onClick={() => setCancelTarget(apt.id)}>
+                <button style={styles.actionBtn(false)} onClick={() => startCancel(apt)}>
                   <XCircle size={13} /> Cancel
                 </button>
               )}
             </div>
 
-            {cancelTarget === apt.id && (
+            {cancelTarget === apt.id && cancelStep === 'confirm' && (
               <div style={styles.confirmBox}>
                 <div style={styles.confirmText}>
-                  <AlertTriangle size={14} /> Cancel this appointment? The customer will not be notified automatically.
+                  <AlertTriangle size={14} /> Cancel this appointment?
                 </div>
                 <div style={styles.confirmBtns}>
                   <button style={{ padding: '5px 14px', borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: 'pointer', background: 'transparent', border: '1px solid #333', color: '#888' }}
                     onClick={() => setCancelTarget(null)}>Keep</button>
-                  <button style={{ padding: '5px 14px', borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: cancelling ? 'not-allowed' : 'pointer', background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', color: '#ef4444' }}
-                    onClick={() => cancelAppointment(apt.id)} disabled={cancelling}>
-                    {cancelling ? 'Cancelling...' : 'Yes, Cancel'}
+                  <button style={{ padding: '5px 14px', borderRadius: 6, fontSize: 12, fontWeight: 600, cursor: 'pointer', background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', color: '#ef4444' }}
+                    onClick={() => setCancelStep('notify')}>
+                    Yes, Cancel
+                  </button>
+                </div>
+              </div>
+            )}
+            {cancelTarget === apt.id && cancelStep === 'notify' && (
+              <div style={{ marginTop: 12, padding: '16px', background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: 10 }}>
+                <div style={{ fontSize: 13, fontWeight: 600, color: '#fff', marginBottom: 10 }}>Notify the customer?</div>
+                <textarea
+                  value={cancelMsg}
+                  onChange={e => setCancelMsg(e.target.value)}
+                  rows={3}
+                  style={{ width: '100%', padding: '8px 12px', background: '#141414', border: '1px solid #333', borderRadius: 8, color: '#ccc', fontSize: 12, lineHeight: 1.5, resize: 'vertical', fontFamily: 'inherit', outline: 'none', boxSizing: 'border-box', marginBottom: 10 }}
+                />
+                <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+                  <button style={{ padding: '6px 16px', borderRadius: 7, fontSize: 12, fontWeight: 600, cursor: 'pointer', background: 'transparent', border: '1px solid #333', color: '#888' }}
+                    onClick={() => cancelAppointment(false, '')} disabled={cancelling}>
+                    {cancelling ? '...' : 'Skip — Don\'t Notify'}
+                  </button>
+                  <button style={{ padding: '6px 16px', borderRadius: 7, fontSize: 12, fontWeight: 600, cursor: cancelling ? 'not-allowed' : 'pointer', background: '#3b82f6', border: 'none', color: '#fff' }}
+                    onClick={() => cancelAppointment(true, cancelMsg)} disabled={cancelling}>
+                    {cancelling ? 'Sending...' : 'Send & Cancel'}
                   </button>
                 </div>
               </div>

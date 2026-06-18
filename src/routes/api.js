@@ -33,7 +33,7 @@ router.get('/conversations/:id', async (req, res) => {
 
 // PATCH /api/businesses/:id
 router.patch('/businesses/:id', async (req, res) => {
-  const allowed = ['name', 'owner_name', 'owner_phone', 'trade', 'services', 'business_hours', 'timezone', 'appointment_duration', 'greeting', 'tone', 'faqs', 'require_approval'];
+  const allowed = ['name', 'owner_name', 'owner_phone', 'trade', 'services', 'business_hours', 'timezone', 'appointment_duration', 'greeting', 'tone', 'faqs', 'require_approval', 'blocked_numbers'];
   const updates = Object.fromEntries(Object.entries(req.body).filter(([k]) => allowed.includes(k)));
   const { data, error } = await supabase
     .from('businesses')
@@ -100,10 +100,22 @@ router.get('/stats', async (req, res) => {
   const activeConvs = (convs || []).filter(c => c.status === 'active').length;
   const apptThisWeek = (appts || []).filter(a => new Date(a.scheduled_at) >= weekStart).length;
 
+  // Response rate = % of calls where customer replied back (has at least one user message)
+  let responded = 0;
+  const convIds = (convs || []).map(c => c.id);
+  if (convIds.length > 0) {
+    const { data: userMessages } = await supabase
+      .from('messages')
+      .select('conversation_id')
+      .in('conversation_id', convIds)
+      .eq('role', 'user');
+    responded = new Set((userMessages || []).map(m => m.conversation_id)).size;
+  }
+
   res.json({
     callsToday: todayCalls,
     totalCalls,
-    responseRate: totalCalls > 0 ? Math.round((totalCalls / totalCalls) * 100) : 0,
+    responseRate: totalCalls > 0 ? Math.round((responded / totalCalls) * 100) : 0,
     bookingRate: totalCalls > 0 ? Math.round((bookedConvs / totalCalls) * 100) : 0,
     conversationsActive: activeConvs,
     appointmentsThisWeek: apptThisWeek,
@@ -131,7 +143,7 @@ router.patch('/conversations/:id', async (req, res) => {
 
 // PATCH /api/appointments/:id
 router.patch('/appointments/:id', async (req, res) => {
-  const { status } = req.body;
+  const { status, notify_customer, cancellation_message } = req.body;
   const allowed = ['confirmed', 'pending', 'completed', 'cancelled'];
   if (!allowed.includes(status)) return res.status(400).json({ error: 'Invalid status' });
 
@@ -181,7 +193,48 @@ router.patch('/appointments/:id', async (req, res) => {
     }
   }
 
+  // When owner cancels: optionally notify customer via SMS
+  if (status === 'cancelled' && notify_customer && cancellation_message) {
+    try {
+      const { data: biz } = await supabase
+        .from('businesses')
+        .select('twilio_number')
+        .eq('id', appt.business_id)
+        .single();
+      if (biz?.twilio_number && appt.customer_phone) {
+        await twilioClient.messages.create({
+          body: cancellation_message,
+          from: biz.twilio_number,
+          to: appt.customer_phone,
+        });
+      }
+    } catch (e) {
+      console.error('[Cancel] SMS notify error (non-fatal):', e.message);
+    }
+  }
+
   res.json(appt);
+});
+
+// DELETE /api/conversations/:id
+router.delete('/conversations/:id', async (req, res) => {
+  await supabase.from('messages').delete().eq('conversation_id', req.params.id);
+  const { error } = await supabase.from('conversations').delete().eq('id', req.params.id);
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ ok: true });
+});
+
+// GET /api/conversations/:id/appointment
+router.get('/conversations/:id/appointment', async (req, res) => {
+  const { data, error } = await supabase
+    .from('appointments')
+    .select('*')
+    .eq('conversation_id', req.params.id)
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data || null);
 });
 
 // POST /api/conversations/:id/send

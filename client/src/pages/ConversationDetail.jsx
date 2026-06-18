@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ArrowLeft, Send, Bot, User, Phone, Clock, Tag, XCircle, Zap, MapPin, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Send, Bot, User, Phone, Clock, Tag, XCircle, Zap, MapPin, AlertTriangle, Trash2, CalendarCheck } from 'lucide-react';
 import { api } from '../services/api';
 import supabase from '../services/supabase';
 
@@ -30,6 +30,9 @@ export default function ConversationDetail() {
   const [closing, setClosing] = useState(false);
   const [showCloseConfirm, setShowCloseConfirm] = useState(false);
   const [showLeaveWarning, setShowLeaveWarning] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [linkedAppointment, setLinkedAppointment] = useState(null);
   const bottomRef = useRef(null);
 
   const handleBack = () => {
@@ -50,6 +53,8 @@ export default function ConversationDetail() {
         (payload) => { setConv(c => c ? { ...c, messages: [...(c.messages || []), payload.new] } : c); }
       )
       .subscribe();
+
+    api.getConversationAppointment(convId).then(apt => setLinkedAppointment(apt)).catch(() => {});
 
     const poll = setInterval(() => {
       api.getConversation(convId).then(data => setConv(data)).catch(() => {});
@@ -101,6 +106,18 @@ export default function ConversationDetail() {
     }
   };
 
+  const handleDelete = async () => {
+    setDeleting(true);
+    try {
+      await api.deleteConversation(convId);
+      window.location.hash = '#/dashboard/conversations';
+    } catch (_) {
+      alert('Failed to delete conversation. Please try again.');
+      setDeleting(false);
+      setShowDeleteConfirm(false);
+    }
+  };
+
   if (loading) return <div style={{ padding: '24px 32px', color: '#666' }}>Loading...</div>;
 
   if (!conv) return (
@@ -133,6 +150,25 @@ export default function ConversationDetail() {
               <button onClick={() => window.location.hash = '#/dashboard/conversations'}
                 style={{ flex: 1, padding: '10px', borderRadius: 8, border: 'none', background: '#f59e0b', color: '#000', fontSize: 14, cursor: 'pointer', fontWeight: 700 }}>
                 Leave Anyway
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showDeleteConfirm && (
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+          <div style={{ background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: 14, padding: 28, maxWidth: 420, width: '100%' }}>
+            <div style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 10 }}>Delete this conversation?</div>
+            <div style={{ fontSize: 14, color: '#aaa', lineHeight: 1.6, marginBottom: 24 }}>This will permanently delete all messages and cannot be undone. Use this for spam or wrong numbers.</div>
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button onClick={() => setShowDeleteConfirm(false)}
+                style={{ flex: 1, padding: '10px', borderRadius: 8, border: '1px solid #333', background: 'transparent', color: '#aaa', fontSize: 14, cursor: 'pointer', fontWeight: 500 }}>
+                Cancel
+              </button>
+              <button onClick={handleDelete} disabled={deleting}
+                style={{ flex: 1, padding: '10px', borderRadius: 8, border: 'none', background: '#ef4444', color: '#fff', fontSize: 14, cursor: deleting ? 'not-allowed' : 'pointer', fontWeight: 700 }}>
+                {deleting ? 'Deleting...' : 'Delete Forever'}
               </button>
             </div>
           </div>
@@ -219,16 +255,36 @@ export default function ConversationDetail() {
             </div>
           </div>
 
+          {linkedAppointment && (
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 16, padding: '12px 14px', background: 'rgba(34,197,94,0.06)', border: '1px solid rgba(34,197,94,0.2)', borderRadius: 10 }}>
+              <CalendarCheck size={16} color="#22c55e" style={{ marginTop: 2, flexShrink: 0 }} />
+              <div>
+                <div style={{ fontSize: 12, color: '#22c55e', fontWeight: 600, marginBottom: 3 }}>
+                  {linkedAppointment.status === 'confirmed' ? 'Scheduled' : linkedAppointment.status === 'pending' ? 'Pending Approval' : linkedAppointment.status === 'cancelled' ? 'Cancelled' : 'Appointment'}
+                </div>
+                <div style={{ fontSize: 13, color: '#ddd', fontWeight: 500 }}>
+                  {new Date(linkedAppointment.scheduled_at).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' })}
+                </div>
+                <div style={{ fontSize: 12, color: '#888' }}>
+                  {new Date(linkedAppointment.scheduled_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
+                </div>
+                {linkedAppointment.service_description && (
+                  <div style={{ fontSize: 12, color: '#666', marginTop: 3 }}>{linkedAppointment.service_description}</div>
+                )}
+              </div>
+            </div>
+          )}
+
           <div style={{ flex: 1 }} />
           <div style={{ borderTop: '1px solid #1e1e1e', paddingTop: 20 }}>
             {conv.status !== 'closed' && !showCloseConfirm && (
               <button onClick={() => setShowCloseConfirm(true)}
-                style={{ display: 'block', width: '100%', padding: '10px 16px', borderRadius: 10, fontSize: 13, fontWeight: 600, cursor: 'pointer', background: 'transparent', color: '#aaa', border: '1px solid #333' }}>
+                style={{ display: 'block', width: '100%', padding: '10px 16px', borderRadius: 10, fontSize: 13, fontWeight: 600, cursor: 'pointer', background: 'transparent', color: '#aaa', border: '1px solid #333', marginBottom: 8 }}>
                 <XCircle size={14} style={{ marginRight: 6, verticalAlign: 'middle' }} />Mark as Closed
               </button>
             )}
             {showCloseConfirm && (
-              <div style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 10, padding: 14 }}>
+              <div style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 10, padding: 14, marginBottom: 8 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#fca5a5', marginBottom: 12 }}>
                   <AlertTriangle size={14} /> Close this conversation?
                 </div>
@@ -245,6 +301,10 @@ export default function ConversationDetail() {
                 </div>
               </div>
             )}
+            <button onClick={() => setShowDeleteConfirm(true)}
+              style={{ display: 'block', width: '100%', padding: '9px 16px', borderRadius: 10, fontSize: 12, fontWeight: 600, cursor: 'pointer', background: 'transparent', color: '#555', border: '1px solid #222', marginTop: showCloseConfirm ? 0 : 0 }}>
+              <Trash2 size={13} style={{ marginRight: 6, verticalAlign: 'middle' }} />Delete Conversation
+            </button>
           </div>
         </div>
       </div>

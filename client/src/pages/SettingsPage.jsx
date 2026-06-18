@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Building2, Bot, Plug, CreditCard, Save, Plus, Trash2, Phone, Clock, Wifi, WifiOff, Check, User, MapPin } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Building2, Bot, Plug, CreditCard, Save, Plus, Trash2, Phone, Clock, Wifi, WifiOff, Check, User, MapPin, Ban } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
 import supabase from '../services/supabase';
@@ -164,6 +164,9 @@ export default function SettingsPage() {
   const [requireApproval, setRequireApproval] = useState(false);
   const [avgJobValue, setAvgJobValue] = useState(400);
   const [serviceArea, setServiceArea] = useState({ base_address: '', radius_miles: 25, outside_radius_behavior: 'reject' });
+  const [blockedNumbers, setBlockedNumbers] = useState([]);
+  const [blockInput, setBlockInput] = useState('');
+  const blockInputRef = useRef(null);
   const [hours, setHours] = useState(defaultHours);
   const [greeting, setGreeting] = useState('');
   const [tone, setTone] = useState('friendly');
@@ -186,6 +189,7 @@ export default function SettingsPage() {
     setFaqs(authBusiness.faqs || []);
     setRequireApproval(!!authBusiness.require_approval);
     setAvgJobValue(authBusiness.avg_job_value ?? 400);
+    setBlockedNumbers(authBusiness.blocked_numbers || []);
     setServiceArea({
       base_address: authBusiness.service_base_address || '',
       radius_miles: authBusiness.service_radius_miles ?? 25,
@@ -212,6 +216,7 @@ export default function SettingsPage() {
         service_radius_miles: serviceArea.radius_miles ? parseInt(serviceArea.radius_miles) : 25,
         outside_radius_behavior: serviceArea.outside_radius_behavior,
         avg_job_value: avgJobValue ? parseInt(avgJobValue) : 400,
+        blocked_numbers: blockedNumbers,
       });
       await reloadBusiness();
       flash();
@@ -439,6 +444,53 @@ export default function SettingsPage() {
             }} />
           </button>
         </div>
+
+        <div style={{ ...s.sectionTitle, marginTop: 28 }}>Blocked Numbers</div>
+        <div style={{ fontSize: 13, color: '#666', marginBottom: 14, lineHeight: 1.5 }}>
+          Numbers added here will never receive an AI text-back after a missed call. Use this for spam callers, wrong numbers, or vendors.
+        </div>
+        <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+          <input
+            ref={blockInputRef}
+            style={{ ...s.input, flex: 1 }}
+            placeholder="Enter phone number (e.g. +12135550199)"
+            value={blockInput}
+            onChange={e => setBlockInput(e.target.value)}
+            onKeyDown={e => {
+              if (e.key === 'Enter') {
+                const num = blockInput.trim();
+                if (num && !blockedNumbers.includes(num)) setBlockedNumbers([...blockedNumbers, num]);
+                setBlockInput('');
+              }
+            }}
+          />
+          <button
+            style={{ ...s.saveBtn, marginTop: 0, background: '#1e1e1e', border: '1px solid #333', color: '#aaa' }}
+            onClick={() => {
+              const num = blockInput.trim();
+              if (num && !blockedNumbers.includes(num)) setBlockedNumbers([...blockedNumbers, num]);
+              setBlockInput('');
+              blockInputRef.current?.focus();
+            }}>
+            <Ban size={15} /> Block
+          </button>
+        </div>
+        {blockedNumbers.length > 0 && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 16 }}>
+            {blockedNumbers.map(num => (
+              <div key={num} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: 8, padding: '8px 14px' }}>
+                <span style={{ fontSize: 13, color: '#ccc', fontFamily: 'monospace' }}>{num}</span>
+                <button onClick={() => setBlockedNumbers(blockedNumbers.filter(n => n !== num))}
+                  style={{ background: 'none', border: 'none', color: '#555', cursor: 'pointer', padding: 4, display: 'flex', alignItems: 'center' }}>
+                  <Trash2 size={14} />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+        {blockedNumbers.length === 0 && (
+          <div style={{ fontSize: 13, color: '#444', fontStyle: 'italic', marginBottom: 16 }}>No numbers blocked.</div>
+        )}
 
         <div style={{ ...s.sectionTitle, marginTop: 28 }}>Revenue Tracking</div>
         <div style={{ display: 'flex', alignItems: 'flex-end', gap: 16, marginBottom: 20 }}>

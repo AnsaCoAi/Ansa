@@ -29,6 +29,26 @@ function filterByRange(convs, range) {
   return convs.filter(c => new Date(c.created_at) >= cutoff);
 }
 
+function filterPriorPeriod(convs, range) {
+  const now = new Date();
+  const days = range === '30 days' ? 30 : range === '90 days' ? 90 : 7;
+  const periodEnd = new Date(now);
+  periodEnd.setDate(now.getDate() - days);
+  periodEnd.setHours(0, 0, 0, 0);
+  const periodStart = new Date(periodEnd);
+  periodStart.setDate(periodEnd.getDate() - days);
+  return convs.filter(c => { const t = new Date(c.created_at); return t >= periodStart && t < periodEnd; });
+}
+
+function trendBadge(current, prior) {
+  if (prior === 0 && current === 0) return null;
+  if (prior === 0) return { label: 'New', color: '#22c55e', bg: 'rgba(34,197,94,0.12)' };
+  const pct = Math.round(((current - prior) / prior) * 100);
+  if (pct === 0) return null;
+  const up = pct > 0;
+  return { label: `${up ? '+' : ''}${pct}%`, color: up ? '#22c55e' : '#ef4444', bg: up ? 'rgba(34,197,94,0.12)' : 'rgba(239,68,68,0.12)' };
+}
+
 function buildChartData(convs, range) {
   const days = range === '30 days' ? 30 : range === '90 days' ? 90 : 7;
   const now = new Date();
@@ -119,14 +139,22 @@ export default function AnalyticsPage() {
   }, [business?.id]);
 
   const rangeConvs = useMemo(() => filterByRange(convs, range), [convs, range]);
+  const priorConvs = useMemo(() => filterPriorPeriod(convs, range), [convs, range]);
 
   const totalCalls  = rangeConvs.length;
   const bookedCount = rangeConvs.filter(c => c.status === 'booked').length;
-  const responded   = rangeConvs.filter(c => (c.messages || []).length > 0).length;
+  const responded   = rangeConvs.filter(c => (c.messages || []).some(m => m.role === 'user')).length;
   const responseRate = totalCalls > 0 ? Math.round((responded / totalCalls) * 100) : 0;
   const bookingRate  = totalCalls > 0 ? Math.round((bookedCount / totalCalls) * 100) : 0;
   const avgJobValue  = business?.avg_job_value || 400;
   const revenueRecovered = bookedCount * avgJobValue;
+
+  const priorTotal    = priorConvs.length;
+  const priorBooked   = priorConvs.filter(c => c.status === 'booked').length;
+  const priorResponded = priorConvs.filter(c => (c.messages || []).some(m => m.role === 'user')).length;
+  const priorResponseRate = priorTotal > 0 ? Math.round((priorResponded / priorTotal) * 100) : 0;
+  const priorBookingRate  = priorTotal > 0 ? Math.round((priorBooked / priorTotal) * 100) : 0;
+  const priorRevenue = priorBooked * avgJobValue;
 
   const chartData  = useMemo(() => buildChartData(rangeConvs, range), [rangeConvs, range]);
   const hourlyData = useMemo(() => buildHourlyData(rangeConvs), [rangeConvs]);
@@ -153,15 +181,20 @@ export default function AnalyticsPage() {
 
       <div style={styles.statsRow}>
         {[
-          { icon: Phone,        color: '#3b82f6', value: loading ? '—' : totalCalls,                                            label: 'Missed Calls' },
-          { icon: MessageCircle,color: '#8b5cf6', value: loading ? '—' : (totalCalls > 0 ? `${responseRate}%` : '—'),           label: 'Response Rate' },
-          { icon: CalendarCheck,color: '#22c55e', value: loading ? '—' : (totalCalls > 0 ? `${bookingRate}%` : '—'),            label: 'Booking Rate' },
-          { icon: DollarSign,   color: '#f59e0b', value: loading ? '—' : `$${revenueRecovered >= 1000 ? (revenueRecovered/1000).toFixed(1)+'k' : revenueRecovered}`, label: 'Revenue Recovered' },
-        ].map(({ icon: Icon, color, value, label }) => (
+          { icon: Phone,        color: '#3b82f6', value: loading ? '—' : totalCalls,                                            label: 'Missed Calls',      trend: trendBadge(totalCalls, priorTotal) },
+          { icon: MessageCircle,color: '#8b5cf6', value: loading ? '—' : (totalCalls > 0 ? `${responseRate}%` : '—'),           label: 'Response Rate',     trend: trendBadge(responseRate, priorResponseRate) },
+          { icon: CalendarCheck,color: '#22c55e', value: loading ? '—' : (totalCalls > 0 ? `${bookingRate}%` : '—'),            label: 'Booking Rate',      trend: trendBadge(bookingRate, priorBookingRate) },
+          { icon: DollarSign,   color: '#f59e0b', value: loading ? '—' : `$${revenueRecovered >= 1000 ? (revenueRecovered/1000).toFixed(1)+'k' : revenueRecovered}`, label: 'Revenue Recovered', trend: trendBadge(revenueRecovered, priorRevenue) },
+        ].map(({ icon: Icon, color, value, label, trend }) => (
           <div key={label} style={styles.statCard}>
             <div style={styles.iconCircle(color)}><Icon size={18} color={color} /></div>
-            <div>
-              <div style={styles.statValue}>{value}</div>
+            <div style={{ flex: 1 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <div style={styles.statValue}>{value}</div>
+                {!loading && trend && (
+                  <span style={{ fontSize: 11, fontWeight: 700, padding: '2px 7px', borderRadius: 20, color: trend.color, background: trend.bg }}>{trend.label}</span>
+                )}
+              </div>
               <div style={styles.statLabel}>{label}</div>
             </div>
           </div>

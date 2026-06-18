@@ -55,6 +55,14 @@ router.post("/missed-call", async (req, res) => {
 
     console.log(`[Missed Call] ${From} → ${business.name}`);
 
+    // Check blocked numbers — compare last 10 digits to handle formatting differences
+    const fromDigits = From.replace(/\D/g, '').slice(-10);
+    const isBlocked = (business.blocked_numbers || []).some(n => n.replace(/\D/g, '').slice(-10) === fromDigits);
+    if (isBlocked) {
+      console.log(`[Missed Call] Blocked number ${From} — skipping text-back`);
+      return res.status(200).send("<Response></Response>");
+    }
+
     const conversation = await getOrCreateConversation(business.id, From);
     await saveMessage(conversation.id, "assistant", business.greeting);
     await sendSMS(From, calledNumber, business.greeting);
