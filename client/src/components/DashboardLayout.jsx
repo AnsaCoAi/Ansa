@@ -35,7 +35,7 @@ export default function DashboardLayout({ children, currentHash }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const daysLeft = trialDaysLeft(business?.created_at)
-  const showTrialBanner = daysLeft !== null && daysLeft <= 7
+  const showTrialBanner = daysLeft !== null && daysLeft <= 7 && business?.subscription_status !== 'active'
 
   const isActive = (hash) => {
     if (hash === '#/dashboard') return currentHash === '#/dashboard'
@@ -81,7 +81,7 @@ export default function DashboardLayout({ children, currentHash }) {
             <div style={styles.businessAvatar}>{bizInitial}</div>
             <div style={styles.businessText}>
               <div style={styles.businessName}>{bizName}</div>
-              <div style={styles.businessPlan}>Pro plan</div>
+              <div style={styles.businessPlan}>{business?.subscription_status === 'active' ? 'Pro plan' : business?.subscription_status === 'trialing' ? 'Trial' : 'Inactive'}</div>
             </div>
           </div>
           <a href="mailto:hello@ansaco.ai" style={styles.logoutBtn}>

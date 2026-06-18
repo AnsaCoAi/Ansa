@@ -163,6 +163,8 @@ export default function SettingsPage() {
   const [services, setServices] = useState([]);
   const [requireApproval, setRequireApproval] = useState(false);
   const [avgJobValue, setAvgJobValue] = useState(400);
+  const [appointmentDuration, setAppointmentDuration] = useState(60);
+  const [timezone, setTimezone] = useState('America/Los_Angeles');
   const [serviceArea, setServiceArea] = useState({ base_address: '', radius_miles: 25, outside_radius_behavior: 'reject' });
   const [blockedNumbers, setBlockedNumbers] = useState([]);
   const [blockInput, setBlockInput] = useState('');
@@ -189,6 +191,8 @@ export default function SettingsPage() {
     setFaqs(authBusiness.faqs || []);
     setRequireApproval(!!authBusiness.require_approval);
     setAvgJobValue(authBusiness.avg_job_value ?? 400);
+    setAppointmentDuration(authBusiness.appointment_duration ?? 60);
+    setTimezone(authBusiness.timezone || 'America/Los_Angeles');
     setBlockedNumbers(authBusiness.blocked_numbers || []);
     setServiceArea({
       base_address: authBusiness.service_base_address || '',
@@ -216,6 +220,8 @@ export default function SettingsPage() {
         service_radius_miles: serviceArea.radius_miles ? parseInt(serviceArea.radius_miles) : 25,
         outside_radius_behavior: serviceArea.outside_radius_behavior,
         avg_job_value: avgJobValue ? parseInt(avgJobValue) : 400,
+        appointment_duration: appointmentDuration ? parseInt(appointmentDuration) : 60,
+        timezone,
         blocked_numbers: blockedNumbers,
       });
       await reloadBusiness();
@@ -362,6 +368,21 @@ export default function SettingsPage() {
           </div>
         ))}
 
+        <div style={{ display: 'flex', gap: 16, marginTop: 16, alignItems: 'flex-end', marginBottom: 4 }}>
+          <div style={{ maxWidth: 280 }}>
+            <label style={s.label}>Timezone</label>
+            <select style={{ ...s.input, cursor: 'pointer' }} value={timezone} onChange={e => setTimezone(e.target.value)}>
+              <option value="America/New_York">Eastern (ET)</option>
+              <option value="America/Chicago">Central (CT)</option>
+              <option value="America/Denver">Mountain (MT)</option>
+              <option value="America/Los_Angeles">Pacific (PT)</option>
+              <option value="America/Phoenix">Arizona (no DST)</option>
+              <option value="America/Anchorage">Alaska (AKT)</option>
+              <option value="Pacific/Honolulu">Hawaii (HST)</option>
+            </select>
+          </div>
+        </div>
+
         <div style={{ ...s.sectionTitle, marginTop: 28 }}>Service Area</div>
         <div style={{ fontSize: 13, color: '#666', marginBottom: 14, lineHeight: 1.5 }}>
           Set your base location and radius. The AI will ask for the job address before booking, and the system will check if it falls within range.
@@ -423,6 +444,18 @@ export default function SettingsPage() {
         </div>
 
         <div style={{ ...s.sectionTitle, marginTop: 28 }}>Appointment Settings</div>
+        <div style={{ display: 'flex', gap: 16, marginBottom: 16 }}>
+          <div style={{ maxWidth: 200 }}>
+            <label style={s.label}>Appointment Duration</label>
+            <select style={{ ...s.input, cursor: 'pointer' }} value={appointmentDuration} onChange={e => setAppointmentDuration(e.target.value)}>
+              <option value={30}>30 minutes</option>
+              <option value={45}>45 minutes</option>
+              <option value={60}>60 minutes</option>
+              <option value={90}>90 minutes</option>
+              <option value={120}>120 minutes</option>
+            </select>
+          </div>
+        </div>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: 10, padding: '16px 18px', marginBottom: 20 }}>
           <div>
             <div style={{ fontSize: 14, fontWeight: 600, color: '#fff', marginBottom: 4 }}>Require approval before confirming</div>
@@ -434,7 +467,7 @@ export default function SettingsPage() {
             onClick={() => setRequireApproval(v => !v)}
             style={{
               width: 48, height: 26, borderRadius: 13, border: 'none', cursor: 'pointer', flexShrink: 0, marginLeft: 20,
-              background: requireApproval ? '#4F6EF7' : '#333',
+              background: requireApproval ? '#3b82f6' : '#333',
               position: 'relative', transition: 'background .2s',
             }}>
             <span style={{
@@ -600,6 +633,13 @@ export default function SettingsPage() {
                 style={{ padding: '8px 16px', borderRadius: 8, fontSize: 12, fontWeight: 600, background: '#3b82f6', color: '#fff', textDecoration: 'none' }}>
                 Connect
               </a>
+            )}
+            {cfg.key === 'googleCalendar' && calendarConnected && authBusiness?.id && (
+              <button
+                onClick={async () => { await api.disconnectGoogle(authBusiness.id); await reloadBusiness(); }}
+                style={{ padding: '8px 16px', borderRadius: 8, fontSize: 12, fontWeight: 600, background: 'transparent', color: '#ef4444', border: '1px solid rgba(239,68,68,0.3)', cursor: 'pointer' }}>
+                Disconnect
+              </button>
             )}
           </div>
         ))}

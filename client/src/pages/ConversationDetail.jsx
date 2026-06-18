@@ -34,6 +34,7 @@ export default function ConversationDetail() {
   const [deleting, setDeleting] = useState(false);
   const [linkedAppointment, setLinkedAppointment] = useState(null);
   const bottomRef = useRef(null);
+  const chatRef = useRef(null);
 
   const handleBack = () => {
     if (!aiMode) { setShowLeaveWarning(true); return; }
@@ -63,7 +64,12 @@ export default function ConversationDetail() {
     return () => { supabase.removeChannel(channel); clearInterval(poll); };
   }, [convId]);
 
-  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [conv?.messages]);
+  useEffect(() => {
+    const el = chatRef.current;
+    if (!el) return;
+    const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 120;
+    if (nearBottom) bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [conv?.messages]);
 
   const handleToggleMode = async () => {
     const next = !aiMode;
@@ -131,7 +137,9 @@ export default function ConversationDetail() {
   );
 
   const msgs = conv.messages || [];
-  const sc = statusConfig[conv.status] || statusConfig.closed;
+  const sc = (conv.manual_mode && conv.status === 'active')
+    ? { label: 'Needs Reply', color: '#f59e0b', bg: 'rgba(245,158,11,0.15)' }
+    : (statusConfig[conv.status] || statusConfig.closed);
 
   return (
     <div style={{ padding: '24px 32px', maxWidth: 1300, margin: '0 auto', height: 'calc(100vh - 120px)', display: 'flex', flexDirection: 'column' }}>
@@ -193,15 +201,28 @@ export default function ConversationDetail() {
             </button>
           </div>
 
-          <div style={{ flex: 1, overflowY: 'auto', padding: '20px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div ref={chatRef} style={{ flex: 1, overflowY: 'auto', padding: '20px', display: 'flex', flexDirection: 'column', gap: 12 }}>
             {msgs.length === 0 && (
               <div style={{ textAlign: 'center', color: '#555', fontSize: 13, padding: '40px 0' }}>No messages yet.</div>
             )}
             {msgs.map((msg, i) => {
               if (msg.role === 'system') return <div key={i} style={{ textAlign: 'center', fontSize: 12, color: '#555', padding: '8px 0' }}>{msg.content}</div>;
               const isUser = msg.role === 'user';
+              const msgDate = new Date(msg.created_at).toDateString();
+              const prevDate = i > 0 ? new Date(msgs[i - 1].created_at).toDateString() : null;
+              const showSeparator = msgDate !== prevDate;
+              const today = new Date().toDateString();
+              const yesterday = new Date(Date.now() - 86400000).toDateString();
+              const dateLabel = msgDate === today ? 'Today' : msgDate === yesterday ? 'Yesterday' : new Date(msg.created_at).toLocaleDateString([], { month: 'short', day: 'numeric' });
               return (
                 <div key={i}>
+                  {showSeparator && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, margin: '8px 0' }}>
+                      <div style={{ flex: 1, height: 1, background: '#222' }} />
+                      <span style={{ fontSize: 11, color: '#555', whiteSpace: 'nowrap' }}>{dateLabel}</span>
+                      <div style={{ flex: 1, height: 1, background: '#222' }} />
+                    </div>
+                  )}
                   <div style={{ display: 'flex', justifyContent: isUser ? 'flex-start' : 'flex-end' }}>
                     <div style={{ maxWidth: '70%', padding: '12px 16px', borderRadius: 14, fontSize: 14, lineHeight: 1.5, background: isUser ? '#2a2a2a' : '#1e3a5f', color: '#e5e5e5', borderBottomLeftRadius: isUser ? 4 : 14, borderBottomRightRadius: isUser ? 14 : 4, border: isUser ? '1px solid #333' : '1px solid rgba(59,130,246,0.2)' }}>
                       {msg.content}

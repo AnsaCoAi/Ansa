@@ -175,13 +175,15 @@ export default function DashboardHome() {
   useEffect(() => {
     if (!business?.id) return;
     setLoadError(false);
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10000);
     Promise.all([
       api.getStats(business.id),
       api.getConversations(business.id),
     ]).then(([s, c]) => {
       setStats(s);
       setConvs(c || []);
-    }).catch(() => setLoadError(true)).finally(() => setLoading(false));
+    }).catch(() => setLoadError(true)).finally(() => { clearTimeout(timeout); setLoading(false); });
   }, [business?.id]);
 
   const ownerFirst = business?.owner_name?.split(' ')[0] || 'there';

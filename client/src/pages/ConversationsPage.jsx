@@ -83,7 +83,7 @@ export default function ConversationsPage() {
   const filtered = useMemo(
     () => {
       const base = activeTab === 'all' ? conversations
-        : activeTab === 'active' ? conversations.filter(c => c.status === 'active' && hasCustomerReply(c) && !c.manual_mode)
+        : activeTab === 'active' ? conversations.filter(c => c.status === 'active' && !c.manual_mode)
         : activeTab === 'takeover' ? conversations.filter(c => c.manual_mode && c.status === 'active')
         : conversations.filter(c => c.status === activeTab);
       return sortByUrgency(base);
@@ -130,7 +130,7 @@ export default function ConversationsPage() {
             {tab.dot && <span style={{ width: 8, height: 8, borderRadius: '50%', background: tab.dot }} />}
             {tab.label}
             <span style={{ color: '#555', fontSize: 12, marginLeft: 2 }}>
-              ({tab.key === 'all' ? conversations.length : tab.key === 'active' ? conversations.filter(c => c.status === 'active' && hasCustomerReply(c) && !c.manual_mode).length : tab.key === 'takeover' ? takeover.length : conversations.filter(c => c.status === tab.key).length})
+              ({tab.key === 'all' ? conversations.length : tab.key === 'active' ? conversations.filter(c => c.status === 'active' && !c.manual_mode).length : tab.key === 'takeover' ? takeover.length : conversations.filter(c => c.status === tab.key).length})
             </span>
           </button>
         ))}

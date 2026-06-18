@@ -13,6 +13,7 @@ export default function SignupPage() {
   const [businessPhone, setBusinessPhone] = useState('');
   const [businessType, setBusinessType] = useState('');
   const [error, setError] = useState('');
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   const handleCreate = () => {
     if (!fullName || !email || !password || !businessName || !businessPhone || !businessType) {
@@ -22,6 +23,9 @@ export default function SignupPage() {
     const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
     if (!emailValid) { setError('Please enter a valid email address.'); return; }
     if (password.length < 8) { setError('Password must be at least 8 characters.'); return; }
+    const phoneDigits = businessPhone.replace(/\D/g, '');
+    if (phoneDigits.length < 10) { setError('Please enter a valid phone number.'); return; }
+    if (!agreedToTerms) { setError('Please agree to the terms to continue.'); return; }
     setError('');
     localStorage.setItem('ansa_signup', JSON.stringify({ fullName, email: email.trim().toLowerCase(), password, businessName, businessPhone, businessType }));
     window.location.hash = '#/onboarding';
@@ -67,6 +71,15 @@ export default function SignupPage() {
           </div>
         </div>
 
+        <label style={{ display: 'flex', alignItems: 'flex-start', gap: 10, cursor: 'pointer', marginBottom: '16px' }}>
+          <input type="checkbox" checked={agreedToTerms} onChange={e => setAgreedToTerms(e.target.checked)} style={{ marginTop: 2, accentColor: '#3b82f6', flexShrink: 0 }} />
+          <span style={{ fontSize: '13px', color: '#888', lineHeight: 1.5 }}>
+            I agree to the{' '}
+            <a href="/#/terms" style={{ color: '#3b82f6', textDecoration: 'none' }}>Terms of Service</a>
+            {' '}and{' '}
+            <a href="/#/privacy" style={{ color: '#3b82f6', textDecoration: 'none' }}>Privacy Policy</a>
+          </span>
+        </label>
         <button onClick={handleCreate} style={{ width: '100%', padding: '12px', backgroundColor: '#3b82f6', color: '#fff', border: 'none', borderRadius: '10px', fontSize: '15px', fontWeight: '600', cursor: 'pointer', marginBottom: '16px' }}>
           Continue
         </button>

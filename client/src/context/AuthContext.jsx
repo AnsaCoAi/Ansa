@@ -72,15 +72,17 @@ export function AuthProvider({ children }) {
     await loadBusiness(data.user.id);
 
     const areaCode = businessPhone.replace(/\D/g, '').slice(0, 3);
+    let provisionError = null;
     try {
-      await fetch(`${apiUrl}/api/provision-number`, {
+      const provRes = await fetch(`${apiUrl}/api/provision-number`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ businessId, areaCode }),
       });
-    } catch (_) {}
+      if (!provRes.ok) { const d = await provRes.json(); provisionError = d.error; console.error('[SignUp] Provision failed:', provisionError); }
+    } catch (e) { provisionError = e.message; console.error('[SignUp] Provision failed:', e.message); }
 
-    return { businessId };
+    return { businessId, provisionError };
   }
 
   async function signIn({ email, password }) {

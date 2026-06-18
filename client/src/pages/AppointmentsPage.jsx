@@ -182,6 +182,7 @@ export default function AppointmentsPage() {
 
             <div style={styles.actions}>
               <button
+                disabled={!apt.conversation_id}
                 style={{ ...styles.actionBtn(!!apt.conversation_id), opacity: apt.conversation_id ? 1 : 0.4, cursor: apt.conversation_id ? 'pointer' : 'not-allowed' }}
                 onClick={() => { if (apt.conversation_id) window.location.hash = `#/dashboard/conversations/${apt.conversation_id}`; }}
                 title={apt.conversation_id ? 'View conversation' : 'No conversation linked'}>

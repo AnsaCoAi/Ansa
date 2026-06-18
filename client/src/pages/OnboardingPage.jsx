@@ -36,9 +36,9 @@ function CityAutocomplete({ value, onChange }) {
       <MapPin size={18} color="#666" style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', zIndex: 1 }} />
       <input
         type="text" value={query} placeholder="Los Angeles, CA"
-        onChange={e => { setQuery(e.target.value); onChange(''); setOpen(true); }}
+        onChange={e => { setQuery(e.target.value); onChange(e.target.value); setOpen(true); }}
         onFocus={e => { e.target.style.borderColor='#3b82f6'; setOpen(true); }}
-        onBlur={e => e.target.style.borderColor='#2a2a2a'}
+        onBlur={e => { e.target.style.borderColor='#2a2a2a'; onChange(query); }}
         style={{ width:'100%',padding:'13px 13px 13px 40px',backgroundColor:'#0f0f0f',border:'1px solid #2a2a2a',borderRadius:'10px',color:'#fff',fontSize:'15px',outline:'none',boxSizing:'border-box',transition:'border-color .15s' }}
         autoComplete="off"
       />
@@ -143,6 +143,7 @@ export default function OnboardingPage() {
   const [step, setStep] = useState(1);
   const [saving, setSaving] = useState(false);
   const [launchError, setLaunchError] = useState('');
+  const [provisionWarning, setProvisionWarning] = useState('');
   const [animating, setAnimating] = useState(false);
 
   const stored = JSON.parse(localStorage.getItem('ansa_signup') || '{}');
@@ -155,6 +156,7 @@ export default function OnboardingPage() {
   const [greeting, setGreeting] = useState('');
   const [faqs, setFaqs] = useState(DEFAULT_FAQS.default);
   const [tone, setTone] = useState('Friendly');
+  const [showBackConfirm, setShowBackConfirm] = useState(false);
 
   const TONE_GREETINGS = {
     Professional: `Hello, you've reached ${businessName || 'us'}. We missed your call but we're on it — how can we help you today?`,
@@ -197,7 +199,7 @@ export default function OnboardingPage() {
         : null;
     });
 
-    const { error, businessId } = await signUp({
+    const { error, businessId, provisionError } = await signUp({
       email: creds.email,
       password: creds.password,
       fullName: creds.fullName,
@@ -216,6 +218,8 @@ export default function OnboardingPage() {
     }
 
     localStorage.removeItem('ansa_signup');
+
+    if (provisionError) setProvisionWarning("Your number couldn't be provisioned automatically — contact hello@ansaco.ai.");
 
     const apiUrl = import.meta.env.VITE_API_URL || 'https://ansa-production.up.railway.app';
     try {
@@ -504,6 +508,11 @@ export default function OnboardingPage() {
             {launchError}
           </div>
         )}
+        {provisionWarning && (
+          <div style={{ background:'rgba(245,158,11,0.08)', border:'1px solid rgba(245,158,11,0.25)', borderRadius:10, padding:'12px 16px', color:'#f59e0b', fontSize:13, marginBottom:16, lineHeight:1.5 }}>
+            {provisionWarning}
+          </div>
+        )}
 
         {/* Navigation */}
         <div style={{ display:'flex', justifyContent:'space-between', gap:12 }}>
@@ -514,8 +523,16 @@ export default function OnboardingPage() {
               onMouseLeave={e => { e.currentTarget.style.borderColor='#2a2a2a'; e.currentTarget.style.color='#888'; }}>
               <ChevronLeft size={16} /> Back
             </button>
+          ) : showBackConfirm ? (
+            <div style={{ display:'flex', flexDirection:'column', gap:8, background:'rgba(239,68,68,0.08)', border:'1px solid rgba(239,68,68,0.2)', borderRadius:10, padding:'14px 16px' }}>
+              <div style={{ fontSize:13, color:'#fca5a5', fontWeight:600 }}>Leave setup? Your progress will be lost.</div>
+              <div style={{ display:'flex', gap:8 }}>
+                <button onClick={() => setShowBackConfirm(false)} style={{ flex:1, padding:'8px', borderRadius:8, border:'1px solid #333', background:'transparent', color:'#aaa', fontSize:13, cursor:'pointer', fontWeight:500 }}>Cancel</button>
+                <button onClick={() => { localStorage.removeItem('ansa_signup'); window.location.hash = user ? '#/dashboard' : '#/'; }} style={{ flex:1, padding:'8px', borderRadius:8, border:'none', background:'#ef4444', color:'#fff', fontSize:13, cursor:'pointer', fontWeight:700 }}>Leave</button>
+              </div>
+            </div>
           ) : (
-            <button onClick={() => { localStorage.removeItem('ansa_signup'); window.location.hash = user ? '#/dashboard' : '#/'; }}
+            <button onClick={() => setShowBackConfirm(true)}
               style={{ padding:'13px 24px', backgroundColor:'transparent', color:'#888', border:'1px solid #2a2a2a', borderRadius:10, fontSize:14, fontWeight:500, cursor:'pointer', display:'flex', alignItems:'center', gap:6, transition:'border-color .15s, color .15s' }}
               onMouseEnter={e => { e.currentTarget.style.borderColor='#444'; e.currentTarget.style.color='#fff'; }}
               onMouseLeave={e => { e.currentTarget.style.borderColor='#2a2a2a'; e.currentTarget.style.color='#888'; }}>
