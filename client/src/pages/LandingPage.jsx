@@ -959,7 +959,7 @@ export default function LandingPage() {
           <a href="#/signup" className="ansa-btn ansa-btn-blue">Start Free Trial <ArrowRight size={16} /></a>
           <a href="#how-it-works" className="ansa-btn ansa-btn-outline" onClick={scrollTo('how-it-works')}>See How It Works</a>
         </div>
-        <div className="ansa-trust-line">No credit card required &nbsp;·&nbsp; Setup in 5 minutes &nbsp;·&nbsp; Cancel anytime</div>
+        <div className="ansa-trust-line">30-day free trial &nbsp;·&nbsp; Setup in 5 minutes &nbsp;·&nbsp; Cancel anytime</div>
         <div className="ansa-phones-row">
           {HERO_PHONES.map((p, idx) => {
             const isCenter = idx === activePhone;
@@ -1021,7 +1021,7 @@ export default function LandingPage() {
           </div>
           <div className="ansa-stats-band-cell">
             <div className="ansa-stats-band-num">30</div>
-            <div className="ansa-stats-band-label">Day free trial — no credit card required</div>
+            <div className="ansa-stats-band-label">Day free trial — cancel anytime</div>
           </div>
           <div className="ansa-stats-band-cell">
             <div className="ansa-stats-band-num">24/7</div>
@@ -1305,7 +1305,7 @@ export default function LandingPage() {
               ].map(f => <li key={f}><Check size={16} color={PRIMARY}/>{f}</li>)}
             </ul>
             <a href="#/signup" className="ansa-pricing-cta ansa-pricing-cta-primary">Start Free Trial — 30 Days Free</a>
-            <div className="ansa-trust-line" style={{ marginTop:14 }}>No credit card required &nbsp;·&nbsp; Cancel anytime</div>
+            <div className="ansa-trust-line" style={{ marginTop:14 }}>30-day free trial &nbsp;·&nbsp; Cancel anytime</div>
           </div>
         </div>
       </section>
@@ -1331,7 +1331,7 @@ export default function LandingPage() {
           <a href="#/signup" className="ansa-btn" style={{ background:'#fff',color:'#1e3a5f',fontWeight:700,boxShadow:'0 0 30px rgba(255,255,255,.2)' }}>
             Start Your Free Trial <ArrowRight size={16}/>
           </a>
-          <div className="ansa-trust-line" style={{ color:'rgba(255,255,255,.4)',marginTop:16 }}>No credit card required &nbsp;·&nbsp; Setup in 5 minutes &nbsp;·&nbsp; Cancel anytime</div>
+          <div className="ansa-trust-line" style={{ color:'rgba(255,255,255,.4)',marginTop:16 }}>30-day free trial &nbsp;·&nbsp; Setup in 5 minutes &nbsp;·&nbsp; Cancel anytime</div>
         </div>
       </section>
 

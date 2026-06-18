@@ -32,7 +32,7 @@ export default function SignupPage() {
       <div style={{ width: '100%', maxWidth: '420px', backgroundColor: '#111111', borderRadius: '16px', border: '1px solid #222', boxShadow: '0 25px 50px rgba(0,0,0,0.5)', padding: '40px' }}>
         <div style={{ textAlign: 'center', marginBottom: '24px', fontSize: '32px', fontWeight: '700', color: '#ffffff' }}>ansa<span style={{ color: '#3b82f6' }}>.</span></div>
         <h1 style={{ fontSize: '24px', fontWeight: '600', color: '#ffffff', textAlign: 'center', margin: '0 0 8px 0' }}>Start your free trial</h1>
-        <p style={{ fontSize: '14px', color: '#888', textAlign: 'center', margin: '0 0 28px 0' }}>No credit card required</p>
+        <p style={{ fontSize: '14px', color: '#888', textAlign: 'center', margin: '0 0 28px 0' }}>30-day free trial · Cancel anytime</p>
 
         {error && <div style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: '8px', padding: '10px 14px', color: '#ef4444', fontSize: '13px', marginBottom: '16px' }}>{error}</div>}
 
