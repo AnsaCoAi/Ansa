@@ -109,7 +109,15 @@ export default function MissedCallsPage() {
       {loading ? (
         <div style={{ padding: 40, textAlign: 'center', color: '#666' }}>Loading...</div>
       ) : paged.length === 0 ? (
-        <div style={{ padding: 40, textAlign: 'center', color: '#666' }}>No missed calls found.</div>
+        <div style={{ padding: '50px 20px', textAlign: 'center' }}>
+          <Phone size={32} color="#333" style={{ marginBottom: 12 }} />
+          <div style={{ fontSize: 15, fontWeight: 600, color: '#555', marginBottom: 6 }}>
+            {search ? 'No results for that search' : dateFilter !== 'All' ? `No missed calls ${dateFilter.toLowerCase()}` : 'No missed calls yet'}
+          </div>
+          <div style={{ fontSize: 13, color: '#444' }}>
+            {search ? 'Try a different phone number or clear the search.' : 'Missed calls appear here automatically when Ansa texts back a caller.'}
+          </div>
+        </div>
       ) : paged.map(conv => {
         const cfg = statusConfig[conv.status] || statusConfig.closed;
         return (
@@ -117,11 +125,12 @@ export default function MissedCallsPage() {
             onMouseEnter={e => e.currentTarget.style.background = '#1a1a1a'}
             onMouseLeave={e => e.currentTarget.style.background = '#141414'}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#1e1e1e', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ width: 36, height: 36, borderRadius: '50%', background: '#1e1e1e', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                 <Phone size={15} color="#888" />
               </div>
               <div>
-                <div style={{ fontSize: 14, fontWeight: 600, color: '#fff' }}>{formatPhone(conv.customer_phone)}</div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: '#fff' }}>{conv.customer_name || formatPhone(conv.customer_phone)}</div>
+                {conv.customer_name && <div style={{ fontSize: 12, color: '#555' }}>{formatPhone(conv.customer_phone)}</div>}
               </div>
             </div>
             <div style={{ fontSize: 13, color: '#aaa' }}>{timeAgo(conv.created_at)}</div>

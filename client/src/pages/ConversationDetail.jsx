@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ArrowLeft, Send, Bot, User, Phone, Calendar, Clock, Tag, XCircle, Zap, MapPin } from 'lucide-react';
+import { ArrowLeft, Send, Bot, User, Phone, Clock, Tag, XCircle, Zap, MapPin, AlertTriangle } from 'lucide-react';
 import { api } from '../services/api';
 import supabase from '../services/supabase';
 
@@ -13,10 +13,10 @@ function formatPhone(p) {
 function formatTime(ts) { return new Date(ts).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' }); }
 function formatDate(ts) { return new Date(ts).toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric' }); }
 
-const statusColors = {
-  active: { color: '#3b82f6', bg: 'rgba(59,130,246,0.15)' },
-  booked: { color: '#22c55e', bg: 'rgba(34,197,94,0.15)' },
-  closed: { color: '#6b7280', bg: 'rgba(107,114,128,0.15)' },
+const statusConfig = {
+  active: { label: 'AI Active',  color: '#3b82f6', bg: 'rgba(59,130,246,0.15)' },
+  booked: { label: 'Booked',     color: '#22c55e', bg: 'rgba(34,197,94,0.15)' },
+  closed: { label: 'Closed',     color: '#6b7280', bg: 'rgba(107,114,128,0.15)' },
 };
 
 export default function ConversationDetail() {
@@ -24,9 +24,11 @@ export default function ConversationDetail() {
   const [conv, setConv] = useState(null);
   const [loading, setLoading] = useState(true);
   const [aiMode, setAiMode] = useState(true);
+  const [togglingMode, setTogglingMode] = useState(false);
   const [inputVal, setInputVal] = useState('');
   const [sendError, setSendError] = useState('');
   const [closing, setClosing] = useState(false);
+  const [showCloseConfirm, setShowCloseConfirm] = useState(false);
   const [showLeaveWarning, setShowLeaveWarning] = useState(false);
   const bottomRef = useRef(null);
 
@@ -45,9 +47,7 @@ export default function ConversationDetail() {
     const channel = supabase
       .channel(`messages:${convId}`)
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `conversation_id=eq.${convId}` },
-        (payload) => {
-          setConv(c => c ? { ...c, messages: [...(c.messages || []), payload.new] } : c);
-        }
+        (payload) => { setConv(c => c ? { ...c, messages: [...(c.messages || []), payload.new] } : c); }
       )
       .subscribe();
 
@@ -59,6 +59,19 @@ export default function ConversationDetail() {
   }, [convId]);
 
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [conv?.messages]);
+
+  const handleToggleMode = async () => {
+    const next = !aiMode;
+    setTogglingMode(true);
+    try {
+      await api.updateConversation(convId, { manual_mode: !next });
+      setAiMode(next);
+    } catch (_) {
+      // revert on failure — UI stays at current state
+    } finally {
+      setTogglingMode(false);
+    }
+  };
 
   const handleSend = async () => {
     if (!inputVal.trim() || aiMode) return;
@@ -77,6 +90,7 @@ export default function ConversationDetail() {
 
   const handleClose = async () => {
     setClosing(true);
+    setShowCloseConfirm(false);
     try {
       await api.updateConversation(convId, { status: 'closed' });
       setConv(c => ({ ...c, status: 'closed' }));
@@ -100,10 +114,12 @@ export default function ConversationDetail() {
   );
 
   const msgs = conv.messages || [];
-  const sc = statusColors[conv.status] || statusColors.closed;
+  const sc = statusConfig[conv.status] || statusConfig.closed;
 
   return (
     <div style={{ padding: '24px 32px', maxWidth: 1300, margin: '0 auto', height: 'calc(100vh - 120px)', display: 'flex', flexDirection: 'column' }}>
+
+      {/* Leave warning modal */}
       {showLeaveWarning && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
           <div style={{ background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: 14, padding: 28, maxWidth: 420, width: '100%' }}>
@@ -122,6 +138,7 @@ export default function ConversationDetail() {
           </div>
         </div>
       )}
+
       <button style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'none', border: 'none', color: '#888', fontSize: 13, cursor: 'pointer', padding: 0, marginBottom: 16, fontWeight: 500 }}
         onClick={handleBack}>
         <ArrowLeft size={16} /> Back to Conversations
@@ -132,26 +149,25 @@ export default function ConversationDetail() {
         <div style={{ flex: 7, display: 'flex', flexDirection: 'column', background: '#141414', borderRadius: 12, border: '1px solid #1e1e1e', overflow: 'hidden' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 20px', background: aiMode ? 'rgba(59,130,246,0.08)' : 'rgba(245,158,11,0.08)', borderBottom: '1px solid #1e1e1e' }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: aiMode ? '#3b82f6' : '#f59e0b', fontWeight: 500 }}>
-              {aiMode ? <><Bot size={15} /> AI is handling this conversation</> : <><User size={15} /> You took over this conversation</>}
+              {aiMode ? <><Bot size={15} /> AI is handling this conversation</> : <><User size={15} /> You are in control</>}
             </span>
-            <button onClick={async () => {
-              const next = !aiMode;
-              setAiMode(next);
-              try { await api.updateConversation(convId, { manual_mode: !next }); } catch (e) { console.error('manual_mode update failed:', e); }
-            }}
-              style={{ padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: 'pointer', border: '1px solid', background: aiMode ? 'transparent' : '#f59e0b', borderColor: aiMode ? '#3b82f6' : '#f59e0b', color: aiMode ? '#3b82f6' : '#000' }}>
-              {aiMode ? 'Take Over' : 'Let AI Handle'}
+            <button onClick={handleToggleMode} disabled={togglingMode}
+              style={{ padding: '6px 14px', borderRadius: 8, fontSize: 12, fontWeight: 600, cursor: togglingMode ? 'not-allowed' : 'pointer', border: '1px solid', background: aiMode ? 'transparent' : '#f59e0b', borderColor: aiMode ? '#3b82f6' : '#f59e0b', color: aiMode ? '#3b82f6' : '#000', opacity: togglingMode ? 0.6 : 1 }}>
+              {togglingMode ? '...' : aiMode ? 'Take Over' : 'Let AI Handle'}
             </button>
           </div>
 
           <div style={{ flex: 1, overflowY: 'auto', padding: '20px', display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {msgs.length === 0 && (
+              <div style={{ textAlign: 'center', color: '#555', fontSize: 13, padding: '40px 0' }}>No messages yet.</div>
+            )}
             {msgs.map((msg, i) => {
               if (msg.role === 'system') return <div key={i} style={{ textAlign: 'center', fontSize: 12, color: '#555', padding: '8px 0' }}>{msg.content}</div>;
               const isUser = msg.role === 'user';
               return (
                 <div key={i}>
                   <div style={{ display: 'flex', justifyContent: isUser ? 'flex-start' : 'flex-end' }}>
-                    <div style={{ maxWidth: '70%', padding: '12px 16px', borderRadius: 14, fontSize: 14, lineHeight: 1.5, background: isUser ? '#222' : '#1a365d', color: '#e5e5e5', borderBottomLeftRadius: isUser ? 4 : 14, borderBottomRightRadius: isUser ? 14 : 4 }}>
+                    <div style={{ maxWidth: '70%', padding: '12px 16px', borderRadius: 14, fontSize: 14, lineHeight: 1.5, background: isUser ? '#2a2a2a' : '#1e3a5f', color: '#e5e5e5', borderBottomLeftRadius: isUser ? 4 : 14, borderBottomRightRadius: isUser ? 14 : 4, border: isUser ? '1px solid #333' : '1px solid rgba(59,130,246,0.2)' }}>
                       {msg.content}
                     </div>
                   </div>
@@ -165,52 +181,71 @@ export default function ConversationDetail() {
           {sendError && <div style={{ padding: '8px 20px', background: 'rgba(239,68,68,0.1)', color: '#ef4444', fontSize: 12 }}>{sendError}</div>}
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '14px 20px', borderTop: '1px solid #1e1e1e', background: '#111' }}>
             <input
-              style={{ flex: 1, background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: 10, padding: '10px 16px', color: '#fff', fontSize: 14, outline: 'none', caretColor: '#3b82f6' }}
+              style={{ flex: 1, background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: 10, padding: '10px 16px', color: '#fff', fontSize: 14, outline: 'none', caretColor: '#3b82f6', opacity: aiMode ? 0.5 : 1 }}
               placeholder={aiMode ? 'Take over to send a message...' : 'Type a message...'}
               value={inputVal} onChange={e => setInputVal(e.target.value)}
               onKeyDown={e => { if (e.key === 'Enter') handleSend(); }}
               disabled={aiMode}
             />
-            <button onClick={handleSend} disabled={aiMode}
-              style={{ width: 40, height: 40, borderRadius: 10, background: '#3b82f6', border: 'none', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0, opacity: aiMode ? 0.4 : 1 }}>
+            <button onClick={handleSend} disabled={aiMode || !inputVal.trim()}
+              style={{ width: 40, height: 40, borderRadius: 10, background: '#3b82f6', border: 'none', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: aiMode || !inputVal.trim() ? 'not-allowed' : 'pointer', flexShrink: 0, opacity: aiMode || !inputVal.trim() ? 0.4 : 1 }}>
               <Send size={18} />
             </button>
           </div>
         </div>
 
         {/* Info Panel */}
-        <div style={{ flex: 3, background: '#141414', borderRadius: 12, border: '1px solid #1e1e1e', padding: 24, overflowY: 'auto' }}>
+        <div style={{ flex: 3, background: '#141414', borderRadius: 12, border: '1px solid #1e1e1e', padding: 24, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
           <div style={{ fontSize: 16, fontWeight: 600, color: '#fff', marginBottom: 20 }}>Caller Info</div>
           {[
-            conv.customer_name ? { icon: User, label: 'Name', value: conv.customer_name } : null,
-            { icon: Phone, label: 'Phone', value: formatPhone(conv.customer_phone) },
-            conv.customer_address ? { icon: MapPin, label: 'Job Address', value: conv.customer_address } : null,
-            { icon: Clock, label: 'First Contact', value: `${formatDate(conv.created_at)} at ${formatTime(conv.created_at)}` },
+            conv.customer_name  ? { icon: User,   label: 'Name',          value: conv.customer_name } : null,
+            { icon: Phone,        label: 'Phone',         value: formatPhone(conv.customer_phone) },
+            conv.customer_address ? { icon: MapPin, label: 'Job Address',   value: conv.customer_address } : null,
+            { icon: Clock,        label: 'First Contact',  value: `${formatDate(conv.created_at)} at ${formatTime(conv.created_at)}` },
           ].filter(Boolean).map(({ icon: Icon, label, value }) => (
-            <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-              <Icon size={16} color="#888" />
+            <div key={label} style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 16 }}>
+              <Icon size={16} color="#888" style={{ marginTop: 2, flexShrink: 0 }} />
               <div>
                 <div style={{ fontSize: 12, color: '#666', marginBottom: 2 }}>{label}</div>
                 <div style={{ fontSize: 14, color: '#ddd', fontWeight: 500 }}>{value}</div>
               </div>
             </div>
           ))}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-            <Zap size={16} color="#888" />
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginBottom: 16 }}>
+            <Zap size={16} color="#888" style={{ marginTop: 2, flexShrink: 0 }} />
             <div>
               <div style={{ fontSize: 12, color: '#666', marginBottom: 2 }}>Status</div>
-              <span style={{ display: 'inline-block', fontSize: 12, fontWeight: 600, padding: '4px 12px', borderRadius: 20, color: sc.color, background: sc.bg, textTransform: 'capitalize' }}>{conv.status}</span>
+              <span style={{ display: 'inline-block', fontSize: 12, fontWeight: 600, padding: '4px 12px', borderRadius: 20, color: sc.color, background: sc.bg }}>{sc.label}</span>
             </div>
           </div>
 
-          <div style={{ borderTop: '1px solid #1e1e1e', margin: '20px 0' }} />
-
-          {conv.status !== 'closed' && (
-            <button onClick={handleClose} disabled={closing}
-              style={{ display: 'block', width: '100%', padding: '10px 16px', borderRadius: 10, fontSize: 13, fontWeight: 600, cursor: closing ? 'not-allowed' : 'pointer', background: 'transparent', color: '#aaa', border: '1px solid #333', opacity: closing ? 0.6 : 1 }}>
-              <XCircle size={14} style={{ marginRight: 6, verticalAlign: 'middle' }} />{closing ? 'Closing...' : 'Mark as Closed'}
-            </button>
-          )}
+          <div style={{ flex: 1 }} />
+          <div style={{ borderTop: '1px solid #1e1e1e', paddingTop: 20 }}>
+            {conv.status !== 'closed' && !showCloseConfirm && (
+              <button onClick={() => setShowCloseConfirm(true)}
+                style={{ display: 'block', width: '100%', padding: '10px 16px', borderRadius: 10, fontSize: 13, fontWeight: 600, cursor: 'pointer', background: 'transparent', color: '#aaa', border: '1px solid #333' }}>
+                <XCircle size={14} style={{ marginRight: 6, verticalAlign: 'middle' }} />Mark as Closed
+              </button>
+            )}
+            {showCloseConfirm && (
+              <div style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 10, padding: 14 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: '#fca5a5', marginBottom: 12 }}>
+                  <AlertTriangle size={14} /> Close this conversation?
+                </div>
+                <div style={{ fontSize: 12, color: '#888', marginBottom: 12, lineHeight: 1.5 }}>The AI will stop responding. This cannot be undone.</div>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button onClick={() => setShowCloseConfirm(false)}
+                    style={{ flex: 1, padding: '7px', borderRadius: 7, border: '1px solid #333', background: 'transparent', color: '#888', fontSize: 12, cursor: 'pointer', fontWeight: 500 }}>
+                    Keep Open
+                  </button>
+                  <button onClick={handleClose} disabled={closing}
+                    style={{ flex: 1, padding: '7px', borderRadius: 7, border: '1px solid rgba(239,68,68,0.3)', background: 'rgba(239,68,68,0.15)', color: '#ef4444', fontSize: 12, cursor: closing ? 'not-allowed' : 'pointer', fontWeight: 600 }}>
+                    {closing ? 'Closing...' : 'Yes, Close'}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

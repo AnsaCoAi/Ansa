@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import {
   LayoutDashboard, PhoneMissed, MessageSquare, CalendarCheck,
-  BarChart3, Settings, LogOut, Menu, X, Phone,
+  BarChart3, Settings, LogOut, Menu, X, Headphones,
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 
@@ -35,7 +35,7 @@ export default function DashboardLayout({ children, currentHash }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
 
   const daysLeft = trialDaysLeft(business?.created_at)
-  const showTrialBanner = daysLeft !== null && daysLeft <= TRIAL_DAYS
+  const showTrialBanner = daysLeft !== null && daysLeft <= 7
 
   const isActive = (hash) => {
     if (hash === '#/dashboard') return currentHash === '#/dashboard'
@@ -85,7 +85,7 @@ export default function DashboardLayout({ children, currentHash }) {
             </div>
           </div>
           <a href="mailto:hello@ansaco.ai" style={styles.logoutBtn}>
-            <Phone size={16} /><span>Contact support</span>
+            <Headphones size={16} /><span>Contact support</span>
           </a>
           <button style={styles.logoutBtn} onClick={() => { setSidebarOpen(false); signOut(); }}>
             <LogOut size={16} /><span>Log out</span>

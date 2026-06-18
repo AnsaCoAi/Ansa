@@ -28,10 +28,10 @@ const tabs = [
   { key: 'closed', label: 'Closed', dot: '#6b7280' },
 ];
 
-const statusColors = {
-  active: { color: '#3b82f6', bg: 'rgba(59,130,246,0.15)' },
-  booked: { color: '#22c55e', bg: 'rgba(34,197,94,0.15)' },
-  closed: { color: '#6b7280', bg: 'rgba(107,114,128,0.15)' },
+const statusConfig = {
+  active: { label: 'AI Active', color: '#3b82f6', bg: 'rgba(59,130,246,0.15)' },
+  booked: { label: 'Booked',    color: '#22c55e', bg: 'rgba(34,197,94,0.15)' },
+  closed: { label: 'Closed',   color: '#6b7280', bg: 'rgba(107,114,128,0.15)' },
 };
 
 const cache = { data: null, bizId: null };
@@ -136,21 +136,36 @@ export default function ConversationsPage() {
           </button>
         ))}
         </div>
-        <button
-          onClick={needsAttention.length > 0 ? () => { markViewed(needsAttention[0].id); window.location.hash = `#/dashboard/conversations/${needsAttention[0].id}`; } : undefined}
-          style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px', background: needsAttention.length > 0 ? '#3b82f6' : '#1a1a1a', border: `1px solid ${needsAttention.length > 0 ? '#3b82f6' : '#2a2a2a'}`, borderRadius: 8, color: needsAttention.length > 0 ? '#fff' : '#555', fontSize: 13, fontWeight: 600, cursor: needsAttention.length > 0 ? 'pointer' : 'default' }}>
-          <span style={{ width: 8, height: 8, borderRadius: '50%', background: needsAttention.length > 0 ? '#fff' : '#444' }} />
-          {needsAttention.length > 0 ? `${needsAttention.length} unread — open latest` : 'All caught up'}
-        </button>
+        {needsAttention.length > 0 ? (
+          <button
+            onClick={() => { markViewed(needsAttention[0].id); window.location.hash = `#/dashboard/conversations/${needsAttention[0].id}`; }}
+            style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px', background: '#3b82f6', border: '1px solid #3b82f6', borderRadius: 8, color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
+            <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#fff' }} />
+            {needsAttention.length} unread — open latest
+          </button>
+        ) : (
+          <span style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px', background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: 8, color: '#555', fontSize: 13, fontWeight: 500 }}>
+            <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#333' }} />
+            All caught up
+          </span>
+        )}
       </div>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         {loading ? (
           <div style={{ padding: 60, textAlign: 'center', color: '#666', fontSize: 14 }}>Loading...</div>
         ) : filtered.length === 0 ? (
-          <div style={{ padding: 60, textAlign: 'center', color: '#666', fontSize: 14 }}>No conversations found.</div>
+          <div style={{ padding: '60px 20px', textAlign: 'center' }}>
+            <MessageSquare size={32} color="#333" style={{ marginBottom: 12 }} />
+            <div style={{ fontSize: 15, fontWeight: 600, color: '#555', marginBottom: 6 }}>
+              {activeTab === 'all' ? 'No conversations yet' : `No ${activeTab === 'active' ? 'AI Active' : activeTab === 'takeover' ? 'Needs Reply' : activeTab} conversations`}
+            </div>
+            <div style={{ fontSize: 13, color: '#444' }}>
+              {activeTab === 'all' ? 'Conversations appear here when someone calls and Ansa texts back.' : 'Try switching to the All tab to see everything.'}
+            </div>
+          </div>
         ) : filtered.map(conv => {
-          const sc = statusColors[conv.status] || statusColors.closed;
+          const sc = statusConfig[conv.status] || statusConfig.closed;
           return (
             <div key={conv.id}
               className={`conv-row${conv.manual_mode && lastMsgIsFromCustomer(conv) ? ' conv-takeover' : isUnread(conv) ? ' conv-unread' : ''}`}
@@ -171,7 +186,7 @@ export default function ConversationsPage() {
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexShrink: 0 }}>
                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
-                  <span style={{ fontSize: 12, fontWeight: 600, padding: '4px 10px', borderRadius: 20, color: sc.color, background: sc.bg, textTransform: 'capitalize' }}>{conv.status}</span>
+                  <span style={{ fontSize: 12, fontWeight: 600, padding: '4px 10px', borderRadius: 20, color: conv.manual_mode ? '#f59e0b' : sc.color, background: conv.manual_mode ? 'rgba(245,158,11,0.15)' : sc.bg }}>{conv.manual_mode && conv.status === 'active' ? 'Needs Reply' : sc.label}</span>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                     <span style={{ fontSize: 11, color: '#888', display: 'flex', alignItems: 'center', gap: 4 }}><MessageSquare size={12} /> {getMsgCount(conv)} msgs</span>
                     <span style={{ fontSize: 12, color: '#555' }}><Clock size={11} style={{ marginRight: 3, verticalAlign: 'middle' }} />{timeAgo(getTimestamp(conv))}</span>

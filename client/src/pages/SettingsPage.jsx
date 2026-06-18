@@ -524,10 +524,11 @@ export default function SettingsPage() {
   function renderIntegrationsTab() {
     const twilioConnected = !!authBusiness?.twilio_number;
     const calendarConnected = !!authBusiness?.google_calendar_id;
+    const stripeConnected = !!authBusiness?.stripe_customer_id;
     const configs = [
       { key: 'twilio', name: 'Twilio', desc: twilioConnected ? `Number: ${authBusiness.twilio_number}` : 'No number provisioned', icon: Phone, connected: twilioConnected },
       { key: 'googleCalendar', name: 'Google Calendar', desc: calendarConnected ? 'Connected' : 'Not connected — click to connect', icon: Clock, connected: calendarConnected },
-      { key: 'stripe', name: 'Stripe', desc: 'Not connected', icon: CreditCard, connected: false },
+      { key: 'stripe', name: 'Stripe', desc: stripeConnected ? 'Billing active' : 'Not connected', icon: CreditCard, connected: stripeConnected },
     ];
     return (
       <div style={s.section}>

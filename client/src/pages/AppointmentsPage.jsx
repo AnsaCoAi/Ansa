@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Calendar, Clock, User, Tag, Eye, XCircle, CheckCircle, AlertTriangle } from 'lucide-react';
+import { Calendar, Clock, User, Tag, Eye, XCircle, CheckCircle, AlertTriangle, CalendarCheck } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../services/api';
 
@@ -126,7 +126,15 @@ export default function AppointmentsPage() {
         {loading ? (
           <div style={styles.empty}>Loading...</div>
         ) : filtered.length === 0 ? (
-          <div style={styles.empty}>No appointments found.</div>
+          <div style={{ ...styles.empty, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
+            <CalendarCheck size={32} color="#333" />
+            <div style={{ fontSize: 15, fontWeight: 600, color: '#555' }}>
+              {filter === 'Upcoming' ? 'No upcoming appointments' : filter === 'Past' ? 'No past appointments' : 'No cancelled appointments'}
+            </div>
+            <div style={{ fontSize: 13, color: '#444' }}>
+              {filter === 'Upcoming' ? 'Appointments booked by Ansa will appear here.' : 'Switch to Upcoming to see scheduled jobs.'}
+            </div>
+          </div>
         ) : filtered.map(apt => (
           <div key={apt.id} style={styles.card}
             onMouseEnter={e => { e.currentTarget.style.borderColor = '#2a2a2a'; }}
