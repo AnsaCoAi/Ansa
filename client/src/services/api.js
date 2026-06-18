@@ -43,6 +43,7 @@ export const api = {
   updateAppointment: (id, data) => patch(`/api/appointments/${id}`, data),
   sendMessage: (conversationId, message) => post(`/api/conversations/${conversationId}/send`, { message }),
   deleteConversation: (id) => del(`/api/conversations/${id}`),
+  disconnectGoogle: (businessId) => post(`/api/businesses/${businessId}/disconnect-google`, {}),
   getConversationAppointment: (conversationId) => get(`/api/conversations/${conversationId}/appointment`),
   cancelAppointmentWithNotify: (id, notifyCustomer, cancellationMessage) =>
     patch(`/api/appointments/${id}`, { status: 'cancelled', notify_customer: notifyCustomer, cancellation_message: cancellationMessage }),

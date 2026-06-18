@@ -64,6 +64,21 @@ router.post("/missed-call", async (req, res) => {
     }
 
     const conversation = await getOrCreateConversation(business.id, From);
+
+    // Dedup: if greeting was already sent in the last 60s, skip (handles Twilio double-fire)
+    const { data: recentGreeting } = await supabase
+      .from('messages')
+      .select('id, created_at')
+      .eq('conversation_id', conversation.id)
+      .eq('role', 'assistant')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (recentGreeting && (Date.now() - new Date(recentGreeting.created_at).getTime()) < 60000) {
+      console.log(`[Missed Call] Duplicate detected — skipping greeting for ${From}`);
+      return res.status(200).send("<Response></Response>");
+    }
+
     await saveMessage(conversation.id, "assistant", business.greeting);
     await sendSMS(From, calledNumber, business.greeting);
 

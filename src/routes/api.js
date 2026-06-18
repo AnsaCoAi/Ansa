@@ -271,6 +271,16 @@ router.post('/conversations/:id/send', async (req, res) => {
   }
 });
 
+// POST /api/businesses/:id/disconnect-google
+router.post('/businesses/:id/disconnect-google', async (req, res) => {
+  const { error } = await supabase
+    .from('businesses')
+    .update({ google_calendar_id: null, google_tokens: null })
+    .eq('id', req.params.id);
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ ok: true });
+});
+
 // POST /api/create-business
 // Called during signup — uses service role to bypass RLS
 router.post('/create-business', async (req, res) => {

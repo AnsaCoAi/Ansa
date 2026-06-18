@@ -2,7 +2,12 @@ const { sendSMS } = require("./twilio");
 
 async function notifyOwner(business, customerPhone, summary, type = "new_lead") {
   let ownerPhone = business.owner_phone;
-  if (ownerPhone && !ownerPhone.startsWith('+')) ownerPhone = '+' + ownerPhone;
+  if (ownerPhone) {
+    const digits = ownerPhone.replace(/\D/g, '');
+    if (digits.length === 10) ownerPhone = '+1' + digits;
+    else if (digits.length === 11 && digits[0] === '1') ownerPhone = '+' + digits;
+    else if (!ownerPhone.startsWith('+')) ownerPhone = '+' + digits;
+  }
   if (!ownerPhone) {
     console.log(`[Notify] No owner_phone on business ${business.id} — skipping`);
     return;
