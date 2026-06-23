@@ -344,7 +344,18 @@ A deep audit of the full platform found 87 issues across 2 sessions. All tracked
 - SMS end-to-end tested and working ✅
 - All settings save correctly (including service area + avg job value) ✅
 
-### NOTHING TODO — all tracked issues resolved as of 2026-06-17
+### Session 2026-06-22 — Mobile Responsiveness Pass
+Full pre-demo audit found 0 logic bugs (all prior fixes held). Only gap was mobile layout.
+
+**6 files updated — committed and live:**
+- DashboardHome: stat grid collapses 4→2→1 columns on tablet/phone
+- AnalyticsPage: stat cards 4→2→1, charts stack to single column on mobile
+- AppointmentsPage: appointment detail cards 3→2→1 columns on mobile
+- MissedCallsPage: table header hidden on mobile, rows switch to vertical card layout
+- ConversationDetail: info panel hidden on mobile (full-screen chat), modals 92vw, padding 16px
+- SettingsPage: tab bar wraps on mobile, name/phone formRow stacks to 1 column
+
+### NOTHING TODO — platform is demo-ready
 
 ### HOW TO RUN THE DEMO ACCOUNT:
 - URL: https://www.ansaco.ai
