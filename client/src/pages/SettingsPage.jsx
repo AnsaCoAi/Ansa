@@ -707,16 +707,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div style={s.page}>
-      <style>{`
-        @media (max-width: 768px) {
-          .ansa-settings-page { padding: 20px 16px !important; }
-          .ansa-settings-tabs { flex-wrap: wrap !important; width: 100% !important; }
-          .ansa-settings-tabs button { flex: 1; min-width: 80px; justify-content: center; font-size: 12px !important; padding: 8px 10px !important; }
-          .ansa-form-row { grid-template-columns: 1fr !important; }
-          .ansa-hours-row { flex-wrap: wrap; gap: 8px !important; }
-        }
-      `}</style>
+    <div style={s.page} className="ansa-settings-page">
       <div style={s.tabs} className="ansa-settings-tabs">
         {tabConfig.map(tab => {
           const Icon = tab.icon;

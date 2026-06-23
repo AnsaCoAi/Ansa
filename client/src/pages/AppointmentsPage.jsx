@@ -121,18 +121,7 @@ export default function AppointmentsPage() {
   }, [filter, appointments]);
 
   return (
-    <div style={styles.page}>
-      <style>{`
-        @media (max-width: 768px) {
-          .ansa-apt-page { padding: 20px 16px !important; }
-          .ansa-apt-body { grid-template-columns: 1fr 1fr !important; }
-          .ansa-apt-top { flex-wrap: wrap; gap: 10px !important; }
-        }
-        @media (max-width: 480px) {
-          .ansa-apt-body { grid-template-columns: 1fr !important; }
-          .ansa-apt-actions { flex-wrap: wrap; }
-        }
-      `}</style>
+    <div style={styles.page} className="ansa-apt-page">
       <div style={styles.filters}>
         {filterTabs.map(f => (
           <button key={f} style={styles.filterBtn(filter === f)} onClick={() => setFilter(f)}>{f}</button>

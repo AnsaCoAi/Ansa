@@ -1,0 +1,258 @@
+/* ============================================================
+   ANSA — Global Mobile Responsive Styles
+   Applied globally via main.jsx import.
+   Overrides inline React styles using !important where needed.
+   Breakpoints: 768px (tablet), 480px (phone)
+   ============================================================ */
+
+/* ── Base resets for all screen sizes ───────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* ── Dashboard page wrapper (all pages share this pattern) ── */
+@media (max-width: 768px) {
+
+  /* Every dashboard page has padding: 32px as inline style */
+  .ansa-page > div:first-child {
+    padding: 20px 16px !important;
+    max-width: 100% !important;
+  }
+
+  /* ── DashboardHome ─────────────────────────────────────── */
+
+  /* Stat grid: 4-col → 2-col */
+  .ansa-stat-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 12px !important;
+  }
+
+  /* Recent activity rows: hide right side badge on very small */
+  .ansa-recent-row {
+    flex-wrap: wrap !important;
+  }
+
+  /* Onboarding checklist step rows */
+  .ansa-checklist-step {
+    flex-wrap: wrap !important;
+  }
+
+  /* ── AnalyticsPage ─────────────────────────────────────── */
+  .ansa-analytics-stats {
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 10px !important;
+  }
+
+  .ansa-analytics-charts {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  .ansa-analytics-page {
+    padding: 20px 16px !important;
+  }
+
+  /* Range toggle wraps on mobile */
+  .ansa-range-toggle {
+    flex-wrap: wrap !important;
+    gap: 6px !important;
+  }
+
+  /* ── ConversationsPage ─────────────────────────────────── */
+  .ansa-conversations-wrap {
+    padding: 16px 12px !important;
+  }
+
+  /* Tab bar scrolls horizontally */
+  .ansa-tab-bar {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    flex-wrap: nowrap !important;
+    padding-bottom: 4px !important;
+  }
+
+  /* Conversation rows: tighten padding */
+  .ansa-conv-row {
+    padding: 14px 14px !important;
+  }
+
+  /* ── ConversationDetail ────────────────────────────────── */
+  .ansa-detail-wrap {
+    padding: 12px !important;
+    height: auto !important;
+    min-height: calc(100vh - 64px) !important;
+  }
+
+  .ansa-detail-panels {
+    flex-direction: column !important;
+    gap: 12px !important;
+    height: auto !important;
+    min-height: 0 !important;
+  }
+
+  /* Hide the Caller Info panel on mobile — show chat full width */
+  .ansa-detail-info {
+    display: none !important;
+  }
+
+  /* Chat panel: full height on mobile */
+  .ansa-detail-chat {
+    height: 70vh !important;
+    min-height: 400px !important;
+  }
+
+  /* Modals: take almost full screen on mobile */
+  .ansa-modal-box {
+    max-width: 92vw !important;
+    width: 92vw !important;
+    padding: 20px !important;
+  }
+
+  /* ── AppointmentsPage ──────────────────────────────────── */
+  .ansa-apt-page {
+    padding: 16px 12px !important;
+  }
+
+  .ansa-apt-body {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+  }
+
+  .ansa-apt-actions {
+    flex-wrap: wrap !important;
+    justify-content: flex-start !important;
+  }
+
+  /* ── MissedCallsPage ───────────────────────────────────── */
+  .ansa-calls-page {
+    padding: 16px 12px !important;
+  }
+
+  /* Hide table header row on mobile */
+  .ansa-calls-header-row {
+    display: none !important;
+  }
+
+  /* Rows become card-style on mobile */
+  .ansa-calls-row {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    padding: 14px 14px !important;
+    align-items: flex-start !important;
+  }
+
+  /* Hide less important columns on mobile */
+  .ansa-calls-hide-mobile {
+    display: none !important;
+  }
+
+  /* Filter bar stacks vertically */
+  .ansa-calls-filter-bar {
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 10px !important;
+  }
+
+  .ansa-calls-search {
+    min-width: unset !important;
+    width: 100% !important;
+  }
+
+  /* ── SettingsPage ──────────────────────────────────────── */
+  .ansa-settings-page {
+    padding: 16px 12px !important;
+  }
+
+  /* Tab bar wraps and fills full width */
+  .ansa-settings-tabs {
+    width: 100% !important;
+    flex-wrap: wrap !important;
+    gap: 4px !important;
+  }
+
+  .ansa-settings-tabs button {
+    flex: 1 !important;
+    min-width: 70px !important;
+    font-size: 11px !important;
+    padding: 8px 6px !important;
+    justify-content: center !important;
+    gap: 4px !important;
+  }
+
+  /* Business Info: name/phone fields stack */
+  .ansa-form-row {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Business hours row: allow wrapping */
+  .ansa-hours-row {
+    flex-wrap: wrap !important;
+  }
+
+  /* Integration cards: stack actions below info */
+  .ansa-integration-card {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+  }
+
+  /* ── General: all flex rows that can wrap ──────────────── */
+
+  /* Top bar in layout */
+  [data-ansa-main] header {
+    padding: 0 14px !important;
+  }
+
+  /* Content area under top bar */
+  [data-ansa-main] main {
+    overflow-x: hidden !important;
+  }
+}
+
+/* ── Phone-only (≤ 480px) ───────────────────────────────── */
+@media (max-width: 480px) {
+
+  /* Stat grids collapse to 1-col on phones */
+  .ansa-stat-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .ansa-analytics-stats {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Appointment detail cards: 1-col */
+  .ansa-apt-body {
+    grid-template-columns: 1fr !important;
+  }
+
+  /* Settings tabs: icon only (label hidden) */
+  .ansa-settings-tabs button span {
+    display: none !important;
+  }
+
+  .ansa-settings-tabs button {
+    padding: 10px !important;
+    min-width: 40px !important;
+    flex: 1 !important;
+  }
+
+  /* Shrink font sizes */
+  .ansa-page > div:first-child {
+    padding: 14px 12px !important;
+  }
+}
+
+/* ── Touch/tap improvements ─────────────────────────────── */
+@media (hover: none) {
+  /* Bigger tap targets on touch devices */
+  button, a[href] {
+    min-height: 40px;
+  }
+
+  /* Remove hover states that can get "stuck" on touch */
+  button:hover, a:hover {
+    opacity: 1 !important;
+  }
+}

@@ -107,7 +107,7 @@ export default function ConversationsPage() {
   const needsAttention = conversations.filter(c => isUnread(c) || (c.manual_mode && lastMsgIsFromCustomer(c)));
 
   return (
-    <div style={{ padding: '32px', maxWidth: 1200, margin: '0 auto' }}>
+    <div className="ansa-conversations-wrap" style={{ padding: '32px', maxWidth: 1200, margin: '0 auto' }}>
       <style>{`
         .conv-row { background: #141414; border: 1px solid #1e1e1e; transition: background 0.15s; }
         .conv-row:hover { background: #1a1a1a !important; border-color: #2a2a2a !important; }
@@ -123,7 +123,7 @@ export default function ConversationsPage() {
       )}
 
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
-        <div style={{ display: 'flex', gap: 4, background: '#141414', borderRadius: 10, padding: 4 }}>
+        <div className="ansa-tab-bar" style={{ display: 'flex', gap: 4, background: '#141414', borderRadius: 10, padding: 4 }}>
         {tabs.map(tab => (
           <button key={tab.key} onClick={() => setActiveTab(tab.key)}
             style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 16px', borderRadius: 8, fontSize: 13, fontWeight: 500, cursor: 'pointer', background: activeTab === tab.key ? '#222' : 'transparent', color: activeTab === tab.key ? '#fff' : '#888', border: 'none' }}>
@@ -167,7 +167,7 @@ export default function ConversationsPage() {
           const sc = statusConfig[conv.status] || statusConfig.closed;
           return (
             <div key={conv.id}
-              className={`conv-row${conv.manual_mode && lastMsgIsFromCustomer(conv) ? ' conv-takeover' : isUnread(conv) ? ' conv-unread' : ''}`}
+              className={`conv-row ansa-conv-row${conv.manual_mode && lastMsgIsFromCustomer(conv) ? ' conv-takeover' : isUnread(conv) ? ' conv-unread' : ''}`}
               style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 24px', borderRadius: 12, cursor: 'pointer' }}
               onClick={() => { markViewed(conv.id); window.location.hash = `#/dashboard/conversations/${conv.id}`; }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 16, flex: 1, minWidth: 0 }}>

@@ -102,16 +102,6 @@ function buildHourlyData(convs) {
   }).filter((_, h) => h >= 6 && h <= 21);
 }
 
-const RESPONSIVE_CSS = `
-  @media (max-width: 768px) {
-    .ansa-analytics-stats { grid-template-columns: repeat(2, 1fr) !important; }
-    .ansa-analytics-charts { grid-template-columns: 1fr !important; }
-    .ansa-analytics-page { padding: 20px 16px !important; }
-  }
-  @media (max-width: 480px) {
-    .ansa-analytics-stats { grid-template-columns: 1fr !important; }
-  }
-`;
 
 const styles = {
   page:         { padding: '32px', maxWidth: 1200, margin: '0 auto' },
@@ -183,7 +173,6 @@ export default function AnalyticsPage() {
 
   return (
     <div style={styles.page} className="ansa-analytics-page">
-      <style>{RESPONSIVE_CSS}</style>
       {loadError && (
         <div style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 10, padding: '12px 18px', marginBottom: 20, fontSize: 13, color: '#fca5a5' }}>
           Unable to load analytics data. Check your connection and refresh.

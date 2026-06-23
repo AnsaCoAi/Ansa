@@ -143,14 +143,6 @@ export default function ConversationDetail() {
 
   return (
     <div className="ansa-detail-wrap" style={{ padding: '24px 32px', maxWidth: 1300, margin: '0 auto', height: 'calc(100vh - 120px)', display: 'flex', flexDirection: 'column' }}>
-      <style>{`
-        @media (max-width: 768px) {
-          .ansa-detail-wrap { padding: 16px !important; height: auto !important; min-height: calc(100vh - 80px); }
-          .ansa-detail-panels { flex-direction: column !important; }
-          .ansa-detail-info { display: none !important; }
-          .ansa-modal-box { width: 92vw !important; max-width: 92vw !important; }
-        }
-      `}</style>
 
       {/* Leave warning modal */}
       {showLeaveWarning && (
@@ -198,7 +190,7 @@ export default function ConversationDetail() {
 
       <div className="ansa-detail-panels" style={{ display: 'flex', gap: 20, flex: 1, minHeight: 0 }}>
         {/* Chat Panel */}
-        <div style={{ flex: 7, display: 'flex', flexDirection: 'column', background: '#141414', borderRadius: 12, border: '1px solid #1e1e1e', overflow: 'hidden' }}>
+        <div className="ansa-detail-chat" style={{ flex: 7, display: 'flex', flexDirection: 'column', background: '#141414', borderRadius: 12, border: '1px solid #1e1e1e', overflow: 'hidden' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 20px', background: aiMode ? 'rgba(59,130,246,0.08)' : 'rgba(245,158,11,0.08)', borderBottom: '1px solid #1e1e1e' }}>
             <span style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: aiMode ? '#3b82f6' : '#f59e0b', fontWeight: 500 }}>
               {aiMode ? <><Bot size={15} /> AI is handling this conversation</> : <><User size={15} /> You are in control</>}

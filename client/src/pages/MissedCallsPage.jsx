@@ -80,17 +80,7 @@ export default function MissedCallsPage() {
   const cols = { gridTemplateColumns: '1.5fr 1fr 1fr 0.8fr' };
 
   return (
-    <div style={{ padding: '32px', maxWidth: 1200, margin: '0 auto' }}>
-      <style>{`
-        @media (max-width: 768px) {
-          .ansa-calls-page { padding: 20px 16px !important; }
-          .ansa-calls-header-row { display: none !important; }
-          .ansa-calls-row { display: flex !important; flex-direction: column !important; gap: 6px !important; padding: 14px 16px !important; }
-          .ansa-calls-hide-mobile { display: none !important; }
-          .ansa-calls-filter-bar { flex-direction: column !important; align-items: stretch !important; }
-          .ansa-calls-search { min-width: unset !important; width: 100% !important; }
-        }
-      `}</style>
+    <div style={{ padding: '32px', maxWidth: 1200, margin: '0 auto' }} className="ansa-calls-page">
       <p style={{ fontSize: 14, color: '#888', margin: '0 0 16px 0' }}>Every missed call that triggered an Ansa text-back</p>
       {loadError && (
         <div style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 10, padding: '12px 18px', marginBottom: 20, fontSize: 13, color: '#fca5a5' }}>
@@ -98,7 +88,7 @@ export default function MissedCallsPage() {
         </div>
       )}
 
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, gap: 16, flexWrap: 'wrap' }}>
+      <div className="ansa-calls-filter-bar" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, gap: 16, flexWrap: 'wrap' }}>
         <div style={{ display: 'flex', gap: 6 }}>
           {dateFilters.map(f => (
             <button key={f} onClick={() => { setDateFilter(f); setPage(1); }}
@@ -107,7 +97,7 @@ export default function MissedCallsPage() {
             </button>
           ))}
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#141414', border: '1px solid #1e1e1e', borderRadius: 8, padding: '8px 14px', minWidth: 240 }}>
+        <div className="ansa-calls-search" style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#141414', border: '1px solid #1e1e1e', borderRadius: 8, padding: '8px 14px', minWidth: 240 }}>
           <Search size={15} color="#666" />
           <input style={{ background: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: 13, flex: 1 }}
             placeholder="Search by phone..." value={search}
