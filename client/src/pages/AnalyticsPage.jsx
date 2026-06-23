@@ -102,6 +102,17 @@ function buildHourlyData(convs) {
   }).filter((_, h) => h >= 6 && h <= 21);
 }
 
+const RESPONSIVE_CSS = `
+  @media (max-width: 768px) {
+    .ansa-analytics-stats { grid-template-columns: repeat(2, 1fr) !important; }
+    .ansa-analytics-charts { grid-template-columns: 1fr !important; }
+    .ansa-analytics-page { padding: 20px 16px !important; }
+  }
+  @media (max-width: 480px) {
+    .ansa-analytics-stats { grid-template-columns: 1fr !important; }
+  }
+`;
+
 const styles = {
   page:         { padding: '32px', maxWidth: 1200, margin: '0 auto' },
   header:       { display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 28 },
@@ -171,7 +182,8 @@ export default function AnalyticsPage() {
   const chartLabel = range === '7 days' ? 'Last 7 Days' : range === '30 days' ? 'Last 30 Days' : 'Last 90 Days';
 
   return (
-    <div style={styles.page}>
+    <div style={styles.page} className="ansa-analytics-page">
+      <style>{RESPONSIVE_CSS}</style>
       {loadError && (
         <div style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 10, padding: '12px 18px', marginBottom: 20, fontSize: 13, color: '#fca5a5' }}>
           Unable to load analytics data. Check your connection and refresh.
@@ -185,7 +197,7 @@ export default function AnalyticsPage() {
         </div>
       </div>
 
-      <div style={styles.statsRow}>
+      <div style={styles.statsRow} className="ansa-analytics-stats">
         {[
           { icon: Phone,        color: '#3b82f6', value: loading ? '—' : totalCalls,                                            label: 'Missed Calls',      trend: trendBadge(totalCalls, priorTotal) },
           { icon: MessageCircle,color: '#8b5cf6', value: loading ? '—' : (totalCalls > 0 ? `${responseRate}%` : '—'),           label: 'Response Rate',     trend: trendBadge(responseRate, priorResponseRate) },
@@ -227,7 +239,7 @@ export default function AnalyticsPage() {
         </ResponsiveContainer>
       </div>
 
-      <div style={styles.chartsGrid}>
+      <div style={styles.chartsGrid} className="ansa-analytics-charts">
         <div style={styles.chartCard}>
           <div style={styles.chartTitle}>Bookings by Day</div>
           <ResponsiveContainer width="100%" height={250}>

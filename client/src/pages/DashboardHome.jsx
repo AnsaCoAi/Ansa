@@ -210,6 +210,16 @@ export default function DashboardHome() {
 
   return (
     <div style={{ padding: '32px', maxWidth: 1200, margin: '0 auto' }}>
+      <style>{`
+        @media (max-width: 768px) {
+          .ansa-stat-grid { grid-template-columns: repeat(2, 1fr) !important; }
+          .ansa-home-wrap { padding: 20px 16px !important; }
+          .ansa-recent-row { flex-direction: column; align-items: flex-start !important; gap: 8px !important; }
+        }
+        @media (max-width: 480px) {
+          .ansa-stat-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
       <h1 style={{ fontSize: 28, fontWeight: 700, color: '#fff', margin: 0 }}>{getGreeting()}, {ownerFirst}</h1>
       <p style={{ fontSize: 15, color: '#888', marginTop: 4, marginBottom: 28 }}>Here's what happened while you were on the job.</p>
 
@@ -223,7 +233,7 @@ export default function DashboardHome() {
 
       <AlertBanner staleConvs={staleActiveConvs} />
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 32 }}>
+      <div className="ansa-stat-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 32 }}>
         {statCards.map(({ icon: Icon, color, value, label, sub }) => (
           <div key={label} style={{ background: '#141414', borderRadius: 12, border: '1px solid #1e1e1e', padding: '20px 24px', display: 'flex', alignItems: 'flex-start', gap: 16 }}>
             <div style={{ width: 44, height: 44, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: `${color}18`, flexShrink: 0 }}>

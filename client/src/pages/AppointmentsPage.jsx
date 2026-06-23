@@ -122,6 +122,17 @@ export default function AppointmentsPage() {
 
   return (
     <div style={styles.page}>
+      <style>{`
+        @media (max-width: 768px) {
+          .ansa-apt-page { padding: 20px 16px !important; }
+          .ansa-apt-body { grid-template-columns: 1fr 1fr !important; }
+          .ansa-apt-top { flex-wrap: wrap; gap: 10px !important; }
+        }
+        @media (max-width: 480px) {
+          .ansa-apt-body { grid-template-columns: 1fr !important; }
+          .ansa-apt-actions { flex-wrap: wrap; }
+        }
+      `}</style>
       <div style={styles.filters}>
         {filterTabs.map(f => (
           <button key={f} style={styles.filterBtn(filter === f)} onClick={() => setFilter(f)}>{f}</button>
@@ -156,7 +167,7 @@ export default function AppointmentsPage() {
               <span style={styles.badge(apt.status)}>{(statusConfig[apt.status] || statusConfig.confirmed).label}</span>
             </div>
 
-            <div style={styles.cardBody}>
+            <div style={styles.cardBody} className="ansa-apt-body">
               <div style={styles.detail}>
                 <Tag size={14} color="#3b82f6" />
                 <div>

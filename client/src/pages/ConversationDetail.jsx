@@ -142,12 +142,20 @@ export default function ConversationDetail() {
     : (statusConfig[conv.status] || statusConfig.closed);
 
   return (
-    <div style={{ padding: '24px 32px', maxWidth: 1300, margin: '0 auto', height: 'calc(100vh - 120px)', display: 'flex', flexDirection: 'column' }}>
+    <div className="ansa-detail-wrap" style={{ padding: '24px 32px', maxWidth: 1300, margin: '0 auto', height: 'calc(100vh - 120px)', display: 'flex', flexDirection: 'column' }}>
+      <style>{`
+        @media (max-width: 768px) {
+          .ansa-detail-wrap { padding: 16px !important; height: auto !important; min-height: calc(100vh - 80px); }
+          .ansa-detail-panels { flex-direction: column !important; }
+          .ansa-detail-info { display: none !important; }
+          .ansa-modal-box { width: 92vw !important; max-width: 92vw !important; }
+        }
+      `}</style>
 
       {/* Leave warning modal */}
       {showLeaveWarning && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
-          <div style={{ background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: 14, padding: 28, maxWidth: 420, width: '100%' }}>
+          <div className="ansa-modal-box" style={{ background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: 14, padding: 28, maxWidth: 420, width: '100%' }}>
             <div style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 10 }}>Leave this conversation?</div>
             <div style={{ fontSize: 14, color: '#aaa', lineHeight: 1.6, marginBottom: 24 }}>You took over this conversation — <span style={{ color: '#f59e0b', fontWeight: 600 }}>the AI will not respond</span> while you're in control. The customer won't get a reply unless you come back and send one.</div>
             <div style={{ display: 'flex', gap: 10 }}>
@@ -166,7 +174,7 @@ export default function ConversationDetail() {
 
       {showDeleteConfirm && (
         <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
-          <div style={{ background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: 14, padding: 28, maxWidth: 420, width: '100%' }}>
+          <div className="ansa-modal-box" style={{ background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: 14, padding: 28, maxWidth: 420, width: '100%' }}>
             <div style={{ fontSize: 16, fontWeight: 700, color: '#fff', marginBottom: 10 }}>Delete this conversation?</div>
             <div style={{ fontSize: 14, color: '#aaa', lineHeight: 1.6, marginBottom: 24 }}>This will permanently delete all messages and cannot be undone. Use this for spam or wrong numbers.</div>
             <div style={{ display: 'flex', gap: 10 }}>
@@ -188,7 +196,7 @@ export default function ConversationDetail() {
         <ArrowLeft size={16} /> Back to Conversations
       </button>
 
-      <div style={{ display: 'flex', gap: 20, flex: 1, minHeight: 0 }}>
+      <div className="ansa-detail-panels" style={{ display: 'flex', gap: 20, flex: 1, minHeight: 0 }}>
         {/* Chat Panel */}
         <div style={{ flex: 7, display: 'flex', flexDirection: 'column', background: '#141414', borderRadius: 12, border: '1px solid #1e1e1e', overflow: 'hidden' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 20px', background: aiMode ? 'rgba(59,130,246,0.08)' : 'rgba(245,158,11,0.08)', borderBottom: '1px solid #1e1e1e' }}>
@@ -252,7 +260,7 @@ export default function ConversationDetail() {
         </div>
 
         {/* Info Panel */}
-        <div style={{ flex: 3, background: '#141414', borderRadius: 12, border: '1px solid #1e1e1e', padding: 24, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
+        <div className="ansa-detail-info" style={{ flex: 3, background: '#141414', borderRadius: 12, border: '1px solid #1e1e1e', padding: 24, overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
           <div style={{ fontSize: 16, fontWeight: 600, color: '#fff', marginBottom: 20 }}>Caller Info</div>
           {[
             conv.customer_name  ? { icon: User,   label: 'Name',          value: conv.customer_name } : null,

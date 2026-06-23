@@ -81,6 +81,16 @@ export default function MissedCallsPage() {
 
   return (
     <div style={{ padding: '32px', maxWidth: 1200, margin: '0 auto' }}>
+      <style>{`
+        @media (max-width: 768px) {
+          .ansa-calls-page { padding: 20px 16px !important; }
+          .ansa-calls-header-row { display: none !important; }
+          .ansa-calls-row { display: flex !important; flex-direction: column !important; gap: 6px !important; padding: 14px 16px !important; }
+          .ansa-calls-hide-mobile { display: none !important; }
+          .ansa-calls-filter-bar { flex-direction: column !important; align-items: stretch !important; }
+          .ansa-calls-search { min-width: unset !important; width: 100% !important; }
+        }
+      `}</style>
       <p style={{ fontSize: 14, color: '#888', margin: '0 0 16px 0' }}>Every missed call that triggered an Ansa text-back</p>
       {loadError && (
         <div style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 10, padding: '12px 18px', marginBottom: 20, fontSize: 13, color: '#fca5a5' }}>
@@ -105,7 +115,7 @@ export default function MissedCallsPage() {
         </div>
       </div>
 
-      <div style={{ display: 'grid', ...cols, padding: '8px 20px', marginBottom: 6 }}>
+      <div className="ansa-calls-header-row" style={{ display: 'grid', ...cols, padding: '8px 20px', marginBottom: 6 }}>
         {['Caller', 'Received', 'Status', 'Action'].map(h => (
           <span key={h} style={{ fontSize: 12, fontWeight: 600, color: '#666', textTransform: 'uppercase', letterSpacing: 0.5 }}>{h}</span>
         ))}
@@ -126,7 +136,7 @@ export default function MissedCallsPage() {
       ) : paged.map(conv => {
         const cfg = statusConfig[conv.status] || statusConfig.closed;
         return (
-          <div key={conv.id} style={{ display: 'grid', ...cols, alignItems: 'center', padding: '14px 20px', background: '#141414', borderRadius: 10, border: '1px solid #1e1e1e', marginBottom: 6 }}
+          <div key={conv.id} className="ansa-calls-row" style={{ display: 'grid', ...cols, alignItems: 'center', padding: '14px 20px', background: '#141414', borderRadius: 10, border: '1px solid #1e1e1e', marginBottom: 6 }}
             onMouseEnter={e => e.currentTarget.style.background = '#1a1a1a'}
             onMouseLeave={e => e.currentTarget.style.background = '#141414'}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
