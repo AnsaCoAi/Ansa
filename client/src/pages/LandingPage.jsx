@@ -962,16 +962,38 @@ function DashboardShowcase() {
             </div>
           </div>
         </div>
-        <div style={{ display:'flex',justifyContent:'center',gap:6,marginTop:10 }}>
-          {SHOWCASE_VIEWS.map((_,i) => (
-            <button key={i} onClick={() => setView(i)} style={{
-              width: i===view ? 20 : 6, height:6, borderRadius:3, border:'none',
-              background: i===view ? '#3b82f6' : '#1e1e1e',
-              cursor:'pointer', padding:0, transition:'all .2s',
-            }}/>
-          ))}
+        <div style={{ display:'flex',alignItems:'center',justifyContent:'center',gap:12,marginTop:14 }}>
+          <button onClick={prev} style={{
+            display:'flex',alignItems:'center',justifyContent:'center',
+            width:36,height:36,borderRadius:10,border:'1px solid #2a2a2a',
+            background:'#141414',color:'#888',cursor:'pointer',flexShrink:0,
+            transition:'all .15s',fontFamily:'inherit',
+          }}
+          onMouseEnter={e=>{e.currentTarget.style.background='#1e1e1e';e.currentTarget.style.color='#fff';e.currentTarget.style.borderColor='#3b82f6'}}
+          onMouseLeave={e=>{e.currentTarget.style.background='#141414';e.currentTarget.style.color='#888';e.currentTarget.style.borderColor='#2a2a2a'}}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+          </button>
+          <div style={{ display:'flex',alignItems:'center',gap:6 }}>
+            {SHOWCASE_VIEWS.map((_,i) => (
+              <button key={i} onClick={() => setView(i)} style={{
+                width: i===view ? 20 : 6, height:6, borderRadius:3, border:'none',
+                background: i===view ? '#3b82f6' : '#1e1e1e',
+                cursor:'pointer', padding:0, transition:'all .2s',
+              }}/>
+            ))}
+          </div>
+          <button onClick={next} style={{
+            display:'flex',alignItems:'center',justifyContent:'center',
+            width:36,height:36,borderRadius:10,border:'1px solid #2a2a2a',
+            background:'#141414',color:'#888',cursor:'pointer',flexShrink:0,
+            transition:'all .15s',fontFamily:'inherit',
+          }}
+          onMouseEnter={e=>{e.currentTarget.style.background='#1e1e1e';e.currentTarget.style.color='#fff';e.currentTarget.style.borderColor='#3b82f6'}}
+          onMouseLeave={e=>{e.currentTarget.style.background='#141414';e.currentTarget.style.color='#888';e.currentTarget.style.borderColor='#2a2a2a'}}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
         </div>
-        <div style={{ textAlign:'center',marginTop:6,fontSize:12,color:'#666' }}>Click any section in the sidebar to explore</div>
+        <div style={{ textAlign:'center',marginTop:8,fontSize:12,color:'#555' }}>Click any section in the sidebar to explore</div>
       </div>
       <ArrowBtn onClick={next}>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
