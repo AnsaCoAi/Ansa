@@ -122,7 +122,7 @@ export default function ConversationsPage() {
         </div>
       )}
 
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
+      <div className="ansa-conv-header" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
         <div className="ansa-tab-bar" style={{ display: 'flex', gap: 4, background: '#141414', borderRadius: 10, padding: 4 }}>
         {tabs.map(tab => (
           <button key={tab.key} onClick={() => setActiveTab(tab.key)}
@@ -136,15 +136,15 @@ export default function ConversationsPage() {
         ))}
         </div>
         {needsAttention.length > 0 ? (
-          <button
+          <button className="ansa-conv-action"
             onClick={() => { markViewed(needsAttention[0].id); window.location.hash = `#/dashboard/conversations/${needsAttention[0].id}`; }}
-            style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px', background: '#3b82f6', border: '1px solid #3b82f6', borderRadius: 8, color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer' }}>
-            <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#fff' }} />
+            style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px', background: '#3b82f6', border: '1px solid #3b82f6', borderRadius: 8, color: '#fff', fontSize: 13, fontWeight: 600, cursor: 'pointer', whiteSpace: 'nowrap' }}>
+            <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#fff', flexShrink: 0 }} />
             {needsAttention.length} unread — open latest
           </button>
         ) : (
-          <span style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px', background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: 8, color: '#555', fontSize: 13, fontWeight: 500 }}>
-            <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#333' }} />
+          <span className="ansa-conv-action" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px', background: '#1a1a1a', border: '1px solid #2a2a2a', borderRadius: 8, color: '#555', fontSize: 13, fontWeight: 500, whiteSpace: 'nowrap' }}>
+            <span style={{ width: 8, height: 8, borderRadius: '50%', background: '#333', flexShrink: 0 }} />
             All caught up
           </span>
         )}

@@ -160,5 +160,5 @@ const styles = {
   pageTitle: { fontSize: 18, fontWeight: 600, color: '#ffffff', margin: 0 },
   topBarRight: { display: 'flex', alignItems: 'center', gap: 16 },
   userAvatar: { width: 36, height: 36, borderRadius: '50%', background: '#1e1e1e', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 600, color: '#999', border: '2px solid #333' },
-  content: { flex: 1, overflowY: 'auto' },
+  content: { flex: 1, overflowY: 'auto', overflowX: 'hidden' },
 }

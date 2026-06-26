@@ -713,7 +713,7 @@ export default function SettingsPage() {
           const Icon = tab.icon;
           return (
             <button key={tab.key} style={s.tab(activeTab === tab.key)} onClick={() => setActiveTab(tab.key)}>
-              <Icon size={16} /> {tab.label}
+              <Icon size={16} /> <span>{tab.label}</span>
             </button>
           );
         })}

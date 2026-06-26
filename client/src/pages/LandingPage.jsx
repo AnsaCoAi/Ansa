@@ -310,20 +310,80 @@ const injectStyles = () => {
     .ansa-funnel-bar-outer{width:100%;height:20px;background:#1a1a1a;border-radius:5px;overflow:hidden}
     .ansa-funnel-bar-inner{height:100%;border-radius:5px}
     @media(max-width:768px){
-      .ansa-problem-grid,.ansa-testimonials{grid-template-columns:1fr}
-      .ansa-chess-row,.ansa-chess-row.flip{grid-template-columns:1fr;direction:ltr}
-      .ansa-compare{grid-template-columns:1fr}
-      .ansa-steps{grid-template-columns:1fr;gap:20px}
-      .ansa-step-arrow{display:none}
+      /* Nav */
       .ansa-nav-links{display:none!important}
       .ansa-nav-mobile-toggle{display:block!important}
       .ansa-nav-mobile-menu.open{display:flex!important}
-      .ansa-proof-stats{gap:24px;flex-wrap:wrap}
-      .ansa-sticky-cta{display:block}
-      .ansa-final-cta-inner{padding:48px 24px}
+      .ansa-nav-inner{padding:14px 20px}
+
+      /* Hero */
+      .ansa-hero{padding:96px 20px 48px}
+      .ansa-hero-ctas{gap:10px}
+      .ansa-btn{padding:13px 22px;font-size:14px}
+      .ansa-phones-row{gap:8px;padding:0 12px;margin-top:40px}
+
+      /* Stats band — THE critical fix, 3-col was unreadable on mobile */
+      .ansa-stats-band{grid-template-columns:1fr;max-width:100%;border-radius:16px}
+      .ansa-stats-band-cell{padding:28px 24px}
+      .ansa-stats-band-num{font-size:44px}
+
+      /* Sections */
+      .ansa-section{padding:48px 20px}
+      .ansa-section-title{margin-bottom:12px}
+      .ansa-section-sub{margin-bottom:32px;font-size:15px}
+
+      /* Problem cards */
+      .ansa-problem-grid{grid-template-columns:1fr}
+
+      /* Testimonials */
+      .ansa-testimonials{grid-template-columns:1fr}
+
+      /* How it works steps */
+      .ansa-steps{grid-template-columns:1fr;gap:20px}
+      .ansa-step-arrow{display:none}
+
+      /* Before/After */
+      .ansa-compare{grid-template-columns:1fr}
+
+      /* Chess / feature rows */
+      .ansa-chess-row,.ansa-chess-row.flip{grid-template-columns:1fr;direction:ltr}
+
+      /* Integrations + split section */
+      .ansa-split-section{padding:48px 20px;gap:32px}
+      .ansa-integrations{grid-template-columns:1fr;max-width:100%}
+
+      /* Dashboard showcase */
       .ansa-showcase-sidebar{display:none}
-      .ansa-showcase-app{height:380px}
+      .ansa-showcase-app{height:360px}
+      .ansa-showcase-wrap{border-radius:12px}
       .ansa-mini-grid{grid-template-columns:repeat(2,1fr)}
+
+      /* Final CTA */
+      .ansa-final-cta-inner{padding:48px 20px}
+      .ansa-final-cta-inner h2{font-size:26px}
+
+      /* Footer */
+      .ansa-footer{flex-direction:column;align-items:center;text-align:center;padding:32px 20px}
+      .ansa-footer-links{flex-wrap:wrap;justify-content:center;gap:16px}
+
+      /* Sticky CTA */
+      .ansa-sticky-cta{display:block}
+
+      /* Legacy */
+      .ansa-proof-stats{gap:24px;flex-wrap:wrap}
+    }
+    @media(max-width:480px){
+      .ansa-hero{padding:88px 16px 40px}
+      .ansa-section{padding:40px 16px}
+      .ansa-split-section{padding:40px 16px}
+      .ansa-nav-inner{padding:12px 16px}
+      .ansa-stats-band-num{font-size:36px}
+      .ansa-stats-band-cell{padding:22px 18px}
+      .ansa-showcase-app{height:300px}
+      .ansa-phones-row{padding:0 8px}
+      .ansa-final-cta-inner{padding:36px 16px}
+      .ansa-bento{grid-template-columns:1fr!important}
+      .ansa-bento-wide,.ansa-bento-full,.ansa-bento-accent{grid-column:span 1!important}
     }
   `;
   document.head.appendChild(style);
