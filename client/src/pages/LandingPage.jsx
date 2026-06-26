@@ -198,7 +198,10 @@ const injectStyles = () => {
     .ansa-bento-points{list-style:none;padding:0;display:flex;flex-direction:column;gap:8px;margin-top:auto}
     .ansa-bento-points li{display:flex;align-items:center;gap:8px;font-size:13px;color:#a1a1aa}
     @media(max-width:900px){.ansa-bento{grid-template-columns:1fr 1fr}.ansa-bento-wide,.ansa-bento-full{grid-column:span 2}.ansa-bento-accent:not(.ansa-bento-wide){grid-column:span 1}}
-    @media(max-width:600px){.ansa-bento{grid-template-columns:1fr}.ansa-bento-wide,.ansa-bento-full,.ansa-bento-accent{grid-column:span 1}}
+    /* At 600px, keep 2-col so the 62%/85% stat cards stay side-by-side; wide/full still span full */
+    @media(max-width:600px){.ansa-bento{grid-template-columns:1fr 1fr;gap:10px}.ansa-bento-wide,.ansa-bento-full{grid-column:span 2}.ansa-bento-accent{grid-column:span 1}.ansa-smart-grid{grid-template-columns:1fr!important;gap:20px!important}}
+    /* Very small phones: everything single col */
+    @media(max-width:380px){.ansa-bento{grid-template-columns:1fr}.ansa-bento-wide,.ansa-bento-full,.ansa-bento-accent{grid-column:span 1}}
 
     /* Integrations */
     .ansa-integrations{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;max-width:520px;margin:0 auto}
@@ -348,6 +351,11 @@ const injectStyles = () => {
       /* Chess / feature rows */
       .ansa-chess-row,.ansa-chess-row.flip{grid-template-columns:1fr;direction:ltr}
 
+      /* Smart booking inner grid: text first, visual below */
+      .ansa-smart-grid{grid-template-columns:1fr!important;gap:24px!important}
+      .ansa-smart-grid > *:first-child{order:2}
+      .ansa-smart-grid > *:last-child{order:1}
+
       /* Integrations + split section */
       .ansa-split-section{padding:48px 20px;gap:32px}
       .ansa-integrations{grid-template-columns:1fr;max-width:100%}
@@ -382,8 +390,7 @@ const injectStyles = () => {
       .ansa-showcase-app{height:300px}
       .ansa-phones-row{padding:0 8px}
       .ansa-final-cta-inner{padding:36px 16px}
-      .ansa-bento{grid-template-columns:1fr!important}
-      .ansa-bento-wide,.ansa-bento-full,.ansa-bento-accent{grid-column:span 1!important}
+      /* bento grid handled by 600px/380px breakpoints above */
     }
   `;
   document.head.appendChild(style);
@@ -1252,7 +1259,7 @@ export default function LandingPage() {
 
             {/* Row 3: Booking — full width horizontal */}
             <div className="ansa-bento-card ansa-bento-full">
-              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:40, alignItems:'center' }}>
+              <div className="ansa-smart-grid" style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:40, alignItems:'center' }}>
                 <div>
                   <div className="ansa-bento-eyebrow">Smart Booking</div>
                   <h3 className="ansa-bento-title">Books the job into your calendar — automatically</h3>

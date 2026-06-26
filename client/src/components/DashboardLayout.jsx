@@ -1,17 +1,17 @@
 import React, { useState } from 'react'
 import {
   LayoutDashboard, PhoneMissed, MessageSquare, CalendarCheck,
-  BarChart3, Settings, LogOut, Menu, X, Headphones,
+  BarChart3, Settings, LogOut, Headphones,
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 
 const navItems = [
-  { label: 'Overview', icon: LayoutDashboard, hash: '#/dashboard' },
-  { label: 'Missed Calls', icon: PhoneMissed, hash: '#/dashboard/calls' },
-  { label: 'Conversations', icon: MessageSquare, hash: '#/dashboard/conversations' },
-  { label: 'Appointments', icon: CalendarCheck, hash: '#/dashboard/appointments' },
-  { label: 'Analytics', icon: BarChart3, hash: '#/dashboard/analytics' },
-  { label: 'Settings', icon: Settings, hash: '#/dashboard/settings' },
+  { label: 'Overview',      short: 'Home',     icon: LayoutDashboard, hash: '#/dashboard' },
+  { label: 'Missed Calls',  short: 'Calls',    icon: PhoneMissed,     hash: '#/dashboard/calls' },
+  { label: 'Conversations', short: 'Messages', icon: MessageSquare,   hash: '#/dashboard/conversations' },
+  { label: 'Appointments',  short: 'Jobs',     icon: CalendarCheck,   hash: '#/dashboard/appointments' },
+  { label: 'Analytics',     short: 'Analytics',icon: BarChart3,       hash: '#/dashboard/analytics' },
+  { label: 'Settings',      short: 'Settings', icon: Settings,        hash: '#/dashboard/settings' },
 ]
 
 function getPageTitle(hash) {
@@ -56,6 +56,7 @@ export default function DashboardLayout({ children, currentHash }) {
 
   return (
     <div style={styles.wrapper}>
+      {/* Desktop sidebar */}
       {sidebarOpen && <div style={styles.overlay} onClick={() => setSidebarOpen(false)} />}
       <aside data-ansa-sidebar="" style={{ ...styles.sidebar, ...(sidebarOpen ? styles.sidebarOpen : {}) }}>
         <div style={styles.logoContainer}>
@@ -81,7 +82,13 @@ export default function DashboardLayout({ children, currentHash }) {
             <div style={styles.businessAvatar}>{bizInitial}</div>
             <div style={styles.businessText}>
               <div style={styles.businessName}>{bizName}</div>
-              <div style={styles.businessPlan}>{business?.subscription_status === 'active' ? 'Pro plan' : business?.subscription_status === 'trialing' ? (daysLeft !== null ? `Trial · ${daysLeft}d left` : 'Trial') : 'Inactive'}</div>
+              <div style={styles.businessPlan}>
+                {business?.subscription_status === 'active'
+                  ? 'Pro plan'
+                  : business?.subscription_status === 'trialing'
+                  ? (daysLeft !== null ? `Trial · ${daysLeft}d left` : 'Trial')
+                  : 'Inactive'}
+              </div>
             </div>
           </div>
           <a href="mailto:hello@ansaco.ai" style={styles.logoutBtn}>
@@ -92,14 +99,15 @@ export default function DashboardLayout({ children, currentHash }) {
           </button>
         </div>
       </aside>
+
+      {/* Main content */}
       <div data-ansa-main="" style={styles.main}>
         <header style={styles.topBar}>
           <div style={styles.topBarLeft}>
-            <button data-ansa-hamburger="" style={styles.hamburger}
-              onClick={() => setSidebarOpen(!sidebarOpen)} aria-label="Toggle menu">
-              {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
-            <h1 style={styles.pageTitle}>{getPageTitle(currentHash)}</h1>
+            <a href="#/dashboard" className="ansa-mobile-logo" style={styles.mobileLogo}>
+              ansa<span style={styles.logoDot}>.</span>
+            </a>
+            <h1 className="ansa-page-title" style={styles.pageTitle}>{getPageTitle(currentHash)}</h1>
           </div>
           <div style={styles.topBarRight}>
             <div style={styles.userAvatar}>{ownerInitials}</div>
@@ -115,15 +123,42 @@ export default function DashboardLayout({ children, currentHash }) {
           <div className="ansa-page">{children}</div>
         </main>
       </div>
+
+      {/* Mobile bottom navigation bar */}
+      <nav data-ansa-bottom-nav="" style={styles.bottomNav}>
+        {navItems.map((item) => {
+          const Icon = item.icon
+          const active = isActive(item.hash)
+          return (
+            <a key={item.hash} href={item.hash}
+              style={{ ...styles.bottomNavItem, ...(active ? styles.bottomNavItemActive : {}) }}>
+              <Icon size={22} style={{ color: active ? '#3b82f6' : '#555', marginBottom: 3 }} />
+              <span style={{ fontSize: 9.5, fontWeight: active ? 600 : 500, color: active ? '#3b82f6' : '#555', letterSpacing: '0.2px' }}>
+                {item.short}
+              </span>
+            </a>
+          )
+        })}
+      </nav>
+
       <style>{`
-        @media (min-width: 768px) {
+        /* Desktop: show sidebar, hide bottom nav */
+        @media (min-width: 769px) {
           [data-ansa-sidebar] { transform: translateX(0) !important; }
           [data-ansa-main] { margin-left: 260px !important; }
-          [data-ansa-hamburger] { display: none !important; }
+          [data-ansa-bottom-nav] { display: none !important; }
+          [data-ansa-mobile-logo] { display: none !important; }
         }
-        .ansa-page {
-          animation: ansa-fade 0.15s ease;
+        /* Mobile: hide sidebar, show bottom nav, show logo */
+        @media (max-width: 768px) {
+          [data-ansa-sidebar] { display: none !important; }
+          [data-ansa-bottom-nav] { display: flex !important; }
+          [data-ansa-main] { margin-left: 0 !important; }
+          [data-ansa-main] main { padding-bottom: 72px; }
+          .ansa-mobile-logo { display: inline-block !important; }
+          .ansa-page-title { display: none !important; }
         }
+        .ansa-page { animation: ansa-fade 0.15s ease; }
         @keyframes ansa-fade {
           from { opacity: 0; transform: translateY(4px); }
           to   { opacity: 1; transform: translateY(0); }
@@ -142,6 +177,7 @@ const styles = {
   sidebarOpen: { transform: 'translateX(0)' },
   logoContainer: { padding: '24px 20px 16px', borderBottom: '1px solid #1e1e1e' },
   logo: { fontSize: 28, fontWeight: 800, color: '#ffffff', textDecoration: 'none', letterSpacing: '-0.02em' },
+  mobileLogo: { fontSize: 22, fontWeight: 800, color: '#ffffff', textDecoration: 'none', letterSpacing: '-0.02em', display: 'none' },
   logoDot: { color: '#3b82f6' },
   nav: { flex: 1, padding: '12px 10px', display: 'flex', flexDirection: 'column', gap: 2 },
   navItem: { display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px', borderRadius: 8, color: '#999', textDecoration: 'none', fontSize: 14, fontWeight: 500, transition: 'all 0.15s' },
@@ -152,13 +188,28 @@ const styles = {
   businessText: { overflow: 'hidden' },
   businessName: { fontSize: 13, fontWeight: 600, color: '#e5e5e5', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' },
   businessPlan: { fontSize: 11, color: '#666' },
-  logoutBtn: { display: 'flex', alignItems: 'center', gap: 8, color: '#666', background: 'none', border: 'none', fontSize: 13, padding: '6px 4px', cursor: 'pointer', width: '100%' },
+  logoutBtn: { display: 'flex', alignItems: 'center', gap: 8, color: '#666', background: 'none', border: 'none', fontSize: 13, padding: '6px 4px', cursor: 'pointer', width: '100%', textDecoration: 'none' },
   main: { flex: 1, marginLeft: 0, display: 'flex', flexDirection: 'column', minHeight: '100vh' },
-  topBar: { height: 64, borderBottom: '1px solid #1e1e1e', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 24px', background: '#0a0a0a', position: 'sticky', top: 0, zIndex: 30 },
+  topBar: { height: 56, borderBottom: '1px solid #1e1e1e', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 20px', background: '#0a0a0a', position: 'sticky', top: 0, zIndex: 30 },
   topBarLeft: { display: 'flex', alignItems: 'center', gap: 12 },
-  hamburger: { background: 'none', border: 'none', color: '#e5e5e5', cursor: 'pointer', padding: 4, display: 'flex', alignItems: 'center' },
-  pageTitle: { fontSize: 18, fontWeight: 600, color: '#ffffff', margin: 0 },
+  pageTitle: { fontSize: 17, fontWeight: 600, color: '#ffffff', margin: 0 },
   topBarRight: { display: 'flex', alignItems: 'center', gap: 16 },
-  userAvatar: { width: 36, height: 36, borderRadius: '50%', background: '#1e1e1e', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 600, color: '#999', border: '2px solid #333' },
+  userAvatar: { width: 34, height: 34, borderRadius: '50%', background: '#1e1e1e', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 600, color: '#999', border: '2px solid #333' },
   content: { flex: 1, overflowY: 'auto', overflowX: 'hidden' },
+  bottomNav: {
+    display: 'none',
+    position: 'fixed', bottom: 0, left: 0, right: 0,
+    height: 60,
+    background: '#111111',
+    borderTop: '1px solid #1e1e1e',
+    alignItems: 'stretch',
+    justifyContent: 'space-around',
+    zIndex: 50,
+    paddingBottom: 'env(safe-area-inset-bottom)',
+  },
+  bottomNavItem: {
+    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+    flex: 1, textDecoration: 'none', padding: '6px 4px', gap: 0,
+  },
+  bottomNavItemActive: {},
 }

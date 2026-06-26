@@ -16,6 +16,7 @@
   overflow-x: hidden;
 }
 
+
 /* ── Tablet + Mobile (≤768px) ───────────────────────────────── */
 @media (max-width: 768px) {
 
@@ -23,6 +24,7 @@
   [data-ansa-main] header {
     padding: 0 16px !important;
   }
+
 
   /* ── Shared: every page wrapper ────────────────────────────── */
   /* Pages render as <div style={{padding:'32px'}}> inside .ansa-page */
@@ -99,7 +101,7 @@
   .ansa-detail-wrap {
     padding: 12px 16px !important;
     height: auto !important;
-    min-height: calc(100dvh - 64px) !important;
+    min-height: calc(100dvh - 56px - 60px) !important;
   }
 
   .ansa-detail-panels {
@@ -115,9 +117,10 @@
     display: none !important;
   }
 
+  /* 56px topbar + 60px bottom nav + 46px back button + 16px padding */
   .ansa-detail-chat {
-    height: calc(100dvh - 180px) !important;
-    min-height: 400px !important;
+    height: calc(100dvh - 218px) !important;
+    min-height: 360px !important;
     flex: none !important;
   }
 
