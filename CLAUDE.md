@@ -392,36 +392,68 @@ Full pre-demo audit found 0 logic bugs (all prior fixes held). Only gap was mobi
 - Smart Booking section: inner `1fr 1fr` grid had no class so never collapsed on mobile. Added `className="ansa-smart-grid"` — collapses to 1-col at ≤768px with visual on top, text below (Apple-style feature layout)
 - 62%/85% stat cards: were stacking back-to-back at ≤600px. Fixed — bento stays 2-col at ≤600px so accent cards stay side-by-side; only wide/full cards span full width. Below 380px everything collapses.
 
+## Session 2026-06-25 (evening) — Mobile Polish + Full Platform Audit
+
+### Mobile landing page overhaul (9 fixes, commit 6a81804):
+- Hero phone height: 600px → 420px (was eating the entire viewport)
+- Phone slot width: constrained to `min(310px, 100vw-48px)` — no overflow on iPhone SE
+- Hero CTAs: stack vertically on mobile, secondary becomes underline text link
+- Dashboard showcase: side arrows hidden on mobile, showcase stretches full-width (was ~215px)
+- Mobile nav menu: full-width "Start Free Trial" CTA button + 44px touch targets on all links
+- Problem cards: horizontal icon+stat layout on mobile (was 3 tall vertical stacking cards)
+- Stats band wrapper: 40px → 24px padding on mobile
+- Sticky CTA: `env(safe-area-inset-bottom)` so it doesn't clip iPhone home indicator
+- Removed ⚡ and 🔧 emojis from VisualTextBack feature block (violated no-emoji rule)
+
+### Dashboard showcase: bottom arrows (commit 736a983):
+- Replaced thin dots-only strip with `[← dots →]` row
+- Arrow buttons: 36×36px, rounded, highlight blue on hover, work on desktop and mobile
+
+### Full platform audit — 8 critical + polish fixes (commit 82e4d4f):
+
+**CRITICAL BUG FIXED:**
+- `src/routes/webhooks.js`: appointment `status: "booked"` → `"confirmed"` (3 inserts)
+  Auto-booked appointments were vanishing from ALL tabs in AppointmentsPage — `isUpcoming()`
+  only matched `"confirmed"|"pending"`. Core product promise broken end-to-end. FIXED.
+- `src/routes/webhooks.js`: `customer_name` now included in all 3 appointment inserts
+- `client/src/pages/AppointmentsPage.jsx`: added `"booked"` fallback to `isUpcoming()` for legacy DB records
+
+**Polish (investor-facing):**
+- Replaced bare `"Loading..."` text with blue SVG spinner in 4 pages (AppointmentsPage, ConversationsPage, ConversationDetail, MissedCallsPage)
+- ConversationDetail: replaced native `alert()` popups with inline dismissible error banners
+- AnalyticsPage: added color legend row above area chart (Missed Calls / Responses / Bookings)
+- DashboardLayout: bottom nav active item now has blue top border + subtle bg — matches iOS/Android native nav patterns
+- LandingPage: "click to expand" → "tap to expand" on phone mockup hints
+
 ## ⚡ NEXT TAB — PICK UP HERE (2026-06-25)
 
-### Current state
-- Platform fully built, all 35+ fixes live ✅
-- Mobile overhaul complete — bottom nav, smart booking fix, stats band fix ✅
+### Current state — INVESTOR READY ✅
+- Platform fully built, all 45+ fixes live ✅
+- Mobile landing page: fully responsive, iOS patterns, no overflow bugs ✅
+- Mobile dashboard: bottom nav, safe area, spinners, no alert() popups ✅
+- CRITICAL appointment bug fixed: AI-booked jobs now appear correctly in dashboard ✅
 - Supabase is **Healthy** (free tier — unpause at supabase.com if down)
 - Demo account: tylerlofaro@yahoo.com / ManyOfMillions#ADMIN6710
-- Last push: commit 65dd192 (bottom nav + landing page feature fixes)
-
-### Hard-refresh on iPhone after reading this
-- www.ansaco.ai → hold reload → "Reload Without Content Blockers"
-- Dashboard: should show ansa. logo in top bar, bottom tab bar at the bottom
-- Landing page: stats band should stack vertically, Smart Booking should be single column
-
-### What's next (prioritized)
-1. **Annual pricing plan** — add annual option ($2,970/yr = 2 months free) to landing page pricing section + Stripe checkout. Needs new Stripe price ID created first in Stripe dashboard.
-2. **First real client onboarding** — when this happens: upgrade Supabase to Pro ($25/mo), add SMS consent checkbox to booking forms, plan per-client A2P brand registration
-3. **Profile photo** in dashboard (Settings > Account)
-4. **Logo in emails** (currently text-only)
-5. **Google Business profile** setup for Ansa
-
-### How to start next tab
-Open CLAUDE.md, read the "NEXT TAB" section, and say:
-"Silas — read CLAUDE.md. [describe what you want to work on]"
+- Last push: commit 82e4d4f
 
 ### HOW TO RUN THE DEMO ACCOUNT:
 - URL: https://www.ansaco.ai
 - Demo login: tylerlofaro@yahoo.com / ManyOfMillions#ADMIN6710
 - Business: "Johns Contracting"
-- To test SMS: call +1 (424) 622-5851 and hang up
+- To test full AI flow: call +1 (424) 622-5851 and hang up — Ansa texts back, AI handles, books to Appointments page
+
+### What's next (prioritized)
+1. **Annual pricing plan** — add annual option ($2,970/yr = 2 months free) to landing page pricing section + Stripe checkout. Needs new Stripe price ID created first in Stripe dashboard.
+2. **Full signup test with real card** (separate account, not admin email) — STILL PENDING before first real client
+3. **First real client onboarding** — when this happens: upgrade Supabase to Pro ($25/mo), add SMS consent checkbox to booking forms, plan per-client A2P brand registration
+4. **Profile photo** in dashboard (Settings > Account)
+5. **Logo in emails** (currently text-only)
+6. **Google Business profile** setup for Ansa
+7. **Namecheap email forwarding**: hello@ansaco.ai → Tyler's personal email (no inbox until done)
+
+### How to start next tab
+Open CLAUDE.md, read the "NEXT TAB" section, and say:
+"Silas — read CLAUDE.md. [what you want to work on]"
 
 ## Annual Pricing Plan (TODO — next session)
 - Add annual plan at 2 months free: $297 × 10 = $2,970/yr (saves $594)
