@@ -137,12 +137,12 @@ const injectStyles = () => {
 
     /* Testimonials */
     .ansa-testimonials{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
-    .ansa-testimonial-card{background:#141414;border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:32px 28px;transition:border-color .3s;position:relative;overflow:hidden}
+    .ansa-testimonial-card{background:#141414;border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:32px 28px;transition:border-color .3s;position:relative;overflow:hidden;display:flex;flex-direction:column}
     .ansa-testimonial-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(59,130,246,.4),transparent)}
     .ansa-testimonial-card:hover{border-color:rgba(59,130,246,.25)}
     .ansa-testimonial-stars{display:flex;gap:3px;margin-bottom:16px;color:#facc15}
-    .ansa-testimonial-text{font-size:15px;color:#d1d5db;line-height:1.65;margin-bottom:20px}
-    .ansa-testimonial-author{display:flex;align-items:center;gap:12px}
+    .ansa-testimonial-text{font-size:15px;color:#d1d5db;line-height:1.65;margin-bottom:20px;flex:1}
+    .ansa-testimonial-author{display:flex;align-items:center;gap:12px;margin-top:auto}
     .ansa-testimonial-avatar{width:42px;height:42px;border-radius:50%;object-fit:cover;flex-shrink:0}
     .ansa-testimonial-avatar-initials{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:#fff;flex-shrink:0}
     .ansa-testimonial-name{font-size:14px;font-weight:600}
