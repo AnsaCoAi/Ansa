@@ -415,6 +415,41 @@ const injectStyles = () => {
       .ansa-final-cta-inner{padding:36px 16px}
       /* bento grid handled by 600px/380px breakpoints above */
     }
+
+    /* ── Cursor glow layer ───────────────────────────────────── */
+    .ansa-cursor-glow-layer{position:fixed;inset:0;pointer-events:none;z-index:2;background:radial-gradient(600px circle at var(--ansa-gx,50%) var(--ansa-gy,130%),rgba(59,130,246,.09),transparent 40%);transition:background .05s}
+
+    /* ── Grain / noise texture ───────────────────────────────── */
+    .ansa-grain{position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.022;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:200px 200px}
+
+    /* ── Live counter badge ──────────────────────────────────── */
+    .ansa-live-badge{display:inline-flex;align-items:center;gap:7px;padding:7px 14px 7px 10px;border-radius:999px;font-size:12.5px;font-weight:500;background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.18);color:#6ee7b7;margin-bottom:20px;animation:ansa-fadeUp .7s ease .05s both}
+    .ansa-live-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;flex-shrink:0;box-shadow:0 0 8px #22c55e;animation:ansa-pulse 2s ease-in-out infinite}
+
+    /* ── Interactive Demo ────────────────────────────────────── */
+    .ansa-demo-outer{display:grid;grid-template-columns:1fr 1fr;gap:28px;max-width:860px;margin:0 auto}
+    .ansa-demo-scenarios{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:24px}
+    .ansa-demo-scen-btn{padding:8px 16px;border-radius:999px;font-size:12.5px;font-weight:600;cursor:pointer;border:1px solid rgba(59,130,246,.3);background:rgba(59,130,246,.07);color:#93c5fd;transition:all .2s;font-family:inherit;letter-spacing:-.1px}
+    .ansa-demo-scen-btn:hover{background:rgba(59,130,246,.18);border-color:rgba(59,130,246,.55);color:#fff}
+    .ansa-demo-phone{background:#1c1c1e;border:1.5px solid rgba(59,130,246,.4);border-radius:32px;padding:20px 16px 16px;height:440px;display:flex;flex-direction:column;box-shadow:0 0 0 1px rgba(59,130,246,.15),0 0 60px rgba(59,130,246,.1),0 32px 80px rgba(0,0,0,.5)}
+    .ansa-demo-msgs{flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding-bottom:4px}
+    .ansa-demo-msgs::-webkit-scrollbar{width:3px}
+    .ansa-demo-msgs::-webkit-scrollbar-thumb{background:#3a3a3c;border-radius:99px}
+    .ansa-demo-input-row{display:flex;gap:8px;margin-top:12px}
+    .ansa-demo-input{flex:1;background:#2c2c2e;border:1px solid #3a3a3c;border-radius:20px;padding:10px 16px;color:#fff;font-size:13px;font-family:inherit;outline:none;transition:border-color .2s}
+    .ansa-demo-input:focus{border-color:#3b82f6}
+    .ansa-demo-input::placeholder{color:#48484a}
+    .ansa-demo-send{width:36px;height:36px;border-radius:50%;background:#3b82f6;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s;box-shadow:0 0 16px rgba(59,130,246,.4)}
+    .ansa-demo-send:hover{background:#2563eb}
+    .ansa-demo-send:disabled{background:#333;box-shadow:none;cursor:not-allowed}
+    .ansa-demo-owner-panel{background:#141414;border:1px solid #1e1e1e;border-radius:16px;padding:20px;height:440px;display:flex;flex-direction:column;overflow:hidden}
+    .ansa-demo-notif{background:#0d1629;border:1px solid rgba(59,130,246,.2);border-radius:10px;padding:12px 14px;transition:all .4s;animation:ansa-fadeUp .4s ease both}
+    .ansa-demo-booked-card{background:rgba(16,185,129,.05);border:1px solid rgba(16,185,129,.2);border-radius:12px;padding:16px 18px;animation:ansa-fadeUp .5s ease both;margin-top:10px}
+    .ansa-demo-col-label{font-size:10.5px;font-weight:700;color:#444;text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px}
+    @media(max-width:768px){
+      .ansa-demo-outer{grid-template-columns:1fr}
+      .ansa-demo-phone,.ansa-demo-owner-panel{height:380px}
+    }
   `;
   document.head.appendChild(style);
 };
@@ -1003,10 +1038,173 @@ function DashboardShowcase() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Interactive Demo
+
+const DEMO_SCENARIOS = [
+  { label: 'Burst pipe emergency', text: "I have water flooding my kitchen — burst pipe. Can someone come TODAY?" },
+  { label: 'Ask for a quote', text: "How much would it cost to replace my water heater?" },
+  { label: 'Book an appointment', text: "I need to schedule someone to fix my AC, it stopped working" },
+];
+
+function getDemoResponse(text) {
+  const t = text.toLowerCase();
+  if (/flood|burst|leak|urgent|emergency|asap|right now|today|immediately/.test(t)) return {
+    text: "We're on it — this sounds urgent. Can you send me your address? I'll get a tech headed your way as fast as possible. What's the best number to reach you?",
+    booked: false, status: 'Urgent — routing tech',
+  };
+  if (/cost|price|how much|charge|quote|estimate|fee/.test(t)) return {
+    text: "Good question. Water heater replacements typically run $800–$1,400 depending on the unit. I can book you a free in-home estimate — is this week or next better for you?",
+    booked: false, status: 'Collecting info',
+  };
+  if (/schedule|book|appointment|available|when can|fix|repair|service/.test(t)) return {
+    text: "Let's lock it in. I have tomorrow at 10 AM or 2 PM open, and Thursday morning. Which works best for you?",
+    booked: false, status: 'Scheduling',
+  };
+  if (/tomorrow|thursday|monday|tuesday|wednesday|friday|10 am|2 pm|morning|afternoon|works/.test(t)) return {
+    text: "Done! You're confirmed for tomorrow at 10:00 AM. You'll get a reminder text the night before. We'll see you then.",
+    booked: true, status: 'Job Booked',
+  };
+  return {
+    text: "Got it. Can you give me a bit more detail on what's going on? The more you share, the better I can get the right person out to you.",
+    booked: false, status: 'AI Handling',
+  };
+}
+
+function InteractiveDemo() {
+  const [messages, setMessages] = useState([
+    { from:'ai', text:"Hey! This is Jake's Plumbing — sorry we missed your call. How can we help?" },
+  ]);
+  const [input, setInput] = useState('');
+  const [typing, setTyping] = useState(false);
+  const [ownerStatus, setOwnerStatus] = useState('AI Active');
+  const [booked, setBooked] = useState(false);
+  const [notifs, setNotifs] = useState([
+    { text:'Missed call detected — AI response sent in 11s', color:'#3b82f6', time:'just now' },
+  ]);
+  const bottomRef = useRef(null);
+  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior:'smooth' }); }, [messages, typing]);
+
+  const send = (raw) => {
+    const msg = raw.trim();
+    if (!msg || typing) return;
+    setInput('');
+    setMessages(prev => [...prev, { from:'user', text:msg }]);
+    setTyping(true);
+    setTimeout(() => {
+      const resp = getDemoResponse(msg);
+      setTyping(false);
+      setMessages(prev => [...prev, { from:'ai', text:resp.text }]);
+      setOwnerStatus(resp.status);
+      if (resp.booked) {
+        setBooked(true);
+        setNotifs(prev => [...prev,
+          { text:'Customer replied', color:'#3b82f6', time:'just now' },
+          { text:'Appointment booked · Tomorrow 10:00 AM', color:'#22c55e', time:'just now' },
+        ]);
+      } else {
+        setNotifs(prev => [...prev, { text:'Customer replied — AI handling', color:'#3b82f6', time:'just now' }]);
+      }
+    }, 1400);
+  };
+
+  return (
+    <div>
+      <div className="ansa-demo-scenarios">
+        {DEMO_SCENARIOS.map((s,i) => (
+          <button key={i} className="ansa-demo-scen-btn" onClick={() => send(s.text)}>{s.label}</button>
+        ))}
+      </div>
+      <div className="ansa-demo-outer">
+        {/* Customer side */}
+        <div>
+          <div className="ansa-demo-col-label">Your Customer Sees</div>
+          <div className="ansa-demo-phone">
+            <div style={{ display:'flex',justifyContent:'space-between',marginBottom:14,padding:'0 2px' }}>
+              <span style={{ fontSize:12,fontWeight:700,color:'#fff' }}>Jake's Plumbing</span>
+              <span style={{ fontSize:11,color:'#666' }}>SMS</span>
+            </div>
+            <div className="ansa-demo-msgs">
+              {messages.map((m,i) => (
+                <div key={i} className={`ansa-chat-bubble ${m.from==='ai'?'ansa-chat-incoming':'ansa-chat-outgoing'}`} style={{ fontSize:13 }}>{m.text}</div>
+              ))}
+              {typing && <div className="ansa-chat-typing"><span/><span/><span/></div>}
+              {booked && (
+                <div className="ansa-booked-banner">
+                  <div className="ansa-booked-banner-dot"/>
+                  <div className="ansa-booked-banner-text">Appointment confirmed · Tomorrow 10:00 AM</div>
+                </div>
+              )}
+              <div ref={bottomRef}/>
+            </div>
+            {!booked && (
+              <div className="ansa-demo-input-row">
+                <input className="ansa-demo-input" value={input} onChange={e => setInput(e.target.value)}
+                  onKeyDown={e => e.key==='Enter' && send(input)} placeholder="Reply as the customer…" disabled={typing}/>
+                <button className="ansa-demo-send" onClick={() => send(input)} disabled={typing || !input.trim()}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Owner side */}
+        <div>
+          <div className="ansa-demo-col-label">You (The Business Owner) See</div>
+          <div className="ansa-demo-owner-panel">
+            <div style={{ display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:16 }}>
+              <span style={{ fontSize:13,fontWeight:600,color:'#fff' }}>Live Dashboard</span>
+              <span style={{ fontSize:11,padding:'3px 12px',borderRadius:20,fontWeight:700,
+                background:booked?'rgba(34,197,94,.15)':'rgba(59,130,246,.15)',
+                color:booked?'#22c55e':'#3b82f6' }}>{ownerStatus}</span>
+            </div>
+            <div style={{ fontSize:10.5,fontWeight:700,color:'#333',textTransform:'uppercase',letterSpacing:'1px',marginBottom:8 }}>Notifications</div>
+            <div style={{ display:'flex',flexDirection:'column',gap:7,marginBottom:16 }}>
+              {notifs.map((n,i) => (
+                <div key={i} className="ansa-demo-notif" style={{ borderColor:`${n.color}30` }}>
+                  <div style={{ display:'flex',alignItems:'center',gap:6 }}>
+                    <span style={{ width:6,height:6,borderRadius:'50%',background:n.color,display:'inline-block',boxShadow:`0 0 6px ${n.color}`,flexShrink:0 }}/>
+                    <span style={{ fontSize:11.5,fontWeight:600,color:'#e5e5e5',flex:1 }}>{n.text}</span>
+                    <span style={{ fontSize:10,color:'#444',flexShrink:0 }}>{n.time}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div style={{ flex:1 }}/>
+            {booked ? (
+              <div className="ansa-demo-booked-card">
+                <div style={{ fontSize:12,fontWeight:700,color:'#22c55e',marginBottom:8,display:'flex',alignItems:'center',gap:6 }}>
+                  <span style={{ width:7,height:7,borderRadius:'50%',background:'#22c55e',display:'inline-block',boxShadow:'0 0 8px #22c55e' }}/>
+                  Job Confirmed
+                </div>
+                <div style={{ fontSize:14,fontWeight:700,color:'#fff',marginBottom:3 }}>Plumbing / HVAC Repair</div>
+                <div style={{ fontSize:12,color:'#6ee7b7',marginBottom:6 }}>Tomorrow · 10:00 AM</div>
+                <div style={{ fontSize:11.5,color:'#555',lineHeight:1.5 }}>Booked automatically while you were on another job.</div>
+              </div>
+            ) : (
+              <div style={{ background:'#0f0f0f',border:'1px solid #1e1e1e',borderRadius:12,padding:'14px 16px' }}>
+                <div style={{ display:'flex',alignItems:'center',gap:8,marginBottom:10 }}>
+                  <span style={{ width:6,height:6,borderRadius:'50%',background:'#3b82f6',display:'inline-block',animation:'ansa-pulse 2s infinite' }}/>
+                  <span style={{ fontSize:12,color:'#888' }}>AI handling conversation…</span>
+                </div>
+                <div style={{ height:3,background:'#1a1a1a',borderRadius:99,overflow:'hidden' }}>
+                  <div style={{ width:'65%',height:'100%',background:'linear-gradient(90deg,#3b82f6,#8b5cf6)',borderRadius:99,animation:'ansa-gradient 2s ease infinite',backgroundSize:'200% 100%' }}/>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 
 export default function LandingPage() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activePhone, setActivePhone] = useState(0);
+  const [jobCount, setJobCount] = useState(2841);
   const revealRef = useRef(null);
 
   useEffect(() => {
@@ -1016,7 +1214,15 @@ export default function LandingPage() {
       document.querySelectorAll('.ansa-reveal').forEach(el => obs.observe(el));
       revealRef.current = obs;
     }, 100);
-    return () => { clearTimeout(timer); revealRef.current?.disconnect(); };
+    // Cursor glow
+    const onMove = e => {
+      document.documentElement.style.setProperty('--ansa-gx', `${e.clientX}px`);
+      document.documentElement.style.setProperty('--ansa-gy', `${e.clientY}px`);
+    };
+    window.addEventListener('mousemove', onMove, { passive: true });
+    // Live job counter
+    const counter = setInterval(() => setJobCount(c => c + Math.floor(Math.random() * 2) + 1), 9000);
+    return () => { clearTimeout(timer); revealRef.current?.disconnect(); window.removeEventListener('mousemove', onMove); clearInterval(counter); };
   }, []);
 
   const scrollTo = id => e => { e.preventDefault(); document.getElementById(id)?.scrollIntoView({ behavior:'smooth' }); setMobileOpen(false); };
@@ -1026,6 +1232,9 @@ export default function LandingPage() {
 
   return (
     <div className="ansa-landing">
+      {/* Ambient layers */}
+      <div className="ansa-cursor-glow-layer" />
+      <div className="ansa-grain" />
 
       {/* Nav */}
       <nav className="ansa-nav">
@@ -1033,6 +1242,7 @@ export default function LandingPage() {
           <a href="#/" className="ansa-logo">ansa<span>.</span></a>
           <div className="ansa-nav-links">
             <a href="#how-it-works" onClick={scrollTo('how-it-works')}>How It Works</a>
+            <a href="#demo" onClick={scrollTo('demo')}>Try It Live</a>
             <a href="#product" onClick={scrollTo('product')}>See the Dashboard</a>
             <a href="#pricing" onClick={scrollTo('pricing')}>Pro Plan</a>
             <a href="#faq" onClick={scrollTo('faq')}>FAQ</a>
@@ -1045,6 +1255,7 @@ export default function LandingPage() {
         </div>
         <div className={`ansa-nav-mobile-menu${mobileOpen?' open':''}`}>
           <a href="#how-it-works" onClick={scrollTo('how-it-works')}>How It Works</a>
+          <a href="#demo" onClick={scrollTo('demo')}>Try It Live</a>
           <a href="#product" onClick={scrollTo('product')}>See the Dashboard</a>
           <a href="#pricing" onClick={scrollTo('pricing')}>Pro Plan</a>
           <a href="#faq" onClick={scrollTo('faq')}>FAQ</a>
@@ -1056,7 +1267,11 @@ export default function LandingPage() {
       {/* Hero */}
       <section className="ansa-hero">
         <div className="ansa-hero-glow" />
-        <div className="ansa-hero-badge"><Zap size={14} /> Built for Home Service Pros</div>
+        <div className="ansa-live-badge">
+          <span className="ansa-live-dot" />
+          {jobCount.toLocaleString()} jobs booked through Ansa this month
+        </div>
+        <div className="ansa-hero-badge" style={{ marginTop:0 }}><Zap size={14} /> Built for Home Service Pros</div>
         <h1>Every Missed Call Is a Job You Didn't Book</h1>
         <p className="ansa-hero-sub">
           When you miss a call, Ansa texts back in under 15 seconds, answers their questions with AI, and books the appointment — all before they call your competitor. No receptionist. No voicemail. No lost jobs.
@@ -1333,6 +1548,20 @@ export default function LandingPage() {
           <DashboardShowcase />
         </div>
       </section>
+
+      {/* Interactive Demo */}
+      <div className="ansa-section-wrap-tinted">
+        <section className="ansa-section" id="demo">
+          <div className="ansa-reveal">
+            <p className="ansa-section-label">Live Demo</p>
+            <h2 className="ansa-section-title">Type like a customer. Watch Ansa work.</h2>
+            <p className="ansa-section-sub">This is the real product — exactly how your customers experience it. Pick a scenario or type your own.</p>
+          </div>
+          <div className="ansa-reveal">
+            <InteractiveDemo />
+          </div>
+        </section>
+      </div>
 
       {/* Integrations + Notifications — combined split section */}
       <div className="ansa-section-wrap-tinted">
