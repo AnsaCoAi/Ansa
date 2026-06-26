@@ -1048,26 +1048,51 @@ const DEMO_SCENARIOS = [
 
 function getDemoResponse(text) {
   const t = text.toLowerCase();
-  if (/flood|burst|leak|urgent|emergency|asap|right now|today|immediately/.test(t)) return {
-    text: "We're on it — this sounds urgent. Can you send me your address? I'll get a tech headed your way as fast as possible. What's the best number to reach you?",
-    booked: false, status: 'Urgent — routing tech',
-  };
-  if (/cost|price|how much|charge|quote|estimate|fee/.test(t)) return {
-    text: "Good question. Water heater replacements typically run $800–$1,400 depending on the unit. I can book you a free in-home estimate — is this week or next better for you?",
-    booked: false, status: 'Collecting info',
-  };
-  if (/schedule|book|appointment|available|when can|fix|repair|service/.test(t)) return {
-    text: "Let's lock it in. I have tomorrow at 10 AM or 2 PM open, and Thursday morning. Which works best for you?",
-    booked: false, status: 'Scheduling',
-  };
-  if (/tomorrow|thursday|monday|tuesday|wednesday|friday|10 am|2 pm|morning|afternoon|works/.test(t)) return {
-    text: "Done! You're confirmed for tomorrow at 10:00 AM. You'll get a reminder text the night before. We'll see you then.",
-    booked: true, status: 'Job Booked',
-  };
-  return {
-    text: "Got it. Can you give me a bit more detail on what's going on? The more you share, the better I can get the right person out to you.",
-    booked: false, status: 'AI Handling',
-  };
+
+  // 1. Emergencies — always first
+  if (/flood|flooding|burst|gush|overflow|sewage backup|no power|gas leak|sparking|fire/.test(t))
+    return { text:"This sounds like an emergency — we're treating it as one. What's your address? I'm flagging this for immediate dispatch.", booked:false, status:'Emergency — dispatching' };
+
+  // 2. Time selection → booking (must come before scheduling so "tomorrow" closes the deal)
+  if (/\btomorrow\b|\bthursday\b|\bmonday\b|\btuesday\b|\bwednesday\b|\bfriday\b|\bsaturday\b|10 am|2 pm|\bmorning\b|\bafternoon\b|that works|sounds good|either works|any of those/.test(t))
+    return { text:"Locked in! You're confirmed for tomorrow at 10:00 AM. You'll get a confirmation text shortly and a reminder the night before. We'll see you then.", booked:true, status:'Job Booked' };
+
+  // 3. Specific problem types — identify BEFORE falling through to generic booking
+  if (/\btoilet\b/.test(t))
+    return { text:"Got it — toilet issue. Is it not flushing at all, running constantly, or leaking at the base? And is it just that toilet or are other drains slow too?", booked:false, status:'Diagnosing' };
+  if (/\bwater heater\b|\bhot water\b|\bno hot water\b/.test(t))
+    return { text:"No hot water is rough. Is the unit gas or electric? Any error lights blinking on it, or is it just stone cold with no signs of life?", booked:false, status:'Diagnosing' };
+  if (/\bdrain\b|\bclog\b|\bclogged\b|\bbackup\b|\bslow drain\b/.test(t))
+    return { text:"Understood. Is it one specific drain or multiple drains acting up? That tells us whether it's a local clog or a main line issue — big difference in how we approach it.", booked:false, status:'Diagnosing' };
+  if (/\bpipe\b|\bleak\b|\bdripping\b|\bwater damage\b/.test(t))
+    return { text:"Leaks need fast attention before they get worse. Where is it — under a sink, behind a wall, in the ceiling? Is the water actively running or just dripping?", booked:false, status:'Diagnosing' };
+  if (/\bac\b|\bair condition|\bhvac\b|\bcooling\b|\bno cool|\bnot cooling\b/.test(t))
+    return { text:"AC issue noted. Is it not turning on at all, running but blowing warm air, or making a noise it shouldn't? Also — how old is the unit roughly?", booked:false, status:'Diagnosing' };
+  if (/\bheat\b|\bfurnace\b|\bheating\b|\bno heat\b|\bnot heating\b/.test(t))
+    return { text:"No heat is never good. Is the furnace not kicking on at all, or is it running but not warming the house? Any error codes on the thermostat display?", booked:false, status:'Diagnosing' };
+  if (/\boutlet\b|\belectric|\bbreaker\b|\bpower out|\bno power\b|\blight switch|\bpanel\b/.test(t))
+    return { text:"Electrical issue — got it. Is it one outlet/switch, a whole room, or the entire house? And have you checked the breaker panel to see if anything tripped?", booked:false, status:'Diagnosing' };
+  if (/\broof\b|\bshingle|\bgutter\b|\bceiling leak|\bwater stain\b/.test(t))
+    return { text:"Roof concerns need quick attention especially with weather. Is there active water coming in, or is this something you noticed visually — staining, missing shingles? What's your zip code?", booked:false, status:'Diagnosing' };
+  if (/\bpest\b|\bbug\b|\bant\b|\broach\b|\bmouse\b|\brat\b|\btermite\b|\bwasp\b/.test(t))
+    return { text:"Pest issue — understood. How long have you been seeing this, and is it a specific room or throughout the house? We can usually get an inspection scheduled within 24 hours.", booked:false, status:'Diagnosing' };
+  if (/\bwindow\b|\bdoor\b|\bframe\b|\bsiding\b|\bdeck\b|\bfence\b/.test(t))
+    return { text:"Got it. Is this more of an urgent repair — damage, broken seal, won't close — or a project quote you're looking to plan out? Happy to help either way.", booked:false, status:'Diagnosing' };
+
+  // 4. Price/quote — after problem types so "how much to fix my toilet" doesn't just say "water heater"
+  if (/cost|price|how much|charge|quote|estimate|fee/.test(t))
+    return { text:"Happy to get you a number. To give you an accurate estimate I just need to know: what's the issue, and roughly what city are you in?", booked:false, status:'Collecting info' };
+
+  // 5. Explicit scheduling request
+  if (/schedule|book|appointment|when can you come|available/.test(t))
+    return { text:"Absolutely. I have tomorrow at 10 AM or 2 PM open, and Thursday morning. What works best?", booked:false, status:'Scheduling' };
+
+  // 6. Generic repair/fix mention without specific problem
+  if (/\bfix\b|\brepair\b|\bbroken\b|\bnot working\b|\bdoesn't work\b|\bstopped working\b/.test(t))
+    return { text:"We can take care of that. Can you tell me a bit more about what's going on — what exactly stopped working and when did you first notice it?", booked:false, status:'Diagnosing' };
+
+  // 7. Fallback
+  return { text:"Got it. Can you describe what's happening in a bit more detail? Even a sentence or two helps us make sure we send the right tech with the right parts.", booked:false, status:'AI Handling' };
 }
 
 function InteractiveDemo() {
@@ -1081,8 +1106,11 @@ function InteractiveDemo() {
   const [notifs, setNotifs] = useState([
     { text:'Missed call detected — AI response sent in 11s', color:'#3b82f6', time:'just now' },
   ]);
-  const bottomRef = useRef(null);
-  useEffect(() => { bottomRef.current?.scrollIntoView({ behavior:'smooth' }); }, [messages, typing]);
+  const msgsRef = useRef(null);
+  useEffect(() => {
+    const el = msgsRef.current;
+    if (el) el.scrollTop = el.scrollHeight;
+  }, [messages, typing]);
 
   const send = (raw) => {
     const msg = raw.trim();
@@ -1123,7 +1151,7 @@ function InteractiveDemo() {
               <span style={{ fontSize:12,fontWeight:700,color:'#fff' }}>Jake's Plumbing</span>
               <span style={{ fontSize:11,color:'#666' }}>SMS</span>
             </div>
-            <div className="ansa-demo-msgs">
+            <div className="ansa-demo-msgs" ref={msgsRef}>
               {messages.map((m,i) => (
                 <div key={i} className={`ansa-chat-bubble ${m.from==='ai'?'ansa-chat-incoming':'ansa-chat-outgoing'}`} style={{ fontSize:13 }}>{m.text}</div>
               ))}
@@ -1134,7 +1162,6 @@ function InteractiveDemo() {
                   <div className="ansa-booked-banner-text">Appointment confirmed · Tomorrow 10:00 AM</div>
                 </div>
               )}
-              <div ref={bottomRef}/>
             </div>
             {!booked && (
               <div className="ansa-demo-input-row">
@@ -1208,6 +1235,9 @@ export default function LandingPage() {
   const revealRef = useRef(null);
 
   useEffect(() => {
+    // Disable browser scroll restoration so refresh always starts at top
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+    window.scrollTo(0, 0);
     injectStyles();
     const timer = setTimeout(() => {
       const obs = new IntersectionObserver(entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }), { threshold: 0.12 });
