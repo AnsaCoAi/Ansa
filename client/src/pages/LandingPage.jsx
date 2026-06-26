@@ -31,8 +31,10 @@ const injectStyles = () => {
     .ansa-nav-links a{color:#a1a1aa;text-decoration:none;font-size:14px;font-weight:500;transition:color .2s}
     .ansa-nav-links a:hover{color:#fff}
     .ansa-nav-mobile-toggle{display:none;background:none;border:none;color:#fff;cursor:pointer}
-    .ansa-nav-mobile-menu{display:none;flex-direction:column;gap:16px;position:absolute;top:64px;left:0;right:0;background:rgba(10,10,10,.97);padding:24px;border-bottom:1px solid #222}
-    .ansa-nav-mobile-menu a{color:#a1a1aa;text-decoration:none;font-size:15px;font-weight:500}
+    .ansa-nav-mobile-menu{display:none;flex-direction:column;gap:4px;position:absolute;top:64px;left:0;right:0;background:rgba(10,10,10,.97);padding:16px 20px 24px;border-bottom:1px solid #222}
+    .ansa-nav-mobile-menu a{color:#a1a1aa;text-decoration:none;font-size:15px;font-weight:500;display:block;padding:12px 4px;border-bottom:1px solid rgba(255,255,255,.04)}
+    .ansa-nav-mobile-menu a:last-of-type{border-bottom:none}
+    .ansa-nav-mobile-cta{display:block;width:100%;text-align:center;padding:15px;border-radius:12px;font-size:16px;font-weight:700;background:${PRIMARY};color:#fff!important;text-decoration:none!important;border:none;margin-top:12px;box-shadow:0 0 0 1px rgba(59,130,246,.3),0 4px 16px rgba(59,130,246,.4);font-family:inherit;cursor:pointer}
 
     /* Buttons */
     .ansa-btn{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;transition:all .25s;text-decoration:none;border:none;font-family:inherit}
@@ -63,7 +65,7 @@ const injectStyles = () => {
     .ansa-phone-slot.is-side .ansa-phone{filter:brightness(.75)}
     .ansa-phone-slot.is-side:hover .ansa-phone{filter:brightness(.9)}
     .ansa-phone-slot.is-side:hover .ansa-phone{border-color:#3b82f6;box-shadow:0 0 0 1px #3b82f6,0 32px 80px rgba(0,0,0,.6)}
-    @media(max-width:820px){.ansa-phone-slot.is-side{display:none!important}.ansa-phones-row{justify-content:center}}
+    @media(max-width:820px){.ansa-phone-slot.is-side{display:none!important}.ansa-phones-row{justify-content:center}.ansa-phone{height:420px!important}.ansa-phone-slot.is-center{flex:0 0 min(310px,calc(100vw - 48px))!important}}
     .ansa-phone{background:#1c1c1e;border:1px solid #2c2c2e;border-radius:36px;padding:20px 16px 24px;position:relative;box-shadow:0 32px 80px rgba(0,0,0,.6),0 0 60px rgba(59,130,246,.07);height:600px;display:flex;flex-direction:column;overflow:hidden}
     .ansa-chat-area{display:flex;flex-direction:column;gap:10px;align-items:flex-start;text-align:left;flex:1;overflow-y:auto;padding-right:2px}
     .ansa-chat-area::-webkit-scrollbar{width:3px}
@@ -379,6 +381,27 @@ const injectStyles = () => {
 
       /* Legacy */
       .ansa-proof-stats{gap:24px;flex-wrap:wrap}
+
+      /* Stats band wrapper: tighter on mobile */
+      .ansa-stats-wrap{padding:24px 16px!important}
+
+      /* Hero CTAs: stack vertically, secondary becomes text link */
+      .ansa-hero-ctas{flex-direction:column!important;align-items:center!important;gap:6px!important}
+      .ansa-hero-ctas .ansa-btn-outline{background:none!important;border:none!important;color:#93c5fd!important;padding:8px 4px!important;font-size:14px!important;box-shadow:none!important;text-decoration:underline!important;text-underline-offset:3px!important}
+      .ansa-hero-ctas .ansa-btn-outline:hover{transform:none!important;background:none!important}
+
+      /* Dashboard showcase: hide arrows, stretch full width */
+      .ansa-showcase-arrow{display:none!important}
+      .ansa-showcase-outer{gap:0!important}
+
+      /* Sticky CTA: safe area for iPhone home indicator */
+      .ansa-sticky-cta{padding:12px 16px max(20px,calc(env(safe-area-inset-bottom) + 8px))!important}
+
+      /* Problem cards: horizontal layout (icon+stat left, desc right) */
+      .ansa-problem-card{display:flex!important;flex-direction:row!important;align-items:center!important;text-align:left!important;gap:16px!important;padding:20px!important}
+      .ansa-problem-icon{margin:0!important;flex-shrink:0!important}
+      .ansa-problem-stat{font-size:28px!important;margin-bottom:4px!important}
+      .ansa-problem-desc{font-size:13px!important}
     }
     @media(max-width:480px){
       .ansa-hero{padding:88px 16px 40px}
@@ -504,9 +527,9 @@ function VisualTextBack() {
         <div style={{ width:7,height:7,borderRadius:'50%',background:'#10b981',animation:'ansa-pulse 2s infinite' }} />
         <span style={{ fontSize:12,color:'#6ee7b7',fontWeight:600 }}>Missed call detected — texting back</span>
       </div>
-      <div style={{ fontSize:12,color:'#52525b',marginBottom:8 }}>⚡ Response sent in 11 seconds</div>
+      <div style={{ fontSize:12,color:'#52525b',marginBottom:8 }}>Response sent in 11 seconds</div>
       <div className="ansa-chat-bubble ansa-chat-incoming" style={{ fontSize:13 }}>
-        Hey! This is Jake from Jake's Plumbing — sorry we missed you. How can we help? 🔧
+        Hey! This is Jake from Jake's Plumbing — sorry we missed you. How can we help?
       </div>
       <div style={{ fontSize:11,color:'#3f3f46',marginTop:4 }}>Delivered · 11s after missed call</div>
     </div>
@@ -879,7 +902,7 @@ function DashboardShowcase() {
   const ActiveView = SHOWCASE_VIEWS[view];
 
   const ArrowBtn = ({ onClick, children }) => (
-    <button onClick={onClick} style={{
+    <button onClick={onClick} className="ansa-showcase-arrow" style={{
       width:40, height:40, borderRadius:'50%', border:'1px solid #1e1e1e',
       background:'#111', color:'#888', display:'flex', alignItems:'center',
       justifyContent:'center', cursor:'pointer', flexShrink:0,
@@ -891,7 +914,7 @@ function DashboardShowcase() {
   );
 
   return (
-    <div style={{ display:'flex', alignItems:'center', gap:16 }}>
+    <div className="ansa-showcase-outer" style={{ display:'flex', alignItems:'center', gap:16 }}>
       <ArrowBtn onClick={prev}>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
       </ArrowBtn>
@@ -1003,8 +1026,8 @@ export default function LandingPage() {
           <a href="#product" onClick={scrollTo('product')}>See the Dashboard</a>
           <a href="#pricing" onClick={scrollTo('pricing')}>Pro Plan</a>
           <a href="#faq" onClick={scrollTo('faq')}>FAQ</a>
-          <a href="#/login" style={{ color:'#a1a1aa',textDecoration:'none',fontSize:'15px',fontWeight:'500' }}>Log In</a>
-          <a href="#/signup" className="ansa-btn ansa-btn-blue" style={{ padding:'10px 22px',fontSize:14,textAlign:'center',color:'#fff' }}>Get Started</a>
+          <a href="#/login" style={{ color:'#a1a1aa',textDecoration:'none',fontSize:'15px',fontWeight:'500',display:'block',padding:'12px 4px' }}>Log In</a>
+          <a href="#/signup" className="ansa-nav-mobile-cta" onClick={() => setMobileOpen(false)}>Start Free Trial — 30 Days Free</a>
         </div>
       </nav>
 
@@ -1074,7 +1097,7 @@ export default function LandingPage() {
           ))}
         </div>
       </div>
-      <div style={{ padding:'40px 24px' }}>
+      <div className="ansa-stats-wrap" style={{ padding:'40px 24px' }}>
         <div className="ansa-stats-band ansa-reveal">
           <div className="ansa-stats-band-cell">
             <div className="ansa-stats-band-num">15s</div>
