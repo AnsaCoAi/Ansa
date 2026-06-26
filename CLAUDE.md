@@ -347,15 +347,75 @@ A deep audit of the full platform found 87 issues across 2 sessions. All tracked
 ### Session 2026-06-22 — Mobile Responsiveness Pass
 Full pre-demo audit found 0 logic bugs (all prior fixes held). Only gap was mobile layout.
 
-**6 files updated — committed and live:**
-- DashboardHome: stat grid collapses 4→2→1 columns on tablet/phone
-- AnalyticsPage: stat cards 4→2→1, charts stack to single column on mobile
-- AppointmentsPage: appointment detail cards 3→2→1 columns on mobile
-- MissedCallsPage: table header hidden on mobile, rows switch to vertical card layout
-- ConversationDetail: info panel hidden on mobile (full-screen chat), modals 92vw, padding 16px
-- SettingsPage: tab bar wraps on mobile, name/phone formRow stacks to 1 column
+**Round 1 — 6 files (first attempt — patchy <style> tags, partially broken):**
+- Added per-component `<style>` tags with class names — some class names never applied to right elements
 
-### NOTHING TODO — platform is demo-ready
+**Round 2 — rebuilt correctly (global CSS file approach):**
+- Created `client/src/mobile.css` — single global stylesheet imported in `main.jsx`
+- Vite bundles it as a real CSS asset (confirmed: `index-DcC6ewDK.css` now in dist/)
+- All `<style>` tag hacks removed from individual pages
+- Correct `className` attributes added to all target elements
+- Pages covered: DashboardHome, AnalyticsPage, AppointmentsPage, MissedCallsPage, ConversationDetail, ConversationsPage, SettingsPage
+
+**What mobile.css does at ≤768px:**
+- Stat grids: 4-col → 2-col (DashboardHome, Analytics)
+- Analytics charts: side-by-side → stacked
+- Appointments: 3-col detail grid → 2-col → 1-col on phone
+- Missed Calls: table header hidden, rows become flex cards
+- Conversation Detail: Caller Info panel hidden, chat takes full screen, padding 12px, modals 92vw
+- Conversations: tab bar scrolls horizontally, rows tighten
+- Settings: tabs wrap + shrink to icons-only on phone, form row stacks
+
+**At ≤480px:** all stat grids collapse to 1-col, settings tabs show icons only
+
+## Session 2026-06-25 — Mobile Overhaul (2 rounds)
+
+### Round 1 — Foundation fix
+- `client/src/mobile.css` completely rewritten (was patchy and had selector mismatches)
+- LandingPage: `.ansa-stats-band` (3-col, no breakpoint) was the worst bug — completely unreadable on mobile. Fixed to 1-col at ≤768px
+- LandingPage: added `@media(max-width:480px)` block, reduced hero/section padding, integrations grid, footer
+- ConversationsPage: added `className="ansa-conv-header"` + `className="ansa-conv-action"` so tab bar stacks above the unread button on mobile
+- SettingsPage: wrapped tab labels in `<span>` so icon-only mode at ≤480px works
+- DashboardLayout: `overflow-x: hidden` on main content to prevent horizontal bleed
+
+### Round 2 — iOS-native patterns
+**Dashboard — replaced hamburger with bottom navigation bar:**
+- `client/src/components/DashboardLayout.jsx` rewritten
+- Mobile (≤768px): sidebar hidden, hamburger gone, `<nav data-ansa-bottom-nav>` appears at bottom
+- 6 tabs: Home · Calls · Messages · Jobs · Analytics · Settings (short labels)
+- `env(safe-area-inset-bottom)` for iPhone home indicator
+- Top bar shows `ansa.` logo on mobile (page title hidden — active tab communicates location)
+- ConversationDetail chat height: `calc(100dvh - 218px)` (accounts for 56px topbar + 60px bottom nav + back button)
+- Desktop unchanged: sidebar always visible, margin-left: 260px
+
+**Landing page:**
+- Smart Booking section: inner `1fr 1fr` grid had no class so never collapsed on mobile. Added `className="ansa-smart-grid"` — collapses to 1-col at ≤768px with visual on top, text below (Apple-style feature layout)
+- 62%/85% stat cards: were stacking back-to-back at ≤600px. Fixed — bento stays 2-col at ≤600px so accent cards stay side-by-side; only wide/full cards span full width. Below 380px everything collapses.
+
+## ⚡ NEXT TAB — PICK UP HERE (2026-06-25)
+
+### Current state
+- Platform fully built, all 35+ fixes live ✅
+- Mobile overhaul complete — bottom nav, smart booking fix, stats band fix ✅
+- Supabase is **Healthy** (free tier — unpause at supabase.com if down)
+- Demo account: tylerlofaro@yahoo.com / ManyOfMillions#ADMIN6710
+- Last push: commit 65dd192 (bottom nav + landing page feature fixes)
+
+### Hard-refresh on iPhone after reading this
+- www.ansaco.ai → hold reload → "Reload Without Content Blockers"
+- Dashboard: should show ansa. logo in top bar, bottom tab bar at the bottom
+- Landing page: stats band should stack vertically, Smart Booking should be single column
+
+### What's next (prioritized)
+1. **Annual pricing plan** — add annual option ($2,970/yr = 2 months free) to landing page pricing section + Stripe checkout. Needs new Stripe price ID created first in Stripe dashboard.
+2. **First real client onboarding** — when this happens: upgrade Supabase to Pro ($25/mo), add SMS consent checkbox to booking forms, plan per-client A2P brand registration
+3. **Profile photo** in dashboard (Settings > Account)
+4. **Logo in emails** (currently text-only)
+5. **Google Business profile** setup for Ansa
+
+### How to start next tab
+Open CLAUDE.md, read the "NEXT TAB" section, and say:
+"Silas — read CLAUDE.md. [describe what you want to work on]"
 
 ### HOW TO RUN THE DEMO ACCOUNT:
 - URL: https://www.ansaco.ai
