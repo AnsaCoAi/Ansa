@@ -152,7 +152,10 @@ export default function ConversationsPage() {
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
         {loading ? (
-          <div style={{ padding: 60, textAlign: 'center', color: '#666', fontSize: 14 }}>Loading...</div>
+          <div style={{ display:'flex', alignItems:'center', justifyContent:'center', padding:60 }}>
+            <style>{`@keyframes ansa-spin{to{transform:rotate(360deg)}}`}</style>
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ animation:'ansa-spin 0.8s linear infinite' }}><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+          </div>
         ) : filtered.length === 0 ? (
           <div style={{ padding: '60px 20px', textAlign: 'center' }}>
             <MessageSquare size={32} color="#333" style={{ marginBottom: 12 }} />

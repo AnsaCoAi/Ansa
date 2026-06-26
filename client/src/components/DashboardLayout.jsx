@@ -210,6 +210,10 @@ const styles = {
   bottomNavItem: {
     display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
     flex: 1, textDecoration: 'none', padding: '6px 4px', gap: 0,
+    borderTop: '2px solid transparent', transition: 'border-color 0.15s',
   },
-  bottomNavItemActive: {},
+  bottomNavItemActive: {
+    borderTop: '2px solid #3b82f6',
+    background: 'rgba(59,130,246,0.06)',
+  },
 }

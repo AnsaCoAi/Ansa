@@ -32,6 +32,7 @@ export default function ConversationDetail() {
   const [showLeaveWarning, setShowLeaveWarning] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [actionError, setActionError] = useState('');
   const [linkedAppointment, setLinkedAppointment] = useState(null);
   const bottomRef = useRef(null);
   const chatRef = useRef(null);
@@ -106,7 +107,7 @@ export default function ConversationDetail() {
       await api.updateConversation(convId, { status: 'closed' });
       setConv(c => ({ ...c, status: 'closed' }));
     } catch (_) {
-      alert('Failed to close conversation. Please try again.');
+      setActionError('Failed to close conversation. Check your connection and try again.');
     } finally {
       setClosing(false);
     }
@@ -118,13 +119,18 @@ export default function ConversationDetail() {
       await api.deleteConversation(convId);
       window.location.hash = '#/dashboard/conversations';
     } catch (_) {
-      alert('Failed to delete conversation. Please try again.');
+      setActionError('Failed to delete conversation. Check your connection and try again.');
       setDeleting(false);
       setShowDeleteConfirm(false);
     }
   };
 
-  if (loading) return <div style={{ padding: '24px 32px', color: '#666' }}>Loading...</div>;
+  if (loading) return (
+    <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height:'60vh' }}>
+      <style>{`@keyframes ansa-spin{to{transform:rotate(360deg)}}`}</style>
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ animation:'ansa-spin 0.8s linear infinite' }}><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+    </div>
+  );
 
   if (!conv) return (
     <div style={{ padding: '24px 32px' }}>
@@ -187,6 +193,13 @@ export default function ConversationDetail() {
         onClick={handleBack}>
         <ArrowLeft size={16} /> Back to Conversations
       </button>
+
+      {actionError && (
+        <div style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.25)', borderRadius: 10, padding: '10px 16px', marginBottom: 16, fontSize: 13, color: '#fca5a5', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          {actionError}
+          <button onClick={() => setActionError('')} style={{ background: 'none', border: 'none', color: '#888', cursor: 'pointer', padding: '0 0 0 12px', fontSize: 16, lineHeight: 1 }}>×</button>
+        </div>
+      )}
 
       <div className="ansa-detail-panels" style={{ display: 'flex', gap: 20, flex: 1, minHeight: 0 }}>
         {/* Chat Panel */}

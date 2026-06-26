@@ -23,7 +23,7 @@ function formatTime(dateStr) {
 }
 
 function isUpcoming(apt) {
-  return (apt.status === 'confirmed' || apt.status === 'pending') && new Date(apt.scheduled_at) >= new Date();
+  return (apt.status === 'confirmed' || apt.status === 'pending' || apt.status === 'booked') && new Date(apt.scheduled_at) >= new Date();
 }
 
 function isPast(apt) {
@@ -128,9 +128,12 @@ export default function AppointmentsPage() {
         ))}
       </div>
 
+      <style>{`@keyframes ansa-spin{to{transform:rotate(360deg)}}`}</style>
       <div style={styles.grid}>
         {loading ? (
-          <div style={styles.empty}>Loading...</div>
+          <div style={{ display:'flex', alignItems:'center', justifyContent:'center', padding:60 }}>
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ animation:'ansa-spin 0.8s linear infinite' }}><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+          </div>
         ) : filtered.length === 0 ? (
           <div style={{ ...styles.empty, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10 }}>
             <CalendarCheck size={32} color="#333" />

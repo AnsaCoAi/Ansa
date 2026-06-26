@@ -209,7 +209,17 @@ export default function AnalyticsPage() {
       </div>
 
       <div style={styles.chartCard}>
-        <div style={styles.chartTitle}>Calls vs Responses vs Bookings — {chartLabel}</div>
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:20, flexWrap:'wrap', gap:8 }}>
+          <div style={styles.chartTitle}>Calls vs Responses vs Bookings — {chartLabel}</div>
+          <div style={{ display:'flex', gap:16 }}>
+            {[['#3b82f6','Missed Calls'],['#8b5cf6','Responses'],['#22c55e','Bookings']].map(([color, label]) => (
+              <div key={label} style={{ display:'flex', alignItems:'center', gap:6 }}>
+                <div style={{ width:10, height:10, borderRadius:2, background:color, flexShrink:0 }}/>
+                <span style={{ fontSize:12, color:'#888' }}>{label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
         <ResponsiveContainer width="100%" height={300}>
           <AreaChart data={chartData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
             <defs>

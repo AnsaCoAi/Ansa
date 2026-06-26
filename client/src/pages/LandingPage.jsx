@@ -1101,7 +1101,7 @@ export default function LandingPage() {
                     )}
                   </div>
                 </div>
-                {!isCenter && <div className="ansa-phone-hint">click to expand</div>}
+                {!isCenter && <div className="ansa-phone-hint">tap to expand</div>}
               </div>
             );
           })}

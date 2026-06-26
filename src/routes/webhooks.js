@@ -173,6 +173,7 @@ router.post("/sms", async (req, res) => {
               business_id: business.id,
               conversation_id: conversation.id,
               customer_phone: From,
+              customer_name: nameMatch?.[1]?.trim() || null,
               customer_address: customerAddress,
               service_description: Body,
               scheduled_at: dateTimeISO,
@@ -199,6 +200,7 @@ router.post("/sms", async (req, res) => {
           business_id: business.id,
           conversation_id: conversation.id,
           customer_phone: From,
+          customer_name: nameMatch?.[1]?.trim() || null,
           customer_address: customerAddress,
           service_description: Body,
           scheduled_at: dateTimeISO,
@@ -213,11 +215,12 @@ router.post("/sms", async (req, res) => {
           business_id: business.id,
           conversation_id: conversation.id,
           customer_phone: From,
+          customer_name: nameMatch?.[1]?.trim() || null,
           customer_address: customerAddress,
           service_description: Body,
           scheduled_at: dateTimeISO,
           google_event_id: booking.eventId || null,
-          status: "booked",
+          status: "confirmed",
         });
         await supabase.from("conversations").update({ status: "booked" }).eq("id", conversation.id);
         await notifyOwner(business, From, `${bookedMatch[1]} — ${Body}`, "booked");
