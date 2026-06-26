@@ -127,7 +127,7 @@ const injectStyles = () => {
 
     /* Problem cards */
     .ansa-problem-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-    .ansa-problem-card{background:#141414;border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:32px 24px;text-align:center;transition:border-color .3s,transform .3s;position:relative;overflow:hidden}
+    .ansa-problem-card{background:#141414;border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:32px 24px;text-align:center;transition:border-color .3s,transform .3s;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center}
     .ansa-problem-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,rgba(59,130,246,.3),transparent);opacity:0;transition:opacity .3s}
     .ansa-problem-card:hover{border-color:rgba(59,130,246,.3);transform:translateY(-3px)}
     .ansa-problem-card:hover::after{opacity:1}
@@ -563,7 +563,7 @@ function VisualBooking() {
           </div>
           <div style={{ background:'rgba(16,185,129,.15)',color:'#10b981',fontSize:11,fontWeight:700,padding:'3px 10px',borderRadius:999 }}>CONFIRMED</div>
         </div>
-        <div style={{ fontSize:12,color:'#71717a' }}>📍 147 Elm Street, Newport Beach · Est. $325</div>
+        <div style={{ fontSize:12,color:'#71717a' }}>147 Elm Street, Newport Beach · Est. $325</div>
       </div>
       <div className="ansa-booked-banner">
         <div className="ansa-booked-banner-dot" />
