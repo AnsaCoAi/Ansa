@@ -454,6 +454,9 @@ const injectStyles = () => {
   document.head.appendChild(style);
 };
 
+// Run immediately on module load so styles exist before first render
+injectStyles();
+
 const HERO_PHONES = [
   {
     biz: "FloorRight Co.",
@@ -1049,7 +1052,6 @@ export default function LandingPage() {
     // Disable browser scroll restoration so refresh always starts at top
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
     window.scrollTo(0, 0);
-    injectStyles();
     const timer = setTimeout(() => {
       const obs = new IntersectionObserver(entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }), { threshold: 0.12 });
       document.querySelectorAll('.ansa-reveal').forEach(el => obs.observe(el));
