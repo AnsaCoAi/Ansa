@@ -1038,195 +1038,6 @@ function DashboardShowcase() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Interactive Demo
-
-const DEMO_SCENARIOS = [
-  { label: 'Burst pipe emergency', text: "I have water flooding my kitchen — burst pipe. Can someone come TODAY?" },
-  { label: 'Ask for a quote', text: "How much would it cost to replace my water heater?" },
-  { label: 'Book an appointment', text: "I need to schedule someone to fix my AC, it stopped working" },
-];
-
-function getDemoResponse(text) {
-  const t = text.toLowerCase();
-
-  // 1. Emergencies — always first
-  if (/flood|flooding|burst|gush|overflow|sewage backup|no power|gas leak|sparking|fire/.test(t))
-    return { text:"This sounds like an emergency — we're treating it as one. What's your address? I'm flagging this for immediate dispatch.", booked:false, status:'Emergency — dispatching' };
-
-  // 2. Time selection → booking (must come before scheduling so "tomorrow" closes the deal)
-  if (/\btomorrow\b|\bthursday\b|\bmonday\b|\btuesday\b|\bwednesday\b|\bfriday\b|\bsaturday\b|10 am|2 pm|\bmorning\b|\bafternoon\b|that works|sounds good|either works|any of those/.test(t))
-    return { text:"Locked in! You're confirmed for tomorrow at 10:00 AM. You'll get a confirmation text shortly and a reminder the night before. We'll see you then.", booked:true, status:'Job Booked' };
-
-  // 3. Specific problem types — identify BEFORE falling through to generic booking
-  if (/\btoilet\b/.test(t))
-    return { text:"Got it — toilet issue. Is it not flushing at all, running constantly, or leaking at the base? And is it just that toilet or are other drains slow too?", booked:false, status:'Diagnosing' };
-  if (/\bwater heater\b|\bhot water\b|\bno hot water\b/.test(t))
-    return { text:"No hot water is rough. Is the unit gas or electric? Any error lights blinking on it, or is it just stone cold with no signs of life?", booked:false, status:'Diagnosing' };
-  if (/\bdrain\b|\bclog\b|\bclogged\b|\bbackup\b|\bslow drain\b/.test(t))
-    return { text:"Understood. Is it one specific drain or multiple drains acting up? That tells us whether it's a local clog or a main line issue — big difference in how we approach it.", booked:false, status:'Diagnosing' };
-  if (/\bpipe\b|\bleak\b|\bdripping\b|\bwater damage\b/.test(t))
-    return { text:"Leaks need fast attention before they get worse. Where is it — under a sink, behind a wall, in the ceiling? Is the water actively running or just dripping?", booked:false, status:'Diagnosing' };
-  if (/\bac\b|\bair condition|\bhvac\b|\bcooling\b|\bno cool|\bnot cooling\b/.test(t))
-    return { text:"AC issue noted. Is it not turning on at all, running but blowing warm air, or making a noise it shouldn't? Also — how old is the unit roughly?", booked:false, status:'Diagnosing' };
-  if (/\bheat\b|\bfurnace\b|\bheating\b|\bno heat\b|\bnot heating\b/.test(t))
-    return { text:"No heat is never good. Is the furnace not kicking on at all, or is it running but not warming the house? Any error codes on the thermostat display?", booked:false, status:'Diagnosing' };
-  if (/\boutlet\b|\belectric|\bbreaker\b|\bpower out|\bno power\b|\blight switch|\bpanel\b/.test(t))
-    return { text:"Electrical issue — got it. Is it one outlet/switch, a whole room, or the entire house? And have you checked the breaker panel to see if anything tripped?", booked:false, status:'Diagnosing' };
-  if (/\broof\b|\bshingle|\bgutter\b|\bceiling leak|\bwater stain\b/.test(t))
-    return { text:"Roof concerns need quick attention especially with weather. Is there active water coming in, or is this something you noticed visually — staining, missing shingles? What's your zip code?", booked:false, status:'Diagnosing' };
-  if (/\bpest\b|\bbug\b|\bant\b|\broach\b|\bmouse\b|\brat\b|\btermite\b|\bwasp\b/.test(t))
-    return { text:"Pest issue — understood. How long have you been seeing this, and is it a specific room or throughout the house? We can usually get an inspection scheduled within 24 hours.", booked:false, status:'Diagnosing' };
-  if (/\bwindow\b|\bdoor\b|\bframe\b|\bsiding\b|\bdeck\b|\bfence\b/.test(t))
-    return { text:"Got it. Is this more of an urgent repair — damage, broken seal, won't close — or a project quote you're looking to plan out? Happy to help either way.", booked:false, status:'Diagnosing' };
-
-  // 4. Price/quote — after problem types so "how much to fix my toilet" doesn't just say "water heater"
-  if (/cost|price|how much|charge|quote|estimate|fee/.test(t))
-    return { text:"Happy to get you a number. To give you an accurate estimate I just need to know: what's the issue, and roughly what city are you in?", booked:false, status:'Collecting info' };
-
-  // 5. Explicit scheduling request
-  if (/schedule|book|appointment|when can you come|available/.test(t))
-    return { text:"Absolutely. I have tomorrow at 10 AM or 2 PM open, and Thursday morning. What works best?", booked:false, status:'Scheduling' };
-
-  // 6. Generic repair/fix mention without specific problem
-  if (/\bfix\b|\brepair\b|\bbroken\b|\bnot working\b|\bdoesn't work\b|\bstopped working\b/.test(t))
-    return { text:"We can take care of that. Can you tell me a bit more about what's going on — what exactly stopped working and when did you first notice it?", booked:false, status:'Diagnosing' };
-
-  // 7. Fallback
-  return { text:"Got it. Can you describe what's happening in a bit more detail? Even a sentence or two helps us make sure we send the right tech with the right parts.", booked:false, status:'AI Handling' };
-}
-
-function InteractiveDemo() {
-  const [messages, setMessages] = useState([
-    { from:'ai', text:"Hey! This is Jake's Plumbing — sorry we missed your call. How can we help?" },
-  ]);
-  const [input, setInput] = useState('');
-  const [typing, setTyping] = useState(false);
-  const [ownerStatus, setOwnerStatus] = useState('AI Active');
-  const [booked, setBooked] = useState(false);
-  const [notifs, setNotifs] = useState([
-    { text:'Missed call detected — AI response sent in 11s', color:'#3b82f6', time:'just now' },
-  ]);
-  const msgsRef = useRef(null);
-  useEffect(() => {
-    const el = msgsRef.current;
-    if (el) el.scrollTop = el.scrollHeight;
-  }, [messages, typing]);
-
-  const send = (raw) => {
-    const msg = raw.trim();
-    if (!msg || typing) return;
-    setInput('');
-    setMessages(prev => [...prev, { from:'user', text:msg }]);
-    setTyping(true);
-    setTimeout(() => {
-      const resp = getDemoResponse(msg);
-      setTyping(false);
-      setMessages(prev => [...prev, { from:'ai', text:resp.text }]);
-      setOwnerStatus(resp.status);
-      if (resp.booked) {
-        setBooked(true);
-        setNotifs(prev => [...prev,
-          { text:'Customer replied', color:'#3b82f6', time:'just now' },
-          { text:'Appointment booked · Tomorrow 10:00 AM', color:'#22c55e', time:'just now' },
-        ]);
-      } else {
-        setNotifs(prev => [...prev, { text:'Customer replied — AI handling', color:'#3b82f6', time:'just now' }]);
-      }
-    }, 1400);
-  };
-
-  return (
-    <div>
-      <div className="ansa-demo-scenarios">
-        {DEMO_SCENARIOS.map((s,i) => (
-          <button key={i} className="ansa-demo-scen-btn" onClick={() => send(s.text)}>{s.label}</button>
-        ))}
-      </div>
-      <div className="ansa-demo-outer">
-        {/* Customer side */}
-        <div>
-          <div className="ansa-demo-col-label">Your Customer Sees</div>
-          <div className="ansa-demo-phone">
-            <div style={{ display:'flex',justifyContent:'space-between',marginBottom:14,padding:'0 2px' }}>
-              <span style={{ fontSize:12,fontWeight:700,color:'#fff' }}>Jake's Plumbing</span>
-              <span style={{ fontSize:11,color:'#666' }}>SMS</span>
-            </div>
-            <div className="ansa-demo-msgs" ref={msgsRef}>
-              {messages.map((m,i) => (
-                <div key={i} className={`ansa-chat-bubble ${m.from==='ai'?'ansa-chat-incoming':'ansa-chat-outgoing'}`} style={{ fontSize:13 }}>{m.text}</div>
-              ))}
-              {typing && <div className="ansa-chat-typing"><span/><span/><span/></div>}
-              {booked && (
-                <div className="ansa-booked-banner">
-                  <div className="ansa-booked-banner-dot"/>
-                  <div className="ansa-booked-banner-text">Appointment confirmed · Tomorrow 10:00 AM</div>
-                </div>
-              )}
-            </div>
-            {!booked && (
-              <div className="ansa-demo-input-row">
-                <input className="ansa-demo-input" value={input} onChange={e => setInput(e.target.value)}
-                  onKeyDown={e => e.key==='Enter' && send(input)} placeholder="Reply as the customer…" disabled={typing}/>
-                <button className="ansa-demo-send" onClick={() => send(input)} disabled={typing || !input.trim()}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Owner side */}
-        <div>
-          <div className="ansa-demo-col-label">You (The Business Owner) See</div>
-          <div className="ansa-demo-owner-panel">
-            <div style={{ display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:16 }}>
-              <span style={{ fontSize:13,fontWeight:600,color:'#fff' }}>Live Dashboard</span>
-              <span style={{ fontSize:11,padding:'3px 12px',borderRadius:20,fontWeight:700,
-                background:booked?'rgba(34,197,94,.15)':'rgba(59,130,246,.15)',
-                color:booked?'#22c55e':'#3b82f6' }}>{ownerStatus}</span>
-            </div>
-            <div style={{ fontSize:10.5,fontWeight:700,color:'#333',textTransform:'uppercase',letterSpacing:'1px',marginBottom:8 }}>Notifications</div>
-            <div style={{ display:'flex',flexDirection:'column',gap:7,marginBottom:16 }}>
-              {notifs.map((n,i) => (
-                <div key={i} className="ansa-demo-notif" style={{ borderColor:`${n.color}30` }}>
-                  <div style={{ display:'flex',alignItems:'center',gap:6 }}>
-                    <span style={{ width:6,height:6,borderRadius:'50%',background:n.color,display:'inline-block',boxShadow:`0 0 6px ${n.color}`,flexShrink:0 }}/>
-                    <span style={{ fontSize:11.5,fontWeight:600,color:'#e5e5e5',flex:1 }}>{n.text}</span>
-                    <span style={{ fontSize:10,color:'#444',flexShrink:0 }}>{n.time}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <div style={{ flex:1 }}/>
-            {booked ? (
-              <div className="ansa-demo-booked-card">
-                <div style={{ fontSize:12,fontWeight:700,color:'#22c55e',marginBottom:8,display:'flex',alignItems:'center',gap:6 }}>
-                  <span style={{ width:7,height:7,borderRadius:'50%',background:'#22c55e',display:'inline-block',boxShadow:'0 0 8px #22c55e' }}/>
-                  Job Confirmed
-                </div>
-                <div style={{ fontSize:14,fontWeight:700,color:'#fff',marginBottom:3 }}>Plumbing / HVAC Repair</div>
-                <div style={{ fontSize:12,color:'#6ee7b7',marginBottom:6 }}>Tomorrow · 10:00 AM</div>
-                <div style={{ fontSize:11.5,color:'#555',lineHeight:1.5 }}>Booked automatically while you were on another job.</div>
-              </div>
-            ) : (
-              <div style={{ background:'#0f0f0f',border:'1px solid #1e1e1e',borderRadius:12,padding:'14px 16px' }}>
-                <div style={{ display:'flex',alignItems:'center',gap:8,marginBottom:10 }}>
-                  <span style={{ width:6,height:6,borderRadius:'50%',background:'#3b82f6',display:'inline-block',animation:'ansa-pulse 2s infinite' }}/>
-                  <span style={{ fontSize:12,color:'#888' }}>AI handling conversation…</span>
-                </div>
-                <div style={{ height:3,background:'#1a1a1a',borderRadius:99,overflow:'hidden' }}>
-                  <div style={{ width:'65%',height:'100%',background:'linear-gradient(90deg,#3b82f6,#8b5cf6)',borderRadius:99,animation:'ansa-gradient 2s ease infinite',backgroundSize:'200% 100%' }}/>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
 
 export default function LandingPage() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -1272,7 +1083,6 @@ export default function LandingPage() {
           <a href="#/" className="ansa-logo">ansa<span>.</span></a>
           <div className="ansa-nav-links">
             <a href="#how-it-works" onClick={scrollTo('how-it-works')}>How It Works</a>
-            <a href="#demo" onClick={scrollTo('demo')}>Try It Live</a>
             <a href="#product" onClick={scrollTo('product')}>See the Dashboard</a>
             <a href="#pricing" onClick={scrollTo('pricing')}>Pro Plan</a>
             <a href="#faq" onClick={scrollTo('faq')}>FAQ</a>
@@ -1285,7 +1095,6 @@ export default function LandingPage() {
         </div>
         <div className={`ansa-nav-mobile-menu${mobileOpen?' open':''}`}>
           <a href="#how-it-works" onClick={scrollTo('how-it-works')}>How It Works</a>
-          <a href="#demo" onClick={scrollTo('demo')}>Try It Live</a>
           <a href="#product" onClick={scrollTo('product')}>See the Dashboard</a>
           <a href="#pricing" onClick={scrollTo('pricing')}>Pro Plan</a>
           <a href="#faq" onClick={scrollTo('faq')}>FAQ</a>
@@ -1578,20 +1387,6 @@ export default function LandingPage() {
           <DashboardShowcase />
         </div>
       </section>
-
-      {/* Interactive Demo */}
-      <div className="ansa-section-wrap-tinted">
-        <section className="ansa-section" id="demo">
-          <div className="ansa-reveal">
-            <p className="ansa-section-label">Live Demo</p>
-            <h2 className="ansa-section-title">Type like a customer. Watch Ansa work.</h2>
-            <p className="ansa-section-sub">This is the real product — exactly how your customers experience it. Pick a scenario or type your own.</p>
-          </div>
-          <div className="ansa-reveal">
-            <InteractiveDemo />
-          </div>
-        </section>
-      </div>
 
       {/* Integrations + Notifications — combined split section */}
       <div className="ansa-section-wrap-tinted">
