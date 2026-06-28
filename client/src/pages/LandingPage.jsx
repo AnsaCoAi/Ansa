@@ -49,7 +49,8 @@ const injectStyles = () => {
     /* Hero */
     .ansa-hero{position:relative;padding:140px 24px 60px;text-align:center;overflow:hidden}
     .ansa-hero-glow{position:absolute;top:-100px;left:50%;transform:translateX(-50%);width:900px;height:900px;border-radius:50%;background:radial-gradient(ellipse at center,rgba(59,130,246,.18) 0%,transparent 70%);pointer-events:none;animation:ansa-pulse 6s ease-in-out infinite}
-    .ansa-hero-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 16px;border-radius:999px;font-size:13px;font-weight:600;background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.25);color:${PRIMARY_LIGHT};margin-bottom:16px;animation:ansa-fadeUp .7s ease both}
+    .ansa-hero-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:999px;font-size:12.5px;font-weight:500;background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.25);color:${PRIMARY_LIGHT};animation:ansa-fadeUp .7s ease both}
+    .ansa-hero-badges{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:20px;flex-wrap:wrap}
     .ansa-hero-announce{display:inline-flex;align-items:center;gap:7px;padding:6px 14px 6px 10px;border-radius:999px;font-size:13px;font-weight:500;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);color:#a1a1aa;text-decoration:none;margin-bottom:28px;animation:ansa-fadeUp .8s ease .1s both;transition:border-color .2s,color .2s}
     .ansa-hero-announce:hover{border-color:rgba(59,130,246,.5);color:#fff}
     .ansa-hero-announce-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;flex-shrink:0;box-shadow:0 0 6px #22c55e}
@@ -423,7 +424,7 @@ const injectStyles = () => {
     .ansa-grain{position:fixed;inset:0;pointer-events:none;z-index:9999;opacity:.022;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");background-size:200px 200px}
 
     /* ── Live counter badge ──────────────────────────────────── */
-    .ansa-live-badge{display:inline-flex;align-items:center;gap:7px;padding:7px 14px 7px 10px;border-radius:999px;font-size:12.5px;font-weight:500;background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.18);color:#6ee7b7;margin-bottom:20px;animation:ansa-fadeUp .7s ease .05s both}
+    .ansa-live-badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:999px;font-size:12.5px;font-weight:500;background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.18);color:#6ee7b7;animation:ansa-fadeUp .7s ease .05s both}
     .ansa-live-dot{width:7px;height:7px;border-radius:50%;background:#22c55e;flex-shrink:0;box-shadow:0 0 8px #22c55e;animation:ansa-pulse 2s ease-in-out infinite}
 
     /* ── Interactive Demo ────────────────────────────────────── */
@@ -1108,11 +1109,13 @@ export default function LandingPage() {
       {/* Hero */}
       <section className="ansa-hero">
         <div className="ansa-hero-glow" />
-        <div className="ansa-live-badge">
-          <span className="ansa-live-dot" />
-          {jobCount.toLocaleString()} jobs booked through Ansa this month
+        <div className="ansa-hero-badges">
+          <div className="ansa-live-badge">
+            <span className="ansa-live-dot" />
+            {jobCount.toLocaleString()} jobs booked through Ansa this month
+          </div>
+          <div className="ansa-hero-badge"><Zap size={14} /> Built for Home Service Pros</div>
         </div>
-        <div className="ansa-hero-badge" style={{ marginTop:0 }}><Zap size={14} /> Built for Home Service Pros</div>
         <h1>Every Missed Call Is a Job You Didn't Book</h1>
         <p className="ansa-hero-sub">
           When you miss a call, Ansa texts back in under 15 seconds, answers their questions with AI, and books the appointment — all before they call your competitor. No receptionist. No voicemail. No lost jobs.
