@@ -1047,6 +1047,7 @@ export default function LandingPage() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activePhone, setActivePhone] = useState(0);
   const [jobCount, setJobCount] = useState(2841);
+  const [annualBilling, setAnnualBilling] = useState(false);
   const revealRef = useRef(null);
 
   useEffect(() => {
@@ -1118,7 +1119,7 @@ export default function LandingPage() {
         </div>
         <h1>Every Missed Call Is a Job You Didn't Book</h1>
         <p className="ansa-hero-sub">
-          When you miss a call, Ansa texts back in under 15 seconds, answers their questions with AI, and books the appointment — all before they call your competitor. No receptionist. No voicemail. No lost jobs.
+          Ansa texts back in 15 seconds, answers questions with AI, and books the job — before they call your competitor. No receptionist. No voicemail. No lost revenue.
         </p>
         <div className="ansa-hero-ctas">
           <a href="#/signup" className="ansa-btn ansa-btn-blue">Start Free Trial <ArrowRight size={16} /></a>
@@ -1260,7 +1261,7 @@ export default function LandingPage() {
           <div className="ansa-step-arrow"><ArrowRight size={28}/></div>
           <div className="ansa-step-card"><div className="ansa-step-num">2</div><div className="ansa-step-icon"><MessageCircle size={24}/></div><div className="ansa-step-title">Ansa Texts Back</div><div className="ansa-step-desc">Within 15 seconds, a personalized text goes out from your number. No app, no action needed.</div></div>
           <div className="ansa-step-arrow"><ArrowRight size={28}/></div>
-          <div className="ansa-step-card"><div className="ansa-step-num">3</div><div className="ansa-step-icon"><CalendarCheck size={24}/></div><div className="ansa-step-title">Job Booked</div><div className="ansa-step-desc">AI handles the conversation and locks in the appointment. You get a notification.</div></div>
+          <div className="ansa-step-card"><div className="ansa-step-num">3</div><div className="ansa-step-icon"><CalendarCheck size={24}/></div><div className="ansa-step-title">Job Booked</div><div className="ansa-step-desc">Your calendar updates. The customer gets a confirmation text. You're already on the next job.</div></div>
         </div>
       </section>
       </div>
@@ -1457,13 +1458,36 @@ export default function LandingPage() {
           <h2 className="ansa-section-title">One Recovered Job Pays for the Year</h2>
           <p className="ansa-section-sub">The average contractor loses $2,400/month to missed calls. Ansa costs $297. Do the math.</p>
         </div>
+
+        {/* Billing toggle */}
+        <div className="ansa-reveal" style={{ display:'flex', alignItems:'center', justifyContent:'center', gap:12, marginBottom:28 }}>
+          <span style={{ fontSize:14, fontWeight:500, color: annualBilling ? '#71717a' : '#fff', transition:'color .2s' }}>Monthly</span>
+          <button
+            onClick={() => setAnnualBilling(a => !a)}
+            style={{ position:'relative', width:48, height:26, borderRadius:999, background: annualBilling ? PRIMARY : '#2a2a2a', border:'none', cursor:'pointer', transition:'background .25s', flexShrink:0, padding:0 }}
+          >
+            <span style={{ position:'absolute', top:3, left: annualBilling ? 24 : 3, width:20, height:20, borderRadius:'50%', background:'#fff', transition:'left .25s', display:'block', boxShadow:'0 1px 4px rgba(0,0,0,.4)' }} />
+          </button>
+          <span style={{ fontSize:14, fontWeight:500, color: annualBilling ? '#fff' : '#71717a', transition:'color .2s' }}>
+            Annual
+            <span style={{ marginLeft:8, fontSize:11, fontWeight:700, color:'#22c55e', background:'rgba(34,197,94,0.1)', border:'1px solid rgba(34,197,94,0.2)', borderRadius:999, padding:'2px 8px' }}>Save $594</span>
+          </span>
+        </div>
+
         <div className="ansa-pricing-grid ansa-reveal">
           <div className="ansa-pricing-card">
             <div className="ansa-pricing-roi">
               If Ansa books just <strong>1 job per month</strong>, it pays for itself. Most customers recover <strong>$2,400+/month</strong>. That's 8× ROI on day one.
             </div>
             <div className="ansa-pricing-tier">Pro</div>
-            <div className="ansa-pricing-price">$297<span>/mo</span></div>
+            {annualBilling ? (
+              <>
+                <div className="ansa-pricing-price">$248<span>/mo</span></div>
+                <div style={{ fontSize:13, color:'#22c55e', fontWeight:500, marginBottom:4 }}>Billed $2,970/yr — 2 months free</div>
+              </>
+            ) : (
+              <div className="ansa-pricing-price">$297<span>/mo</span></div>
+            )}
             <div className="ansa-pricing-subtitle">Everything you need to never lose another lead</div>
             <ul className="ansa-pricing-features">
               {[
@@ -1477,7 +1501,18 @@ export default function LandingPage() {
               ].map(f => <li key={f}><Check size={16} color={PRIMARY}/>{f}</li>)}
             </ul>
             <a href="#/signup" className="ansa-pricing-cta ansa-pricing-cta-primary">Start Free Trial — 30 Days Free</a>
-            <div className="ansa-trust-line" style={{ marginTop:14 }}>30-day free trial &nbsp;·&nbsp; Cancel anytime</div>
+            <div className="ansa-trust-line" style={{ marginTop:14 }}>30-day free trial &nbsp;·&nbsp; Cancel anytime &nbsp;·&nbsp; No setup fee</div>
+          </div>
+        </div>
+
+        {/* Guarantee */}
+        <div className="ansa-reveal" style={{ maxWidth:480, margin:'28px auto 0', display:'flex', alignItems:'flex-start', gap:16, background:'rgba(34,197,94,0.05)', border:'1px solid rgba(34,197,94,0.15)', borderRadius:16, padding:'20px 24px' }}>
+          <div style={{ width:40, height:40, borderRadius:'50%', background:'rgba(34,197,94,0.1)', border:'1px solid rgba(34,197,94,0.2)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <div>
+            <div style={{ fontSize:14, fontWeight:700, color:'#fff', marginBottom:4 }}>30-Day Performance Guarantee</div>
+            <div style={{ fontSize:13, color:'#71717a', lineHeight:1.6 }}>If Ansa doesn't recover its cost in your first month, we'll give you a second month free — no questions asked.</div>
           </div>
         </div>
       </section>
@@ -1498,8 +1533,8 @@ export default function LandingPage() {
       {/* Final CTA */}
       <section className="ansa-final-cta">
         <div className="ansa-final-cta-inner ansa-reveal">
-          <h2>Stop Losing Jobs to Voicemail.</h2>
-          <p>Every day without Ansa is another 3–5 calls going unanswered. Start your free trial in 5 minutes.</p>
+          <h2>Every Missed Call Is Money Left on the Table.</h2>
+          <p>The jobs you're losing right now go to whoever picks up first. Ansa picks up in 15 seconds — always.</p>
           <a href="#/signup" className="ansa-btn" style={{ background:'#fff',color:'#1e3a5f',fontWeight:700,boxShadow:'0 0 30px rgba(255,255,255,.2)' }}>
             Start Your Free Trial <ArrowRight size={16}/>
           </a>

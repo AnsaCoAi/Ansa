@@ -82,13 +82,15 @@ export default function DashboardLayout({ children, currentHash }) {
             <div style={styles.businessAvatar}>{bizInitial}</div>
             <div style={styles.businessText}>
               <div style={styles.businessName}>{bizName}</div>
-              <div style={styles.businessPlan}>
-                {business?.subscription_status === 'active'
-                  ? 'Pro plan'
-                  : business?.subscription_status === 'trialing'
-                  ? (daysLeft !== null ? `Trial · ${daysLeft}d left` : 'Trial')
-                  : 'Inactive'}
-              </div>
+              {business?.subscription_status === 'active' ? (
+                <span style={{ display:'inline-flex',alignItems:'center',fontSize:10,fontWeight:700,color:'#3b82f6',background:'rgba(59,130,246,0.12)',border:'1px solid rgba(59,130,246,0.2)',borderRadius:99,padding:'1px 7px',letterSpacing:'0.3px',marginTop:2 }}>PRO</span>
+              ) : business?.subscription_status === 'trialing' ? (
+                <span style={{ display:'inline-flex',alignItems:'center',fontSize:10,fontWeight:600,color:'#f59e0b',background:'rgba(245,158,11,0.1)',border:'1px solid rgba(245,158,11,0.2)',borderRadius:99,padding:'1px 7px',marginTop:2 }}>
+                  {daysLeft !== null ? `Trial · ${daysLeft}d left` : 'Trial'}
+                </span>
+              ) : (
+                <span style={{ fontSize:10,color:'#555' }}>Inactive</span>
+              )}
             </div>
           </div>
           <a href="mailto:hello@ansaco.ai" style={styles.logoutBtn}>
@@ -194,7 +196,7 @@ const styles = {
   topBarLeft: { display: 'flex', alignItems: 'center', gap: 12 },
   pageTitle: { fontSize: 17, fontWeight: 600, color: '#ffffff', margin: 0 },
   topBarRight: { display: 'flex', alignItems: 'center', gap: 16 },
-  userAvatar: { width: 34, height: 34, borderRadius: '50%', background: '#1e1e1e', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 600, color: '#999', border: '2px solid #333' },
+  userAvatar: { width: 34, height: 34, borderRadius: '50%', background: 'linear-gradient(135deg, #3b82f6, #2563eb)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, fontWeight: 700, color: '#fff', boxShadow: '0 0 0 2px rgba(59,130,246,0.3)' },
   content: { flex: 1, overflowY: 'auto', overflowX: 'hidden' },
   bottomNav: {
     display: 'none',

@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { Phone, MessageCircle, CalendarCheck, DollarSign, ArrowUpRight, ChevronRight, MessageSquare, Calendar, AlertTriangle, CheckCircle2, Circle, ExternalLink } from 'lucide-react';
+import { useEffect, useState, useRef } from 'react';
+import { Phone, MessageCircle, CalendarCheck, DollarSign, ChevronRight, MessageSquare, Calendar, AlertTriangle, CheckCircle2, Circle, ExternalLink } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { api } from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -35,6 +35,27 @@ function formatPhone(p) {
 function formatMoney(n) {
   if (n >= 1000) return `$${(n / 1000).toFixed(n % 1000 === 0 ? 0 : 1)}k`;
   return `$${n}`;
+}
+
+function useCountUp(target, duration = 900) {
+  const [val, setVal] = useState(0);
+  const ran = useRef(false);
+  useEffect(() => {
+    if (ran.current || !target) return;
+    ran.current = true;
+    const num = typeof target === 'number' ? target : parseFloat(String(target).replace(/[^0-9.]/g, ''));
+    if (isNaN(num) || num === 0) { setVal(0); return; }
+    const start = performance.now();
+    const step = ts => {
+      const p = Math.min((ts - start) / duration, 1);
+      const e = 1 - Math.pow(1 - p, 3);
+      setVal(Math.floor(e * num));
+      if (p < 1) requestAnimationFrame(step);
+      else setVal(num);
+    };
+    requestAnimationFrame(step);
+  }, [target, duration]);
+  return val;
 }
 
 const statusColors = {
@@ -165,6 +186,42 @@ function AlertBanner({ staleConvs }) {
   );
 }
 
+function StatCard({ Icon, color, value, label, sub, loading, idx }) {
+  const isNumeric = typeof value === 'number';
+  const isPct = typeof value === 'string' && value.includes('%');
+  const isMoney = typeof value === 'string' && value.startsWith('$');
+  const numVal = isNumeric ? value : isPct ? parseFloat(value) : isMoney ? parseFloat(value.replace(/[^0-9.]/g, '')) : 0;
+  const animated = useCountUp(!loading && numVal ? numVal : 0);
+
+  let display;
+  if (loading) display = '—';
+  else if (typeof value === 'string' && value === '—') display = '—';
+  else if (isPct) display = `${animated}%`;
+  else if (isMoney) {
+    const n = animated;
+    display = n >= 1000 ? `$${(n / 1000).toFixed(n % 1000 === 0 ? 0 : 1)}k` : `$${n}`;
+  } else display = animated;
+
+  return (
+    <div style={{ background: '#141414', borderRadius: 12, border: '1px solid #1e1e1e', padding: '20px 24px', display: 'flex', alignItems: 'flex-start', gap: 16, animation: `ansa-card-in 0.4s ease ${idx * 0.08}s both` }}>
+      <div style={{ width: 44, height: 44, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: `${color}18`, flexShrink: 0 }}>
+        <Icon size={20} color={color} />
+      </div>
+      <div>
+        <div style={{ fontSize: 28, fontWeight: 700, color: '#fff', lineHeight: 1 }}>{display}</div>
+        <div style={{ fontSize: 13, color: '#888', marginTop: 4 }}>{label}</div>
+        {sub && <div style={{ fontSize: 12, color: '#555', marginTop: 2 }}>{sub}</div>}
+        {!sub && !loading && (
+          <div style={{ fontSize: 12, fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 5, marginTop: 5, color: '#22c55e' }}>
+            <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#22c55e', display: 'inline-block', animation: 'ansa-live-pulse 2s ease-in-out infinite' }} />
+            Live
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function DashboardHome() {
   const { business } = useAuth();
   const [stats, setStats] = useState(null);
@@ -223,28 +280,27 @@ export default function DashboardHome() {
 
       <AlertBanner staleConvs={staleActiveConvs} />
 
+      <style>{`
+        @keyframes ansa-live-pulse { 0%,100%{opacity:.5;transform:scale(1)} 50%{opacity:1;transform:scale(1.3)} }
+        @keyframes ansa-card-in { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+      `}</style>
       <div className="ansa-stat-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16, marginBottom: 32 }}>
-        {statCards.map(({ icon: Icon, color, value, label, sub }) => (
-          <div key={label} style={{ background: '#141414', borderRadius: 12, border: '1px solid #1e1e1e', padding: '20px 24px', display: 'flex', alignItems: 'flex-start', gap: 16 }}>
-            <div style={{ width: 44, height: 44, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: `${color}18`, flexShrink: 0 }}>
-              <Icon size={20} color={color} />
-            </div>
-            <div>
-              <div style={{ fontSize: 28, fontWeight: 700, color: '#fff', lineHeight: 1 }}>{loading ? '—' : value}</div>
-              <div style={{ fontSize: 13, color: '#888', marginTop: 4 }}>{label}</div>
-              {sub && <div style={{ fontSize: 12, color: '#555', marginTop: 2 }}>{sub}</div>}
-              {!sub && (
-                <div style={{ fontSize: 12, fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 2, marginTop: 4, color: '#22c55e' }}>
-                  <ArrowUpRight size={14} /> Live
-                </div>
-              )}
-            </div>
-          </div>
+        {statCards.map(({ icon: Icon, color, value, label, sub }, idx) => (
+          <StatCard key={label} Icon={Icon} color={color} value={value} label={label} sub={sub} loading={loading} idx={idx} />
         ))}
       </div>
 
       <div style={{ background: '#141414', borderRadius: 12, border: '1px solid #1e1e1e', padding: 24, marginBottom: 32 }}>
-        <div style={{ fontSize: 16, fontWeight: 600, color: '#fff', marginBottom: 20 }}>This Week's Activity</div>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20, flexWrap: 'wrap', gap: 8 }}>
+          <div style={{ fontSize: 16, fontWeight: 600, color: '#fff' }}>This Week's Activity</div>
+          <div style={{ display: 'flex', gap: 16 }}>
+            {[['#3b82f6','Missed Calls'],['#8b5cf6','Responses'],['#22c55e','Bookings']].map(([c,l]) => (
+              <span key={l} style={{ fontSize: 12, color: '#888', display: 'flex', alignItems: 'center', gap: 5 }}>
+                <span style={{ width: 8, height: 8, borderRadius: 2, background: c, display: 'inline-block', flexShrink: 0 }} />{l}
+              </span>
+            ))}
+          </div>
+        </div>
         <ResponsiveContainer width="100%" height={280}>
           <AreaChart data={weeklyData} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
             <defs>
