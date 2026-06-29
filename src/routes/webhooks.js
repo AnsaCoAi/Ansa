@@ -140,6 +140,8 @@ router.post("/sms", async (req, res) => {
     const cleanAiReply = aiReply
       .replace(/\[NAME:[^\]]*\]/gi, '')
       .replace(/\[ADDRESS:[^\]]*\]/gi, '')
+      .replace(/\[BOOKED:[^\]]*\]/gi, '')
+      .replace(/\[URGENT\]/gi, '')
       .trim();
 
     // Persist extracted metadata
@@ -156,10 +158,9 @@ router.post("/sms", async (req, res) => {
     await saveMessage(conversation.id, "assistant", cleanAiReply);
 
     // ── URGENT ─────────────────────────────────────────────────────────────
-    if (cleanAiReply.includes("[URGENT]")) {
-      const urgentReply = cleanAiReply.replace("[URGENT]", "").trim();
+    if (aiReply.match(/\[URGENT\]/i)) {
       await notifyOwner(business, From, Body, "urgent");
-      await sendSMS(From, To, urgentReply);
+      await sendSMS(From, To, cleanAiReply);
       return res.status(200).send("<Response></Response>");
     }
 
@@ -215,7 +216,7 @@ router.post("/sms", async (req, res) => {
           customer_phone: From,
           customer_name: nameMatch?.[1]?.trim() || null,
           customer_address: customerAddress,
-          service_description: Body,
+          service_description: serviceDescription,
           scheduled_at: dateTimeISO,
           status: "pending",
         });

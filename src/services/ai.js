@@ -830,8 +830,14 @@ async function getAIResponse(phoneNumber, customerMessage, business, availableSl
 
   const response = await anthropic.messages.create({
     model: 'claude-sonnet-4-6',
-    max_tokens: 600,
-    system: buildSystemPrompt(business, availableSlots),
+    max_tokens: 300,
+    system: [
+      {
+        type: 'text',
+        text: buildSystemPrompt(business, availableSlots),
+        cache_control: { type: 'ephemeral' },
+      },
+    ],
     messages: history,
   });
 

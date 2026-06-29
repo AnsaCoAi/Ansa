@@ -1046,7 +1046,6 @@ function DashboardShowcase() {
 export default function LandingPage() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activePhone, setActivePhone] = useState(0);
-  const [jobCount, setJobCount] = useState(2841);
   const [annualBilling, setAnnualBilling] = useState(false);
   const revealRef = useRef(null);
 
@@ -1065,9 +1064,7 @@ export default function LandingPage() {
       document.documentElement.style.setProperty('--ansa-gy', `${e.clientY}px`);
     };
     window.addEventListener('mousemove', onMove, { passive: true });
-    // Live job counter
-    const counter = setInterval(() => setJobCount(c => c + Math.floor(Math.random() * 2) + 1), 9000);
-    return () => { clearTimeout(timer); revealRef.current?.disconnect(); window.removeEventListener('mousemove', onMove); clearInterval(counter); };
+    return () => { clearTimeout(timer); revealRef.current?.disconnect(); window.removeEventListener('mousemove', onMove); };
   }, []);
 
   const scrollTo = id => e => { e.preventDefault(); document.getElementById(id)?.scrollIntoView({ behavior:'smooth' }); setMobileOpen(false); };
@@ -1113,7 +1110,7 @@ export default function LandingPage() {
         <div className="ansa-hero-badges">
           <div className="ansa-live-badge">
             <span className="ansa-live-dot" />
-            {jobCount.toLocaleString()} jobs booked through Ansa this month
+            AI responds in seconds — 24/7, no exceptions
           </div>
           <div className="ansa-hero-badge"><Zap size={14} /> Built for Home Service Pros</div>
         </div>
