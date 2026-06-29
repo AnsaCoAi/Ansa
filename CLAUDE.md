@@ -425,16 +425,23 @@ Full pre-demo audit found 0 logic bugs (all prior fixes held). Only gap was mobi
 - DashboardLayout: bottom nav active item now has blue top border + subtle bg — matches iOS/Android native nav patterns
 - LandingPage: "click to expand" → "tap to expand" on phone mockup hints
 
-## ⚡ NEXT TAB — PICK UP HERE (2026-06-25)
+## ⚡ NEXT TAB — PICK UP HERE (2026-06-28)
 
 ### Current state — INVESTOR READY ✅
-- Platform fully built, all 45+ fixes live ✅
-- Mobile landing page: fully responsive, iOS patterns, no overflow bugs ✅
-- Mobile dashboard: bottom nav, safe area, spinners, no alert() popups ✅
-- CRITICAL appointment bug fixed: AI-booked jobs now appear correctly in dashboard ✅
-- Supabase is **Healthy** (free tier — unpause at supabase.com if down)
-- Demo account: tylerlofaro@yahoo.com / ManyOfMillions#ADMIN6710
-- Last push: commit 82e4d4f
+- Platform fully built, all fixes live ✅
+- Last push: commit 2813577
+
+### Landing page changes this session (2026-06-27/28):
+- Testimonial cards: flex-column, author section pinned to bottom ✅
+- Problem stat cards: flex-column for consistent alignment ✅
+- Removed 📍 emoji from VisualBooking (no-emoji rule) ✅
+- Cursor glow layer: radial gradient follows mouse (premium feel) ✅
+- Film grain overlay: 2.2% opacity SVG noise texture ✅
+- Live job counter badge: pulsing green dot, increments every 9s ✅
+- Interactive demo: REMOVED (scripted sim hurt trust — full code in Claude memory) ✅
+- Hero badges: unified padding/font, wrapped in flex row — perfectly level ✅
+- Flash of white on load: fixed — #root has dark bg inline + injectStyles() moved to module level ✅
+- Refresh-to-middle bug: fixed — history.scrollRestoration = 'manual' + scrollTo(0,0) ✅
 
 ### HOW TO RUN THE DEMO ACCOUNT:
 - URL: https://www.ansaco.ai
