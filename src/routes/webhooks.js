@@ -117,7 +117,20 @@ router.post("/sms", async (req, res) => {
     }
 
     const slots = await getAvailableSlots(business.id, business);
-    const aiReply = await getAIResponse(From, Body, business, slots);
+
+    // Load DB message history so AI survives server restarts
+    const { data: dbMessages } = await supabase
+      .from('messages')
+      .select('role, content')
+      .eq('conversation_id', conversation.id)
+      .order('created_at', { ascending: true })
+      .limit(20);
+
+    // Use the customer's first inbound message as service_description (much better than last message)
+    const firstCustomerMsg = (dbMessages || []).find(m => m.role === 'user');
+    const serviceDescription = firstCustomerMsg ? firstCustomerMsg.content : Body;
+
+    const aiReply = await getAIResponse(From, Body, business, slots, dbMessages || []);
 
     // Strip all control tags and extract their values
     const nameMatch  = aiReply.match(/\[NAME:\s*([^\]]+)\]/i);
@@ -175,7 +188,7 @@ router.post("/sms", async (req, res) => {
               customer_phone: From,
               customer_name: nameMatch?.[1]?.trim() || null,
               customer_address: customerAddress,
-              service_description: Body,
+              service_description: serviceDescription,
               scheduled_at: dateTimeISO,
               status: "pending",
             });
@@ -207,10 +220,10 @@ router.post("/sms", async (req, res) => {
           status: "pending",
         });
         await supabase.from("conversations").update({ status: "active" }).eq("id", conversation.id);
-        await notifyOwner(business, From, `Pending approval: ${bookedMatch[1]} — ${Body}`, "pending");
+        await notifyOwner(business, From, `Pending approval: ${bookedMatch[1]} — ${serviceDescription}`, "pending");
         await sendSMS(From, To, `Got it! We'll review and confirm your appointment for ${bookedMatch[1]}. You'll hear from us shortly.`);
       } else {
-        const booking = await bookAppointment(business.id, business, dateTimeISO, From, Body);
+        const booking = await bookAppointment(business.id, business, dateTimeISO, From, serviceDescription);
         await supabase.from("appointments").insert({
           business_id: business.id,
           conversation_id: conversation.id,
@@ -223,7 +236,7 @@ router.post("/sms", async (req, res) => {
           status: "confirmed",
         });
         await supabase.from("conversations").update({ status: "booked" }).eq("id", conversation.id);
-        await notifyOwner(business, From, `${bookedMatch[1]} — ${Body}`, "booked");
+        await notifyOwner(business, From, `${bookedMatch[1]} — ${serviceDescription}`, "booked");
         await sendSMS(From, To, cleanReply);
       }
 
