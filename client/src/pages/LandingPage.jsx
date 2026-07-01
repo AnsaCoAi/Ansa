@@ -1497,7 +1497,7 @@ export default function LandingPage() {
                 '30-day free trial included',
               ].map(f => <li key={f}><Check size={16} color={PRIMARY}/>{f}</li>)}
             </ul>
-            <a href="#/signup" className="ansa-pricing-cta ansa-pricing-cta-primary">Start Free Trial — 30 Days Free</a>
+            <a href={annualBilling ? '#/signup?plan=annual' : '#/signup'} className="ansa-pricing-cta ansa-pricing-cta-primary">Start Free Trial — 30 Days Free</a>
             <div className="ansa-trust-line" style={{ marginTop:14 }}>30-day free trial &nbsp;·&nbsp; Cancel anytime &nbsp;·&nbsp; No setup fee</div>
           </div>
         </div>

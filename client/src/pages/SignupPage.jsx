@@ -27,7 +27,9 @@ export default function SignupPage() {
     if (phoneDigits.length < 10) { setError('Please enter a valid phone number.'); return; }
     if (!agreedToTerms) { setError('Please agree to the terms to continue.'); return; }
     setError('');
-    localStorage.setItem('ansa_signup', JSON.stringify({ fullName, email: email.trim().toLowerCase(), password, businessName, businessPhone, businessType }));
+    const hashQuery = window.location.hash.split('?')[1] || '';
+    const plan = new URLSearchParams(hashQuery).get('plan') || 'monthly';
+    localStorage.setItem('ansa_signup', JSON.stringify({ fullName, email: email.trim().toLowerCase(), password, businessName, businessPhone, businessType, plan }));
     window.location.hash = '#/onboarding';
   };
 

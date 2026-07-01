@@ -223,10 +223,11 @@ export default function OnboardingPage() {
 
     const apiUrl = import.meta.env.VITE_API_URL || 'https://ansa-production.up.railway.app';
     try {
+      const savedSignup = JSON.parse(localStorage.getItem('ansa_signup') || '{}');
       const stripeRes = await fetch(`${apiUrl}/api/stripe/checkout`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ businessId }),
+        body: JSON.stringify({ businessId, plan: savedSignup.plan || 'monthly' }),
       });
       const stripeData = await stripeRes.json();
       if (stripeData.bypass) { window.location.hash = '#/dashboard'; return; }

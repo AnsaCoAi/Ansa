@@ -6,13 +6,15 @@ const { sendWelcomeEmail, sendCancellationEmail } = require('../services/email')
 
 const FRONTEND_URL = process.env.FRONTEND_URL || 'https://www.ansaco.ai';
 const PRO_PRICE_ID = process.env.STRIPE_PRO_PRICE_ID;
+const ANNUAL_PRICE_ID = process.env.STRIPE_ANNUAL_PRICE_ID;
 
 const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || '').split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
 
 // POST /api/stripe/checkout — create Stripe Checkout session
 router.post('/checkout', async (req, res) => {
-  const { businessId } = req.body;
+  const { businessId, plan } = req.body;
   if (!businessId) return res.status(400).json({ error: 'businessId required' });
+  const priceId = (plan === 'annual' && ANNUAL_PRICE_ID) ? ANNUAL_PRICE_ID : PRO_PRICE_ID;
 
   const { data: biz, error } = await supabase
     .from('businesses')
@@ -52,7 +54,7 @@ router.post('/checkout', async (req, res) => {
   const session = await stripe.checkout.sessions.create({
     customer: customerId,
     mode: 'subscription',
-    line_items: [{ price: PRO_PRICE_ID, quantity: 1 }],
+    line_items: [{ price: priceId, quantity: 1 }],
     subscription_data: { trial_period_days: 30, metadata: { businessId } },
     success_url: `${FRONTEND_URL}/#/onboarding`,
     cancel_url: `${FRONTEND_URL}/#/billing?b=${businessId}`,
