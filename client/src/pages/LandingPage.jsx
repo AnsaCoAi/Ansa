@@ -1389,6 +1389,23 @@ export default function LandingPage() {
         <div className="ansa-reveal">
           <DashboardShowcase />
         </div>
+
+        {/* Below-showcase callout */}
+        <div className="ansa-reveal" style={{ maxWidth: 720, margin: '28px auto 0', display: 'flex', alignItems: 'flex-start', gap: 20, background: 'rgba(59,130,246,0.05)', border: '1px solid rgba(59,130,246,0.15)', borderRadius: 16, padding: '20px 28px' }}>
+          <div style={{ width: 36, height: 36, borderRadius: '50%', background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: 2 }}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </div>
+          <div>
+            <div style={{ fontSize: 14, fontWeight: 700, color: '#fff', marginBottom: 4 }}>This is a preview — your live dashboard does more.</div>
+            <div style={{ fontSize: 13, color: '#71717a', lineHeight: 1.65 }}>
+              Once you sign up, your real dashboard shows live conversations as they happen, full message threads, appointment management, revenue tracking, analytics, and AI settings — all connected to your actual business phone number.
+            </div>
+            <a href="#/signup" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, marginTop: 12, fontSize: 13, fontWeight: 600, color: '#3b82f6', textDecoration: 'none' }}>
+              See the real thing — start free
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+            </a>
+          </div>
+        </div>
       </section>
 
       {/* Integrations + Notifications — combined split section */}
